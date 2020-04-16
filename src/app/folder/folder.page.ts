@@ -75,28 +75,21 @@ interface GameInstance extends Phaser.Types.Core.GameConfig {
 export class FolderPage implements OnInit {
   public folder: string;
   public initialize: boolean = false;
-  // public gameConfig: GameConfig = {
-  //   title: environment.title,
-  //   version: environment.version,
-  //   type: Phaser.AUTO,
-  //   width: window.innerWidth,
-  //   height: window.innerHeight - 45,
-  //   physics: {
-  //     default: 'arcade',
-  //     arcade: {
-  //         gravity: { y: 300 },
-  //         debug: false
-  //     }
-  // },
-  // };
 
   game: GameInstance = {
-    width: "100%",
-    height: "100%",
     title: environment.title,
     version: environment.version,
     type: Phaser.AUTO,
-    scene: BootScene,
+    width: window.innerWidth,
+    height: window.innerHeight - 45,
+    physics: {
+      default: 'arcade',
+      arcade: {
+          gravity: { y: 300 },
+          debug: false
+      }
+    },
+    scene: [MapSceneService],
     instance: null
   }
 
@@ -109,6 +102,7 @@ export class FolderPage implements OnInit {
 
   initializeGame() {    
     this.initialize = true
+
   }
 
   getInstance(){

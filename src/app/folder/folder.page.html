@@ -15,17 +15,15 @@
   </ion-header>
 
   <div id="container">
-    <strong class="capitalize">{{ folder }}</strong>
-    <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
     <ng-container *ngIf="!initialize">
       <img src="../../assets/icons/icon-192x192.png" class="App-logo" alt="logo" />
       <div (click)="initializeGame()" class="flex">
-        <a href="javascript:void(0)" class="bttn">Initialize</a>
+        <ion-button href="javascript:void(0)" color="primary">Initialize</ion-button>
       </div>
     </ng-container>
     <ion-phaser [game]="game" [initialize]="initialize"></ion-phaser>
     <div *ngIf="initialize" (click)="changeAngle()" class="flex bottom-button">
-      <a href="javascript:void(0)" class="bttn">Set Angle</a>
+      <ion-button href="javascript:void(0)">Set Angle</ion-button>
     </div>
   </div>
 </ion-content>
