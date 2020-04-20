@@ -9,9 +9,11 @@ export class MapSceneService extends Phaser.Scene {
 
     dude;
     keys;
+    player;
     sceneWidthHalf: number;
     mapa: Phaser.Physics.Arcade.Group;
-    jugadores: Jugador[];
+    jugadores: Phaser.Physics.Arcade.Group; //Jugador[];
+    numeroJugadores: number = 2;
     
     public constructor() {
       super({ key: 'Map' });
@@ -19,6 +21,8 @@ export class MapSceneService extends Phaser.Scene {
 
     public preload() {
       this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
+      this.load.spritesheet('jugador', 'assets/Jugador.png', { frameWidth: 413, frameHeight: 413 });
+
       this.sceneWidthHalf = window.innerWidth / 2;
     }
 
@@ -27,6 +31,14 @@ export class MapSceneService extends Phaser.Scene {
 
       this.dude.setBounce(0.2);
       this.dude.setCollideWorldBounds(true);
+
+      this.jugadores = this.physics.add.group();
+      for (var i = 0; i < this.numeroJugadores; i++) {
+        var jugador = new Jugador(this);        
+        this.jugadores.add(jugador,true);        
+        jugador.setCollideWorldBounds(true);
+        jugador.setX(jugador.getBounds().width * (i + 0.5));
+      }
 
       this.anims.create({
         key: 'left',
