@@ -25,6 +25,6 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
         this.setScale(scale);
 
         this.setCollideWorldBounds(true);
-
+        this.setInteractive();
     }
 }

@@ -81,7 +81,7 @@ export class FolderPage implements OnInit {
     version: environment.version,
     type: Phaser.AUTO,
     width: window.innerWidth,
-    height: window.innerHeight - 45,
+    height: window.innerHeight - 45,    
     physics: {
       default: 'arcade',
       arcade: {

@@ -76,13 +76,18 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         if (!this.fichasTerreno) return null;
         var fichasArray = this.fichasTerreno.getChildren();
 
-        for (var i = 0; i < fichasArray.length; i++) {
+        for (var i = (fichasArray.length-1); i >= 0; i--) 
+        {
             var ficha = <Ficha>fichasArray[i];
             if (!ficha.colocada)
                 return ficha;
         }
 
         return null;
+    }
+
+    getZonaColocacion() {
+        
     }
 
     activar() {

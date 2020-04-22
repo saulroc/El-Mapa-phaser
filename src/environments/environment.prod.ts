@@ -1,5 +1,7 @@
 export const environment = {
   production: true,
+  title: 'El Mapa',
+  version: 'Beta',
   firebase : {
     apiKey: "AIzaSyC7yTbgBHfkBSMQSulBcX8vxWjK2Udntoo",
     authDomain: "el-mapa-phaser.firebaseapp.com",

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as Phaser from 'phaser';
 import { Jugador } from '../Model/jugador';
+import { Ficha } from '../Model/ficha';
 
 @Injectable({
   providedIn: 'root'
@@ -12,12 +13,17 @@ export class MapSceneService extends Phaser.Scene {
     player;
     sceneWidthHalf: number;
     mapa: Phaser.Physics.Arcade.Group;
+    zonaColocacion: Phaser.Physics.Arcade.Group;
     jugadores: Phaser.Physics.Arcade.Group; //Jugador[];
     jugadorActivo: Jugador;
+    fichaColocando: Ficha;
     numeroJugadores: number = 2;
     colores = ["0xff0000", "0x0000ff"];
     colocandoFichas: boolean;
     controls;
+    textoInformacion: Phaser.GameObjects.Text;
+    marker;
+    map;
 
     public constructor() {
       super({ key: 'Map' });
@@ -55,7 +61,10 @@ export class MapSceneService extends Phaser.Scene {
       };
   
       this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
-  
+      
+      this.textoInformacion = this.add.text(this.game.scale.width / 2, this.game.scale.height / 8, "");
+      this.textoInformacion.setScrollFactor(0);
+      this.textoInformacion.text = "Cargando partida";
       this.colocandoFichas = true;
       this.jugadores = this.physics.add.group();
       for (var i = 0; i < this.numeroJugadores; i++) {
@@ -68,55 +77,87 @@ export class MapSceneService extends Phaser.Scene {
       }
 
       this.colocandoFichas = true;
-      // this.jugadorActivo = this.jugadores.getFirst();
-      // this.jugadorActivo;
+      this.mapa = this.physics.add.group();
+      this.zonaColocacion = this.physics.add.group();
+      this.zonaColocacion.create(this.cameras.main.centerX, this.cameras.main.centerY);
+            
+      // this.jugadorActivo;     
+      this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
 
-      this.anims.create({
-        key: 'left',
-        frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-        frameRate: 10,
-        repeat: -1
-      });
+        gameObject.x = dragX;
+        gameObject.y = dragY;
 
-      this.anims.create({
-        key: 'turn',
-        frames: [{ key: 'dude', frame: 4 }],
-        frameRate: 20
-      });
+      }); 
 
-      this.anims.create({
-        key: 'right',
-        frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-        frameRate: 10,
-        repeat: -1
-      });
-
-      this.keys = this.input.keyboard.createCursorKeys();
-
+      this.input.on('dragend', this.onDragStop, this);
+      this.activarJugador(<Jugador>this.jugadores.getChildren()[0]);
+      
+      this.map = this.make.tilemap({ tileWidth: 413, tileHeight: 413, width: 80, height: 80});
+      var tiles = this.map.addTilesetImage('fichas');
+      var layer1 = this.map.createBlankDynamicLayer('layer1', tiles);
+      layer1.randomize(0, 0, this.map.width, this.map.height, [ -1, 0, 1, 2, 3, 4, 5, 6, 7, 12 ]);
+      //layer1.scale;
+      this.marker = this.add.graphics();
+      this.marker.lineStyle(2, 0x000000, 1);
+      this.marker.strokeRect(0, 0, this.map.tileWidth * layer1.scaleX, this.map.tileHeight * layer1.scaleY);
+  
     }
 
     public update(time, delta) {
+      var worldPoint = <Phaser.Math.Vector2>this.input.activePointer.positionToCamera(this.cameras.main);
 
-      if (this.keys.left.isDown || this.isLeftTouch()) {
-        this.dude.setVelocityX(-160);
-        this.dude.anims.play('left', true);
-      } else if (this.keys.right.isDown  || this.isRightTouch()) {
-        this.dude.setVelocityX(160);
-        this.dude.anims.play('right', true);
+      // Rounds down to nearest tile
+      var pointerTileX = this.map.worldToTileX(worldPoint.x);
+      var pointerTileY = this.map.worldToTileY(worldPoint.y);
+
+      // Snap to tile coordinates, but in world space
+      this.marker.x = this.map.tileToWorldX(pointerTileX);
+      this.marker.y = this.map.tileToWorldY(pointerTileY);
+      if (this.colocandoFichas) {
+
+        this.generarZonaDeColocacion();
+
       } else {
-        this.dude.setVelocityX(0);
-        this.dude.anims.play('turn');
+
       }
 
       this.controls.update(delta);
 
     }
 
-    private isLeftTouch() {
-      return this.input.activePointer.isDown && this.input.activePointer.downX < this.sceneWidthHalf;
+    activarJugador(jugador: Jugador) {
+      this.jugadorActivo = jugador;
+      jugador.activar();
+      if (this.colocandoFichas) {
+        this.textoInformacion.text = "Colocando ficha " + jugador.nombre;
+        this.fichaColocando = jugador.getSiguienteFicha();
+        this.fichaColocando.setVisible(true);
+        this.input.setDraggable(this.fichaColocando);
+        //this.input.setDragState
+        //this.fichaColocando.input.dragState
+      }
+
     }
 
-    private isRightTouch() {
-      return this.input.activePointer.isDown && this.input.activePointer.downX >= this.sceneWidthHalf;
+    generarZonaDeColocacion() {
+
     }
+  
+    onDragStop(pointer, sprite) {
+      
+      if (!this.physics.overlap(sprite, this.zonaColocacion))
+      {
+        console.log("No Overlap");  
+        //this.game.add.tween(sprite).to( { x: this.game.scale.width / 2, y: this.game.scale.height / 2 }, 500, "Back.easeOut", true);
+          // this.tweens.add({
+
+          // });
+      } else {
+        console.log("Overlap");  
+        this.mapa.add(sprite);
+        sprite.setDraggable(false);
+      }
+    
+    }
+    
 }
