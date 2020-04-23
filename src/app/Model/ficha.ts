@@ -5,6 +5,7 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
     nivel: number;
     colocada: boolean;
     oculta: boolean;
+    frameNumero: number;
 
     public constructor(scene: Phaser.Scene, frame: number, nombre: string, nivel: number, colocada: boolean, oculta: boolean) {
         super(scene, 0, 0, 'fichas',frame);
@@ -13,6 +14,10 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
         this.nivel = nivel;
         this.colocada = colocada;
         this.oculta = oculta;
+        this.frameNumero = frame;
+        if (this.oculta)
+            this.setFrame(40 + nivel);
+
 
         scene.add.existing(this);
 

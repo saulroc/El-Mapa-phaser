@@ -3,25 +3,46 @@ import { Carta } from '../Model/carta';
 import { Ficha } from '../Model/ficha';
 
 var fichas = [{
-    frame: 0,
-    nombre: "pueblo ini",
-    nivel: 0,
-    colocada: false,
-    oculta: false
+        frame: 0,
+        nombre: "pueblo ini",
+        nivel: 0,
+        colocada: false,
+        oculta: false
     },
     {
-    frame: 8,
-    nombre: "mina madera ini",
-    nivel: 0,
-    colocada: false,
-    oculta: false
+        frame: 8,
+        nombre: "mina madera ini",
+        nivel: 0,
+        colocada: false,
+        oculta: false
     },
     {
-    frame: 16,
-    nombre: "mina piedra ini",
-    nivel: 0,
-    colocada: false,
-    oculta: false
+        frame: 16,
+        nombre: "mina piedra ini",
+        nivel: 0,
+        colocada: false,
+        oculta: false
+    },
+    {
+        frame: 24,
+        nombre: "ficha 1",
+        nivel: 1,
+        colocada: false,
+        oculta: true
+    },
+    {
+        frame: 32,
+        nombre: "ficha 2",
+        nivel: 1,
+        colocada: false,
+        oculta: true
+    },
+    {
+        frame: 9,
+        nombre: "ficha 3",
+        nivel: 1,
+        colocada: false,
+        oculta: true
     }
 ];
 
@@ -65,7 +86,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         for( var i = 0; i < fichas.length; i++) {
             var ficha = fichas[i];
             var fichaTerreno = new Ficha(this.scene, ficha.frame,ficha.nombre, ficha.nivel, ficha.colocada, ficha.oculta);
-            fichaTerreno.setVisible(false);
+            //fichaTerreno.setVisible(false);
             fichaTerreno.setPosition(50 * i * this.numero + fichaTerreno.width, 50 * i * this.numero + fichaTerreno.height);
             this.fichasTerreno.add(fichaTerreno);
         }
