@@ -114,11 +114,13 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
     activar() {
         this.activo = true;
         this.setFrame(1);
+        this.setActive(true);
     }
 
     desactivar() {
         this.activo = false;
         this.setFrame(0);
+        this.setActive(false);
     }
 
 }

@@ -21,7 +21,8 @@ export class MapSceneService extends Phaser.Scene {
     textoInformacion: Phaser.GameObjects.Text;
     marker: Phaser.GameObjects.Graphics;
     map: Phaser.Tilemaps.Tilemap;
-    layer1;
+    layer1: Phaser.Tilemaps.DynamicTilemapLayer;
+    tileSet: Phaser.Tilemaps.Tileset;
 
     public constructor() {
       super({ key: 'Map' });
@@ -40,10 +41,10 @@ export class MapSceneService extends Phaser.Scene {
       this.physics.world.setBounds(0, 0, this.game.scale.width * 4, this.game.scale.height * 4);
       
       this.map = this.make.tilemap({ tileWidth: 413, tileHeight: 413, width: 80, height: 80});
-      var tiles = this.map.addTilesetImage('fichas');
-      this.layer1 = this.map.createBlankDynamicLayer('layer1', tiles);
+      this.tileSet = this.map.addTilesetImage('fichas');
+      this.layer1 = this.map.createBlankDynamicLayer('layer1', this.tileSet);
       this.layer1.setOrigin(0.5);
-      this.layer1.randomize(0, 0, this.map.width, this.map.height, [ -1]);
+      this.layer1.randomize(0, 0, this.map.width, this.map.height, [ 40]);
 
       var scale = this.game.scale.width / this.map.tileWidth / 8 ;
         if (scale > (this.game.scale.height / this.map.tileHeight / 8))
@@ -73,7 +74,7 @@ export class MapSceneService extends Phaser.Scene {
       this.textoInformacion.setOrigin(0.5);
       this.textoInformacion.setScrollFactor(0);
       this.textoInformacion.text = "Cargando partida";
-      this.colocandoFichas = true;
+      
       this.jugadores = this.physics.add.group();
       for (var i = 0; i < this.numeroJugadores; i++) {
         var color = Phaser.Display.Color.HexStringToColor(this.colores[i]);        
@@ -104,7 +105,7 @@ export class MapSceneService extends Phaser.Scene {
       this.input.on('dragend', this.onDragStop, this);
       
       this.activarJugador(<Jugador>this.jugadores.getChildren()[0]);
-      
+      this.cameras.main.setScroll(this.physics.world.bounds.centerX, this.physics.world.bounds.centerY)
       
     }
 
@@ -123,14 +124,16 @@ export class MapSceneService extends Phaser.Scene {
         this.generarZonaDeColocacion();
         if (this.input.manager.activePointer.isDown)
         {
-            var tile = this.map.getTileAtWorldXY(worldPoint.x, worldPoint.y);
-            console.log("Tile clicked: ", tile);
-            // This will replace all instances of the selected tile with a plant (tile id = 38).
-            this.map.replaceByIndex(tile.index,this.fichaColocando.frame.sourceIndex,tile.x, tile.y)
-            //map.replaceByIndex(tile.index, 38);
-
-            // You can also replace within a specific region (tileX, tileY, width, height):
-            // map.replaceByIndex(tile.index, 38, 5, 5, 15, 15);
+            console.log(this.fichaColocando);
+            var tile = this.layer1.getTileAtWorldXY(worldPoint.x, worldPoint.y);
+            if (tile.index == 40)
+            {
+              this.map.putTileAt(this.fichaColocando.frame.sourceIndex,pointerTileX, pointerTileY);
+              this.mapa.add(this.fichaColocando);
+              this.fichaColocando.colocada = true;
+              this.activarJugador(this.getSiguienteJugador());
+            }            
+            
         }
 
       } else {
@@ -141,7 +144,18 @@ export class MapSceneService extends Phaser.Scene {
 
     }
 
+    getSiguienteJugador() {
+      var jugadoresVector = this.jugadores.getChildren();  
+      var indice = jugadoresVector.indexOf(this.jugadorActivo);
+      indice = (indice + 1) % jugadoresVector.length;
+      return <Jugador>jugadoresVector[indice];
+    }
+
     activarJugador(jugador: Jugador) {
+      if(this.jugadorActivo) {
+        this.jugadorActivo.desactivar();
+      }
+
       this.jugadorActivo = jugador;
       jugador.activar();
       if (this.colocandoFichas) {
@@ -155,6 +169,8 @@ export class MapSceneService extends Phaser.Scene {
 
         //this.input.setDragState
         //this.fichaColocando.input.dragState
+      } else {
+        this.textoInformacion.text = "Turno del jugdaor " + jugador.nombre;
       }
 
     }
