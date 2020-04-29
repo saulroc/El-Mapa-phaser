@@ -124,11 +124,16 @@ export class MapSceneService extends Phaser.Scene {
         this.generarZonaDeColocacion();
         if (this.input.manager.activePointer.isDown)
         {
-            console.log(this.fichaColocando);
             var tile = this.layer1.getTileAtWorldXY(worldPoint.x, worldPoint.y);
             if (tile.index == 40)
             {
-              this.map.putTileAt(this.fichaColocando.frame.sourceIndex,pointerTileX, pointerTileY);
+              //console.log("Frame concolando", this.fichaColocando.frame);
+              var indice = +this.fichaColocando.frame.name;
+              tile = this.layer1.putTileAt(indice,pointerTileX, pointerTileY);
+              if (this.fichaColocando.oculta) {
+                tile.tint = this.jugadorActivo.color.color;
+              }
+
               this.mapa.add(this.fichaColocando);
               this.fichaColocando.colocada = true;
               this.activarJugador(this.getSiguienteJugador());
@@ -158,9 +163,9 @@ export class MapSceneService extends Phaser.Scene {
 
       this.jugadorActivo = jugador;
       jugador.activar();
-      if (this.colocandoFichas) {
+      this.fichaColocando = jugador.getSiguienteFicha();
+      if (this.fichaColocando) {
         this.textoInformacion.text = "Colocando ficha " + jugador.nombre;
-        this.fichaColocando = jugador.getSiguienteFicha();
         this.fichaColocando.setVisible(true);
         this.fichaColocando.setDepth(10);
         this.input.setDraggable(this.fichaColocando);
@@ -170,7 +175,9 @@ export class MapSceneService extends Phaser.Scene {
         //this.input.setDragState
         //this.fichaColocando.input.dragState
       } else {
+        this.colocandoFichas = false;
         this.textoInformacion.text = "Turno del jugdaor " + jugador.nombre;
+        this.jugadorActivo.iniciarTurno();
       }
 
     }

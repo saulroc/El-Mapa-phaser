@@ -15,8 +15,10 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
         this.colocada = colocada;
         this.oculta = oculta;
         this.frameNumero = frame;
-        if (this.oculta)
-            this.setFrame(40 + nivel);
+        if (this.oculta) {
+            var indiceFrame = 40 + nivel;
+            this.setTexture('fichas', indiceFrame);
+        }
 
 
         scene.add.existing(this);
