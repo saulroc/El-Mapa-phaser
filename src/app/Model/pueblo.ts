@@ -1,9 +1,15 @@
 import * as Phaser from 'phaser';
+import {Edificio} from './edificio';
 
-export class Pueblo extends Phaser.Physics.Arcade.Sprite {
+
+export class Pueblo  {
     nombre: string;
-    nivel: number;
-    colocada: boolean;
-    oculta: boolean;
+    construido: boolean = false;
+    edificios: Edificio[];
+    color:  Phaser.Display.Color;
+
+    constructor(color: Phaser.Display.Color) {
+        this.color = color;
+    }
 
 }

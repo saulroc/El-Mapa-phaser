@@ -2,65 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { environment } from '../../../src/environments/environment';
 import { ActivatedRoute } from '@angular/router';
 import { MapSceneService } from '../services/map-scene.service';
+import { PuebloSceneService } from '../services/pueblo-scene.service';
 
 import * as Phaser from 'phaser';
 
-const SCENES = {
-  FIRST: 'FirstScene',
-  SECOND: 'SecondScene'
-}
 
-class CommonScene extends Phaser.Scene {
-  helloWorld: Phaser.GameObjects.Text
-
-  init () {
-    this.cameras.main.setBackgroundColor('#24252A');
-  }
-
-  create () {
-    this.helloWorld = this.add.text(
-      this.cameras.main.centerX, 
-      this.cameras.main.centerY, 
-      "Hello World", { 
-        font: "40px Arial", 
-        fill: "#ffffff" 
-      }
-    );
-    this.helloWorld.setOrigin(0.5);
-
-    this.input.keyboard.on('keyup_C', function() {
-      this.scene.start(
-        this.scene.key === SCENES.FIRST ?
-          SCENES.SECOND : SCENES.FIRST
-      );
-    }, this);
-  }
-
-  setAngle (angle: number) {
-    this.helloWorld.angle = angle;
-  }
-}
-
-class FirstScene extends CommonScene {
-  update () {
-    this.helloWorld.angle += 1;
-  }
-}
-
-class SecondScene extends CommonScene {
-  update () {
-    this.helloWorld.angle -= 1;
-  }
-}
-
-class BootScene extends Phaser.Scene {
-  create() {
-    this.scene.add(SCENES.FIRST, FirstScene, true);
-    this.scene.add(SCENES.SECOND, SecondScene, false);
-
-    this.scene.run(SCENES.FIRST);
-  }
-}
 
 interface GameInstance extends Phaser.Types.Core.GameConfig {
   instance: Phaser.Game
@@ -70,7 +16,7 @@ interface GameInstance extends Phaser.Types.Core.GameConfig {
   selector: 'app-folder',
   templateUrl: './folder.page.html',
   styleUrls: ['./folder.page.scss'],
-  providers: [MapSceneService]
+  providers: [MapSceneService, PuebloSceneService]
 })
 export class FolderPage implements OnInit {
   public folder: string;
@@ -88,7 +34,7 @@ export class FolderPage implements OnInit {
           debug: true
       }
     },
-    scene: [MapSceneService],
+    scene: [MapSceneService, PuebloSceneService],
     instance: null
   }
 

@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser';
+import { Pueblo } from './pueblo';
 
 export class Ficha extends Phaser.Physics.Arcade.Sprite {
     nombre: string;
@@ -6,8 +7,13 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
     colocada: boolean;
     oculta: boolean;
     frameNumero: number;
+    pueblo: Pueblo;
+    tropas: any;
+    minaMadera: any;
+    minaPiedra: any;
+    tesoros: any;
 
-    public constructor(scene: Phaser.Scene, frame: number, nombre: string, nivel: number, colocada: boolean, oculta: boolean) {
+    public constructor(scene: Phaser.Scene, frame: number, nombre: string, nivel: number, colocada: boolean, oculta: boolean, pueblo: Pueblo = null, minaMadera: boolean = false, minaPiedra: boolean = false) {
         super(scene, 0, 0, 'fichas',frame);
         this.scene = scene;
         this.nombre = nombre;
@@ -19,7 +25,9 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
             var indiceFrame = 40 + nivel;
             this.setTexture('fichas', indiceFrame);
         }
-
+        this.minaMadera = minaMadera;
+        this.minaPiedra = minaPiedra;
+        this.pueblo = pueblo;
 
         scene.add.existing(this);
 
@@ -33,5 +41,9 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
 
         this.setCollideWorldBounds(true);
         this.setInteractive();
+    }
+
+    setMarcador(color: Phaser.Display.Color) {
+        
     }
 }

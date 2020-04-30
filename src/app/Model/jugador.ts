@@ -8,42 +8,60 @@ var fichas = [{
         nombre: "pueblo ini",
         nivel: 0,
         colocada: false,
-        oculta: false
+        oculta: false,
+        pueblo: true,
+        minaMadera: false,
+        minaPiedra: false
     },
     {
         frame: 8,
         nombre: "mina madera ini",
         nivel: 0,
         colocada: false,
-        oculta: false
+        oculta: false,
+        pueblo: false,
+        minaMadera: true,
+        minaPiedra: false
     },
     {
         frame: 16,
         nombre: "mina piedra ini",
         nivel: 0,
         colocada: false,
-        oculta: false
+        oculta: false,
+        pueblo: false,
+        minaMadera: false,
+        minaPiedra: true
     },
     {
         frame: 24,
         nombre: "ficha 1",
         nivel: 1,
         colocada: false,
-        oculta: true
+        oculta: true,
+        pueblo: false,
+        minaMadera: false,
+        minaPiedra: false
     },
     {
         frame: 32,
         nombre: "ficha 2",
         nivel: 1,
         colocada: false,
-        oculta: true
+        oculta: true,
+        pueblo: false,
+        minaMadera: false,
+        minaPiedra: false
     },
     {
         frame: 9,
         nombre: "ficha 3",
         nivel: 1,
         colocada: false,
-        oculta: true
+        oculta: true,
+        pueblo: false,
+        minaMadera: false,
+        minaPiedra: false
     }
 ];
 
@@ -56,7 +74,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
     CPU: boolean;
     color:  Phaser.Display.Color;
     mano: Carta[];
-    pueblos: Pueblo[];
+    pueblos: Pueblo[] = [];
     fichasTerreno: Phaser.Physics.Arcade.Group;
     activo: boolean;
     madera: number;
@@ -107,10 +125,28 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         this.fichasTerreno = this.scene.physics.add.group();
         for( var i = 0; i < fichas.length; i++) {
             var ficha = fichas[i];
-            var fichaTerreno = new Ficha(this.scene, ficha.frame,ficha.nombre, ficha.nivel, ficha.colocada, ficha.oculta);
+            var fichaTerreno = new Ficha(
+                this.scene, 
+                ficha.frame,
+                ficha.nombre, 
+                ficha.nivel, 
+                ficha.colocada, 
+                ficha.oculta,
+                ficha.pueblo ? 
+                    (i == 0) ? 
+                        new Pueblo(this.color) 
+                        : new Pueblo(new Phaser.Display.Color(255, 255, 255, 255)) 
+                    : null,
+                ficha.minaMadera,
+                ficha.minaPiedra
+                );
+
             fichaTerreno.setVisible(false);            
             fichaTerreno.setPosition(50 * i * this.numero + fichaTerreno.width, 50 * i * this.numero + fichaTerreno.height);
             this.fichasTerreno.add(fichaTerreno);
+            if (i == 0 && fichaTerreno.pueblo) {                
+                this.pueblos.push(fichaTerreno.pueblo);
+            }
         }
         
     }

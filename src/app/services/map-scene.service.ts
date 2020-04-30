@@ -14,8 +14,8 @@ export class MapSceneService extends Phaser.Scene {
     jugadores: Phaser.Physics.Arcade.Group; //Jugador[];
     jugadorActivo: Jugador;
     fichaColocando: Ficha;
-    numeroJugadores: number = 2;
-    colores = ["0xff0000", "0x0000ff"];
+    numeroJugadores: number = 4;
+    colores = ["0xff0000", "0x0000ff", "0x008000", "0xffff00", "0xD2B48C", "0xff4500", "0x800080", "0x00ffff"];
     colocandoFichas: boolean;
     controls;
     textoInformacion: Phaser.GameObjects.Text;
@@ -40,18 +40,18 @@ export class MapSceneService extends Phaser.Scene {
 
       this.physics.world.setBounds(0, 0, this.game.scale.width * 4, this.game.scale.height * 4);
       
-      this.map = this.make.tilemap({ tileWidth: 413, tileHeight: 413, width: 80, height: 80});
+      this.map = this.make.tilemap({ tileWidth: 413, tileHeight: 413, width: 20 * this.numeroJugadores, height: 20 * this.numeroJugadores});
       this.tileSet = this.map.addTilesetImage('fichas');
       this.layer1 = this.map.createBlankDynamicLayer('layer1', this.tileSet);
       this.layer1.setOrigin(0.5);
       this.layer1.randomize(0, 0, this.map.width, this.map.height, [ 40]);
+      //this.layer1.putTilesAt
 
       var scale = this.game.scale.width / this.map.tileWidth / 8 ;
         if (scale > (this.game.scale.height / this.map.tileHeight / 8))
             scale = this.game.scale.height / this.map.tileHeight / 8;
 
       this.layer1.setScale(scale);
-      //layer1.randomize(0, 0, this.map.width, this.map.height, [ -1, 0, 8, 16, 24, 32, 1, 9, 17, 25, 33, 2 ]);
       
 
       var cursors = this.input.keyboard.createCursorKeys();
@@ -75,15 +75,7 @@ export class MapSceneService extends Phaser.Scene {
       this.textoInformacion.setScrollFactor(0);
       this.textoInformacion.text = "Cargando partida";
       
-      this.jugadores = this.physics.add.group();
-      for (var i = 0; i < this.numeroJugadores; i++) {
-        var color = Phaser.Display.Color.HexStringToColor(this.colores[i]);        
-        var jugador = new Jugador(this, color, "Jugador " + (i+1), i);        
-        this.jugadores.add(jugador,true);        
-        jugador.setCollideWorldBounds(true);
-        jugador.setScrollFactor(0);
-        jugador.inicializarFichas();
-      }
+      this.iniciarJugadores();
 
       this.colocandoFichas = true;
       this.mapa = this.physics.add.group();
@@ -94,7 +86,6 @@ export class MapSceneService extends Phaser.Scene {
       this.marker.lineStyle(4, 0xFFFFFF, 1);
       this.marker.strokeRect(0, 0, this.map.tileWidth * this.layer1.scaleX, this.map.tileHeight * this.layer1.scaleY);
 
-      // this.jugadorActivo;     
       this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
 
         gameObject.x = dragX;
@@ -127,13 +118,14 @@ export class MapSceneService extends Phaser.Scene {
             var tile = this.layer1.getTileAtWorldXY(worldPoint.x, worldPoint.y);
             if (tile.index == 40)
             {
-              //console.log("Frame concolando", this.fichaColocando.frame);
+              //
               var indice = +this.fichaColocando.frame.name;
               tile = this.layer1.putTileAt(indice,pointerTileX, pointerTileY);
               if (this.fichaColocando.oculta) {
                 tile.tint = this.jugadorActivo.color.color;
               }
-
+              this.fichaColocando.setPosition(worldPoint.x, worldPoint.y);
+              console.log("Tile concolando", tile);
               this.mapa.add(this.fichaColocando);
               this.fichaColocando.colocada = true;
               this.activarJugador(this.getSiguienteJugador());
@@ -147,6 +139,18 @@ export class MapSceneService extends Phaser.Scene {
 
       this.controls.update(delta);
 
+    }
+
+    iniciarJugadores() {
+      this.jugadores = this.physics.add.group();
+      for (var i = 0; i < this.numeroJugadores; i++) {
+        var color = Phaser.Display.Color.HexStringToColor(this.colores[i]);        
+        var jugador = new Jugador(this, color, "Jugador " + (i+1), i);        
+        this.jugadores.add(jugador,true);        
+        jugador.setCollideWorldBounds(true);
+        jugador.setScrollFactor(0);
+        jugador.inicializarFichas();
+      }
     }
 
     getSiguienteJugador() {
@@ -163,17 +167,16 @@ export class MapSceneService extends Phaser.Scene {
 
       this.jugadorActivo = jugador;
       jugador.activar();
+      this.marker.lineStyle(4, jugador.color.color, 1);
+      this.marker.strokeRect(0, 0, this.map.tileWidth * this.layer1.scaleX, this.map.tileHeight * this.layer1.scaleY);
+
       this.fichaColocando = jugador.getSiguienteFicha();
       if (this.fichaColocando) {
         this.textoInformacion.text = "Colocando ficha " + jugador.nombre;
         this.fichaColocando.setVisible(true);
         this.fichaColocando.setDepth(10);
         this.input.setDraggable(this.fichaColocando);
-        this.marker.lineStyle(4, jugador.color.color, 1);
-        this.marker.strokeRect(0, 0, this.map.tileWidth * this.layer1.scaleX, this.map.tileHeight * this.layer1.scaleY);
-
-        //this.input.setDragState
-        //this.fichaColocando.input.dragState
+                
       } else {
         this.colocandoFichas = false;
         this.textoInformacion.text = "Turno del jugdaor " + jugador.nombre;
