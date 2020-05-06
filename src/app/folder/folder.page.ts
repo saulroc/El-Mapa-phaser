@@ -27,7 +27,11 @@ export class FolderPage implements OnInit {
     version: environment.version,
     type: Phaser.AUTO,
     width: window.innerWidth,
-    height: window.innerHeight - 45,    
+    height: window.innerHeight - 45,  
+    scale: {
+      mode: Phaser.Scale.FIT,
+      autoCenter: Phaser.Scale.CENTER_BOTH
+    },  
     physics: {
       default: 'arcade',
       arcade: {
@@ -57,8 +61,8 @@ export class FolderPage implements OnInit {
   changeAngle () {
     const instance = this.getInstance();
     instance.scene.scenes.forEach(scene => {
-      if (scene.sys.isActive() && scene instanceof CommonScene) {
-        scene.setAngle(0);
+      if (scene.sys.isActive()) {
+        //scene.setAngle(0);
       }
     });
   }

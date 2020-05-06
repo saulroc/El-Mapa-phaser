@@ -12,7 +12,7 @@ var fichas = [{
         pueblo: true,
         minaMadera: false,
         minaPiedra: false
-    },
+    }/*,
     {
         frame: 8,
         nombre: "mina madera ini",
@@ -62,7 +62,7 @@ var fichas = [{
         pueblo: false,
         minaMadera: false,
         minaPiedra: false
-    }
+    }*/
 ];
 
 export class Jugador extends Phaser.Physics.Arcade.Sprite {
@@ -104,19 +104,26 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
 
         this.setTint(color.color);
         this.setX(this.getBounds().width * (numero + 0.5));
+        
+        var estilo = { 
+            font: 'bold 10pt Arial',
+            fill: '#000000',
+            align: 'center',
+            wordWrap: true
+           }
 
-        this.nombreText = this.scene.add.text(this.x, this.y, this.nombre);
+        this.nombreText = this.scene.add.text(this.x, this.y, this.nombre, estilo);
         this.nombreText.setOrigin(0.5, 0);
         this.nombreText.setScrollFactor(0);
-        this.oroText = this.scene.add.text(this.x, this.nombreText.y + this.nombreText.height, "Oro: " + this.oro);
+        this.oroText = this.scene.add.text(this.x, this.nombreText.y + this.nombreText.height, "Oro: " + this.oro, estilo);
         this.oroText.setOrigin(0.5, 0);
         this.oroText.setScrollFactor(0);
         
-        this.maderaText = this.scene.add.text(this.x, this.oroText.y + this.oroText.height, "Piedra: " + this.piedra);
+        this.maderaText = this.scene.add.text(this.x, this.oroText.y + this.oroText.height, "Piedra: " + this.piedra, estilo);
         this.maderaText.setOrigin(0.5, 0);
         this.maderaText.setScrollFactor(0);
 
-        this.piedraText = this.scene.add.text(this.x, this.maderaText.y + this.maderaText.height, "Madera: " + this.madera);
+        this.piedraText = this.scene.add.text(this.x, this.maderaText.y + this.maderaText.height, "Madera: " + this.madera, estilo);
         this.piedraText.setOrigin(0.5, 0);
         this.piedraText.setScrollFactor(0);
     }
@@ -140,6 +147,9 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
                 ficha.minaMadera,
                 ficha.minaPiedra
                 );
+
+            if(fichaTerreno.pueblo)
+                fichaTerreno.pueblo.nombre = ficha.nombre;
 
             fichaTerreno.setVisible(false);            
             fichaTerreno.setPosition(50 * i * this.numero + fichaTerreno.width, 50 * i * this.numero + fichaTerreno.height);

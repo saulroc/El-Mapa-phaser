@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import { Pueblo } from './pueblo';
+import { PuebloSceneService } from '../services/pueblo-scene.service';
 
 export class Ficha extends Phaser.Physics.Arcade.Sprite {
     nombre: string;
@@ -12,6 +13,7 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
     minaMadera: any;
     minaPiedra: any;
     tesoros: any;
+    marcador: Phaser.GameObjects.Sprite;
 
     public constructor(scene: Phaser.Scene, frame: number, nombre: string, nivel: number, colocada: boolean, oculta: boolean, pueblo: Pueblo = null, minaMadera: boolean = false, minaPiedra: boolean = false) {
         super(scene, 0, 0, 'fichas',frame);
@@ -41,9 +43,22 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
 
         this.setCollideWorldBounds(true);
         this.setInteractive();
+        this.on("pointerup", this.clicked, this);
     }
 
     setMarcador(color: Phaser.Display.Color) {
-        
+        if (! this.marcador) {
+            this.marcador = this.scene.add.sprite(this.x, this.y, 'marcadores', 0);  
+            this.marcador.setScale(this.scale / 2);  
+            this.marcador.setDepth(2);      
+        }
+        this.marcador.tint = color.color;
+    }
+
+    clicked() {
+        if (this.colocada && this.pueblo) {
+            this.scene.game.scene.pause('Map');            
+            this.scene.game.scene.start('Pueblo', this.pueblo);
+        }
     }
 }

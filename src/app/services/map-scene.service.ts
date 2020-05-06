@@ -15,6 +15,7 @@ export class MapSceneService extends Phaser.Scene {
     jugadorActivo: Jugador;
     fichaColocando: Ficha;
     numeroJugadores: number = 4;
+    turno: number = 0;
     colores = ["0xff0000", "0x0000ff", "0x008000", "0xffff00", "0xD2B48C", "0xff4500", "0x800080", "0x00ffff"];
     colocandoFichas: boolean;
     controls;
@@ -23,6 +24,7 @@ export class MapSceneService extends Phaser.Scene {
     map: Phaser.Tilemaps.Tilemap;
     layer1: Phaser.Tilemaps.DynamicTilemapLayer;
     tileSet: Phaser.Tilemaps.Tileset;
+    tileSeleccionado: Phaser.Tilemaps.Tile;
 
     public constructor() {
       super({ key: 'Map' });
@@ -32,6 +34,7 @@ export class MapSceneService extends Phaser.Scene {
       this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
       this.load.spritesheet('fichas', 'assets/Fichas.png', { frameWidth: 413, frameHeight: 413 });
       this.load.spritesheet('jugador', 'assets/Jugador.png', { frameWidth: 413, frameHeight: 413 });
+      this.load.spritesheet('marcadores', 'assets/Marcadores.png', { frameWidth: 413, frameHeight: 413 });
 
       this.sceneWidthHalf = window.innerWidth / 2;
     }
@@ -70,7 +73,13 @@ export class MapSceneService extends Phaser.Scene {
       };
   
       this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
-      this.textoInformacion = this.add.text(this.game.scale.width / 2, this.game.scale.height / 8, "");
+      var estilo = { 
+        font: 'bold 16pt Arial',
+        fill: '#000000',
+        align: 'center',
+        wordWrap: true
+       }
+      this.textoInformacion = this.add.text(this.game.scale.width / 2, this.game.scale.height / 6, "", estilo);
       this.textoInformacion.setOrigin(0.5);
       this.textoInformacion.setScrollFactor(0);
       this.textoInformacion.text = "Cargando partida";
@@ -94,7 +103,8 @@ export class MapSceneService extends Phaser.Scene {
       }); 
 
       this.input.on('dragend', this.onDragStop, this);
-      
+      this.input.on('pointerup', this.clickear, this);
+
       this.activarJugador(<Jugador>this.jugadores.getChildren()[0]);
       this.cameras.main.setScroll(this.physics.world.bounds.centerX, this.physics.world.bounds.centerY)
       
@@ -102,6 +112,7 @@ export class MapSceneService extends Phaser.Scene {
 
     public update(time, delta) {
       var worldPoint = <Phaser.Math.Vector2>this.input.activePointer.positionToCamera(this.cameras.main);
+      //console.log("World point",worldPoint);
 
       // Rounds down to nearest tile
       var pointerTileX = this.map.worldToTileX(worldPoint.x);
@@ -109,33 +120,7 @@ export class MapSceneService extends Phaser.Scene {
 
       // Snap to tile coordinates, but in world space
       this.marker.x = this.map.tileToWorldX(pointerTileX);
-      this.marker.y = this.map.tileToWorldY(pointerTileY);
-      if (this.colocandoFichas) {
-
-        this.generarZonaDeColocacion();
-        if (this.input.manager.activePointer.isDown)
-        {
-            var tile = this.layer1.getTileAtWorldXY(worldPoint.x, worldPoint.y);
-            if (tile.index == 40)
-            {
-              //
-              var indice = +this.fichaColocando.frame.name;
-              tile = this.layer1.putTileAt(indice,pointerTileX, pointerTileY);
-              if (this.fichaColocando.oculta) {
-                tile.tint = this.jugadorActivo.color.color;
-              }
-              this.fichaColocando.setPosition(worldPoint.x, worldPoint.y);
-              console.log("Tile concolando", tile);
-              this.mapa.add(this.fichaColocando);
-              this.fichaColocando.colocada = true;
-              this.activarJugador(this.getSiguienteJugador());
-            }            
-            
-        }
-
-      } else {
-
-      }
+      this.marker.y = this.map.tileToWorldY(pointerTileY);          
 
       this.controls.update(delta);
 
@@ -146,7 +131,8 @@ export class MapSceneService extends Phaser.Scene {
       for (var i = 0; i < this.numeroJugadores; i++) {
         var color = Phaser.Display.Color.HexStringToColor(this.colores[i]);        
         var jugador = new Jugador(this, color, "Jugador " + (i+1), i);        
-        this.jugadores.add(jugador,true);        
+        this.jugadores.add(jugador,true);   
+        jugador.setDepth(3);     
         jugador.setCollideWorldBounds(true);
         jugador.setScrollFactor(0);
         jugador.inicializarFichas();
@@ -157,6 +143,9 @@ export class MapSceneService extends Phaser.Scene {
       var jugadoresVector = this.jugadores.getChildren();  
       var indice = jugadoresVector.indexOf(this.jugadorActivo);
       indice = (indice + 1) % jugadoresVector.length;
+      if(indice == 0 && !this.colocandoFichas)
+        this.turno++;
+
       return <Jugador>jugadoresVector[indice];
     }
 
@@ -174,15 +163,69 @@ export class MapSceneService extends Phaser.Scene {
       if (this.fichaColocando) {
         this.textoInformacion.text = "Colocando ficha " + jugador.nombre;
         this.fichaColocando.setVisible(true);
-        this.fichaColocando.setDepth(10);
-        this.input.setDraggable(this.fichaColocando);
+        this.fichaColocando.setDepth(1);
                 
       } else {
         this.colocandoFichas = false;
-        this.textoInformacion.text = "Turno del jugdaor " + jugador.nombre;
+        this.textoInformacion.text = "Turno " + this.turno + " del jugdaor " + jugador.nombre;
         this.jugadorActivo.iniciarTurno();
       }
 
+    }
+
+    clickear(pointer) {
+      var xCamera = this.cameras.main.centerX - pointer.position.x;
+      var yCamera = this.cameras.main.centerY - pointer.position.y;
+      var worldPoint = <Phaser.Math.Vector2>pointer.positionToCamera(this.cameras.main);
+        
+      if(Math.abs(xCamera) > this.map.tileWidth * 2 * this.layer1.scaleX
+      || Math.abs(yCamera) > this.map.tileHeight * 2 * this.layer1.scaleY) {
+        
+        this.cameras.main.pan(worldPoint.x, worldPoint.y);
+        worldPoint = <Phaser.Math.Vector2>pointer.positionToCamera(this.cameras.main);
+
+      }
+
+      var pointerTileX = this.map.worldToTileX(worldPoint.x);
+      var pointerTileY = this.map.worldToTileY(worldPoint.y);
+
+      // Snap to tile coordinates, but in world space
+      this.marker.x = this.map.tileToWorldX(pointerTileX);
+      this.marker.y = this.map.tileToWorldY(pointerTileY);  
+      
+      if (this.colocandoFichas) {
+       
+        this.generarZonaDeColocacion();                
+
+        var tile = this.layer1.getTileAtWorldXY(worldPoint.x, worldPoint.y);
+        if (tile.index == 40)
+        {
+          //
+          var indice = +this.fichaColocando.frame.name;
+          tile = this.layer1.putTileAt(indice,pointerTileX, pointerTileY);
+          if (this.fichaColocando.oculta) {
+            tile.tint = this.jugadorActivo.color.color;
+            this.fichaColocando.tint = this.jugadorActivo.color.color;
+          }
+          this.fichaColocando.setPosition(this.marker.x + this.fichaColocando.width * this.fichaColocando.scaleX / 2, this.marker.y + this.fichaColocando.height * this.fichaColocando.scaleY / 2);                
+
+          this.mapa.add(this.fichaColocando);
+          this.fichaColocando.colocada = true;
+          if (this.fichaColocando.pueblo && !this.fichaColocando.oculta) {
+            this.fichaColocando.setMarcador(this.fichaColocando.pueblo.color);
+          }
+          this.activarJugador(this.getSiguienteJugador());
+        }                                
+
+      } else {
+        
+        var tile = this.layer1.getTileAtWorldXY(worldPoint.x, worldPoint.y);
+          
+        if (tile && (!this.tileSeleccionado || this.tileSeleccionado != tile)) {
+          this.tileSeleccionado = tile;
+        }
+        
+      }
     }
 
     generarZonaDeColocacion() {
