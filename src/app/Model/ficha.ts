@@ -12,10 +12,12 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
     tropas: any;
     minaMadera: any;
     minaPiedra: any;
+    minaOro: any;
     tesoros: any;
     marcador: Phaser.GameObjects.Sprite;
+    marcadoresTropas: Phaser.GameObjects.Sprite[];
 
-    public constructor(scene: Phaser.Scene, frame: number, nombre: string, nivel: number, colocada: boolean, oculta: boolean, pueblo: Pueblo = null, minaMadera: boolean = false, minaPiedra: boolean = false) {
+    public constructor(scene: Phaser.Scene, frame: number, nombre: string, nivel: number, colocada: boolean, oculta: boolean, pueblo: Pueblo = null, minaMadera: boolean = false, minaPiedra: boolean = false, minaOro: boolean = false) {
         super(scene, 0, 0, 'fichas',frame);
         this.scene = scene;
         this.nombre = nombre;
@@ -29,8 +31,9 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
         }
         this.minaMadera = minaMadera;
         this.minaPiedra = minaPiedra;
+        this.minaOro = minaOro;
         this.pueblo = pueblo;
-
+        this.marcadoresTropas = [];
         scene.add.existing(this);
 
         scene.physics.world.enableBody(this);
@@ -55,10 +58,39 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
         this.marcador.tint = color.color;
     }
 
+    deleteMarcador() {
+        if (this.marcador) {
+            this.marcador.destroy();    
+        }
+    }
+
+    addMarcadorTropas(color: Phaser.Display.Color) {
+        var marcadorTropas = this.scene.add.sprite(this.x, this.y, 'marcadores', 1);
+        marcadorTropas.setScale(this.scale / 2);  
+        marcadorTropas.setDepth(2); 
+        marcadorTropas.tint = color.color;
+        var desplazamientoX = this.width * this.scaleX / 2;
+        var desplazamientoY = this.height * this.scaleY / 2;
+        switch (this.marcadoresTropas.length) {
+            case 0:
+                marcadorTropas.setPosition(this.x - desplazamientoX, this.y - desplazamientoY);
+                break;
+
+            case 1:
+                marcadorTropas.setPosition(this.x - desplazamientoX, this.y + desplazamientoY);
+                break;
+            case 2:
+                break;
+            default:
+                break;
+        }
+        this.marcadoresTropas.push(marcadorTropas);
+    }
+
     clicked() {
         if (this.colocada && this.pueblo) {
             this.scene.game.scene.pause('Map');            
-            this.scene.game.scene.start('Pueblo', this.pueblo);
+            this.scene.game.scene.start('Pueblo', this);
         }
     }
 }

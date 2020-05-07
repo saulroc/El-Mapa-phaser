@@ -3,6 +3,22 @@ import * as Phaser from 'phaser';
 import { Jugador } from '../Model/jugador';
 import { Ficha } from '../Model/ficha';
 
+var ini_jugadores = [{
+  nombre: 'Jugador 1',
+  cpu: false,
+  color: "0xff0000"
+},
+{
+  nombre: 'Jugador 2',
+  cpu: false,
+  color: "0x0000ff"
+},
+{
+  nombre: 'CPU 1',
+  cpu: true,
+  color: "0x008000"
+}];
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,12 +30,14 @@ export class MapSceneService extends Phaser.Scene {
     jugadores: Phaser.Physics.Arcade.Group; //Jugador[];
     jugadorActivo: Jugador;
     fichaColocando: Ficha;
-    numeroJugadores: number = 4;
+    numeroJugadores: number;
+
     turno: number = 0;
     colores = ["0xff0000", "0x0000ff", "0x008000", "0xffff00", "0xD2B48C", "0xff4500", "0x800080", "0x00ffff"];
     colocandoFichas: boolean;
     controls;
     textoInformacion: Phaser.GameObjects.Text;
+    textoTerminarTurno: Phaser.GameObjects.Text;
     marker: Phaser.GameObjects.Graphics;
     map: Phaser.Tilemaps.Tilemap;
     layer1: Phaser.Tilemaps.DynamicTilemapLayer;
@@ -28,6 +46,7 @@ export class MapSceneService extends Phaser.Scene {
 
     public constructor() {
       super({ key: 'Map' });
+      this.numeroJugadores = ini_jugadores.length;
     }
 
     public preload() {
@@ -82,6 +101,7 @@ export class MapSceneService extends Phaser.Scene {
       this.textoInformacion = this.add.text(this.game.scale.width / 2, this.game.scale.height / 6, "", estilo);
       this.textoInformacion.setOrigin(0.5);
       this.textoInformacion.setScrollFactor(0);
+      this.textoInformacion.setDepth(3);
       this.textoInformacion.text = "Cargando partida";
       
       this.iniciarJugadores();
@@ -129,14 +149,19 @@ export class MapSceneService extends Phaser.Scene {
     iniciarJugadores() {
       this.jugadores = this.physics.add.group();
       for (var i = 0; i < this.numeroJugadores; i++) {
-        var color = Phaser.Display.Color.HexStringToColor(this.colores[i]);        
-        var jugador = new Jugador(this, color, "Jugador " + (i+1), i);        
+        var datosJugador = ini_jugadores[i];
+        var color = Phaser.Display.Color.HexStringToColor(datosJugador.color);        
+        var jugador = new Jugador(this, color, datosJugador.nombre, i, datosJugador.cpu);        
         this.jugadores.add(jugador,true);   
-        jugador.setDepth(3);     
+        jugador.posicionarDelante();     
         jugador.setCollideWorldBounds(true);
         jugador.setScrollFactor(0);
         jugador.inicializarFichas();
       }
+    }
+
+    terminarTurno() {
+      this.activarJugador(this.getSiguienteJugador());      
     }
 
     getSiguienteJugador() {
@@ -166,8 +191,19 @@ export class MapSceneService extends Phaser.Scene {
         this.fichaColocando.setDepth(1);
                 
       } else {
+        if(this.colocandoFichas) {
+          this.textoTerminarTurno = this.add.text(
+            this.game.scale.width / 2, 
+            this.jugadorActivo.y + (this.jugadorActivo.height * this.jugadorActivo.scaleY),
+             "Terminar turno", 
+             { fill: '#000000', font: 'bold 16pt arial'});
+          this.textoTerminarTurno.setInteractive();
+          this.textoTerminarTurno.setScrollFactor(0);
+          this.textoTerminarTurno.setDepth(3);
+          this.textoTerminarTurno.on('pointerup', this.terminarTurno, this);
+        }
         this.colocandoFichas = false;
-        this.textoInformacion.text = "Turno " + this.turno + " del jugdaor " + jugador.nombre;
+        this.textoInformacion.text = "Turno " + this.turno + " del jugador " + jugador.nombre;
         this.jugadorActivo.iniciarTurno();
       }
 
@@ -214,7 +250,7 @@ export class MapSceneService extends Phaser.Scene {
           if (this.fichaColocando.pueblo && !this.fichaColocando.oculta) {
             this.fichaColocando.setMarcador(this.fichaColocando.pueblo.color);
           }
-          this.activarJugador(this.getSiguienteJugador());
+          this.terminarTurno();
         }                                
 
       } else {

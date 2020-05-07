@@ -7,9 +7,18 @@ export class Pueblo  {
     construido: boolean = false;
     edificios: Edificio[];
     color:  Phaser.Display.Color;
+    leva: number = 1;
 
     constructor(color: Phaser.Display.Color) {
         this.color = color;
+    }
+
+    iniciarTurno() {
+        this.addLeva();
+    }
+
+    addLeva() {
+        this.leva++;        
     }
 
 }

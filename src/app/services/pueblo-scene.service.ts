@@ -3,6 +3,7 @@ import * as Phaser from 'phaser';
 import { Jugador } from '../Model/jugador';
 import { Edificio } from '../Model/edificio';
 import { Pueblo } from '../Model/pueblo';
+import { Ficha } from '../Model/ficha';
 
 var ini_edificios = [{
     nombre: 'ayuntamiento',
@@ -48,14 +49,16 @@ export class PuebloSceneService extends Phaser.Scene {
     
     background: Phaser.GameObjects.Image;
     pueblo: Pueblo;
+    fichaPueblo: Ficha;
     edificios: Phaser.GameObjects.Group;
 
     public constructor() {
         super({ key: 'Pueblo' });
     }
 
-    public init(pueblo: Pueblo) {
-        this.pueblo = pueblo;
+    public init(ficha: Ficha) {
+        this.pueblo = ficha.pueblo;
+        this.fichaPueblo = ficha;
     }
 
     public preload() {
@@ -103,6 +106,12 @@ export class PuebloSceneService extends Phaser.Scene {
             
             edificio.posicionar();
             this.edificios.add(edificio);
+        }
+    }
+
+    pintarLevas() {
+        for(var i = 0; i < this.pueblo.leva; i++) {
+
         }
     }
 
