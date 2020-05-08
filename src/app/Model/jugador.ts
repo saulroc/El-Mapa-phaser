@@ -202,7 +202,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
     }
 
     iniciarTurno() {
-        this.oro
+        this.pueblos.forEach(pueblo => { pueblo.iniciarTurno(); })
     }
 
     activar() {
@@ -221,6 +221,21 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         else
             this.setFrame(0);
         this.setActive(false);
+    }
+
+    public setOro(nuevoOro: number) {
+        this.oro = nuevoOro;
+        this.oroText.text = "Oro: " + this.oro;
+    }
+
+    public setMadera(nuevoMadera: number) {
+        this.madera = nuevoMadera;
+        this.maderaText.text = "Madera: " + this.madera;
+    }
+
+    public setPiedra(nuevoPiedra: number) {
+        this.piedra = nuevoPiedra;
+        this.piedraText.text = "Piedra: " + this.piedra;
     }
 
 }

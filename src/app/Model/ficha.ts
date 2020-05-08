@@ -38,9 +38,7 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
 
         scene.physics.world.enableBody(this);
         //this.body.immovable = true;
-        var scale = this.scene.game.scale.width / this.width / 8 ;
-        if (scale > (this.scene.game.scale.height / this.height / 8))
-            scale = this.scene.game.scale.height / this.height / 8;
+        var scale = this.getEscala();
 
         this.setScale(scale);
 
@@ -56,6 +54,7 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
             this.marcador.setDepth(2);      
         }
         this.marcador.tint = color.color;
+        
     }
 
     deleteMarcador() {
@@ -85,6 +84,13 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
                 break;
         }
         this.marcadoresTropas.push(marcadorTropas);
+    }
+
+    getEscala() {
+        var scale = this.scene.game.scale.width / this.width / 8 ;
+        if (scale > (this.scene.game.scale.height / this.height / 8))
+            scale = this.scene.game.scale.height / this.height / 8;
+        return scale;
     }
 
     clicked() {

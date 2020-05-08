@@ -6,11 +6,12 @@ export class Edificio extends Phaser.GameObjects.Sprite {
     oro: number = 0;
     madera: number = 0;
     piedra: number = 0;
+    nivel: number = 1;
     numeroFrame: number = 0;
     /**
      *
      */
-    constructor(scene: Phaser.Scene, frame: number, nombre: string, posicion: number, oro: number, madera: number, piedra: number) {
+    constructor(scene: Phaser.Scene, frame: number, nombre: string, nivel:number, posicion: number, oro: number, madera: number, piedra: number) {
         super(scene, 0, 0, 'edificios',frame);
         this.scene = scene;
         this.nombre = nombre;
@@ -19,6 +20,7 @@ export class Edificio extends Phaser.GameObjects.Sprite {
         this.madera = madera;
         this.piedra = piedra;
         this.numeroFrame = frame;
+        this.nivel = nivel;
         
         scene.add.existing(this);
 
@@ -34,41 +36,13 @@ export class Edificio extends Phaser.GameObjects.Sprite {
         //this.on("pointerup", this.clicked, this);
     }    
 
-    posicionar() {
-        var x: number, y: number;
-
-        switch (this.posicion) {
-            case -1:
-                x = this.scene.scale.width - this.width * this.scaleX;
-                y = this.numeroFrame * this.height * this.scaleY + (this.height * this.scaleY) / 2;
-                break;
-            case 0-3:
-                x = this.posicion * this.width * this.scaleX;
-                y = this.height * this.scaleY * 3 + (this.height * this.scaleY) / 2;
-                break;
-
-            case 4-6:
-                x = (this.posicion - 4) * this.width * this.scaleX + this.width / 2;
-                y = this.height * this.scaleY * 2 + (this.height * this.scaleY) / 2;
-                break;
-            case 7-8:
-                x = (this.posicion - 6) * this.width * this.scaleX;
-                y = this.height * this.scaleY * 1 + (this.height * this.scaleY) / 2;
-                break;
-            case 9:
-                x = (this.posicion - 8) * this.width * this.scaleX + this.width / 2;
-                y = (this.height * this.scaleY) / 2;
-                break;
-            default:
-                x = this.scene.scale.width - this.width * this.scaleX;
-                y = this.numeroFrame * this.height * this.scaleY;
-                break;
-        }
-
-        this.setPosition(x, y);
-    }
-
-    sePuedeConstruir(oro:number, madera: number, piedra: number) {
-        return this.oro <= oro && this.madera <= madera && this.piedra <= piedra;
+    sePuedeConstruir(oro:number, madera: number, piedra: number, posicion: number) {
+        return this.oro <= oro 
+            && this.madera <= madera 
+            && this.piedra <= piedra
+            && (this.nivel == 1 
+                || (this.nivel == 2 && posicion > 3) 
+                || (this.nivel == 3 && posicion > 6)
+                || (this.nivel == 4 && posicion > 8));
     }
 }
