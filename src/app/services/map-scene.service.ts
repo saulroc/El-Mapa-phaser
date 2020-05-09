@@ -67,6 +67,7 @@ export class MapSceneService extends Phaser.Scene {
       this.layer1 = this.map.createBlankDynamicLayer('layer1', this.tileSet);
       this.layer1.setOrigin(0.5);
       this.layer1.randomize(0, 0, this.map.width, this.map.height, [ 40]);
+      //this.physics.world.setBounds(0, 0, this.layer1.width, this.layer1.height);
       //this.layer1.putTilesAt
 
       var scale = this.game.scale.width / this.map.tileWidth / 8 ;

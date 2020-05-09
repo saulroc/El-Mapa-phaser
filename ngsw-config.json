@@ -3,7 +3,7 @@
   "index": "/index.html",
   "assetGroups": [
     {
-      "name": "app",
+      "name": "El Mapa",
       "installMode": "prefetch",
       "resources": {
         "files": [
