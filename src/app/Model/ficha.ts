@@ -63,13 +63,17 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
+    addTropas() {
+        
+    }
+
     addMarcadorTropas(color: Phaser.Display.Color) {
         var marcadorTropas = this.scene.add.sprite(this.x, this.y, 'marcadores', 1);
         marcadorTropas.setScale(this.scale / 4);  
         marcadorTropas.setDepth(2); 
         marcadorTropas.tint = color.color;
-        var desplazamientoX = this.width * this.scaleX / 2;
-        var desplazamientoY = this.height * this.scaleY / 2;
+        var desplazamientoX = this.width * this.scaleX / 4;
+        var desplazamientoY = this.height * this.scaleY / 4;
         switch (this.marcadoresTropas.length) {
             case 0:
                 marcadorTropas.setPosition(this.x - desplazamientoX, this.y - desplazamientoY);

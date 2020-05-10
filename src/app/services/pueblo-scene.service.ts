@@ -99,7 +99,7 @@ export class PuebloSceneService extends Phaser.Scene {
     }
 
     seleccionarParaConstruir() {
-        var escenaPueblo = <PuebloSceneService>this.scene;
+        var escenaPueblo = <PuebloSceneService><unknown>this.scene;
         escenaPueblo.seleccionadoParaConstruir(this);
     }
 
@@ -149,7 +149,8 @@ export class PuebloSceneService extends Phaser.Scene {
     }
 
     construyendoEdificio() {
-        this.scene.construirEdificio(this);
+        var escenaPueblo = <PuebloSceneService><unknown>this.scene;
+        escenaPueblo.construirEdificio(this);
     }
 
     construirEdificio(edificio) {
@@ -158,7 +159,7 @@ export class PuebloSceneService extends Phaser.Scene {
         edificio.setDepth(1);
         this.zonasDeConstruccion.setVisible(false);
 
-        this.edificios.getChildren().forEach(edificio => edificio.clearTint() );
+        this.edificios.getChildren().forEach((edificio: Edificio) => edificio.clearTint() );
 
         this.pueblo.construirEdificio(this.posicionSeleccionada, edificio.nombre);
         this.jugador.setOro(this.jugador.oro - edificio.oro);
@@ -221,17 +222,20 @@ export class PuebloSceneService extends Phaser.Scene {
     }
 
     seleccionarTropaParaComprar() {
-        if (this.isTinted) {
-            var escenaPueblo = <PuebloSceneService>this.scene;
+        var leva = <Phaser.GameObjects.Sprite><unknown>this;
+        var escenaPueblo = <PuebloSceneService><unknown>this.scene;
+        if (leva.isTinted) {
             escenaPueblo.comprarLeva(this);
         } else {
-            this.tint = COLOR_EDIFICIO_INACTIVO;
+            if (escenaPueblo.jugador.oro > 0)
+                leva.tint = COLOR_EDIFICIO_INACTIVO;
         }
     }
 
     comprarLeva(leva) {
         leva.destroy();
         this.jugador.setOro(this.jugador.oro - 1);
+        this.fichaPueblo.pueblo.leva--;
         this.fichaPueblo.addMarcadorTropas(this.jugador.color);
     }
 
