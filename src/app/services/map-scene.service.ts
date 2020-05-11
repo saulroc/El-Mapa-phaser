@@ -12,12 +12,12 @@ var ini_jugadores = [{
   nombre: 'Jugador 2',
   cpu: false,
   color: "0x0000ff"
-},
+}/*,
 {
   nombre: 'CPU 1',
   cpu: true,
   color: "0x008000"
-}];
+}*/];
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +32,7 @@ export class MapSceneService extends Phaser.Scene {
     fichaColocando: Ficha;
     numeroJugadores: number;
 
-    turno: number = 0;
+    turno: number = 1;
     colores = ["0xff0000", "0x0000ff", "0x008000", "0xffff00", "0xD2B48C", "0xff4500", "0x800080", "0x00ffff"];
     colocandoFichas: boolean;
     controls;
@@ -65,18 +65,17 @@ export class MapSceneService extends Phaser.Scene {
       this.map = this.make.tilemap({ tileWidth: 413, tileHeight: 413, width: 20 * this.numeroJugadores, height: 20 * this.numeroJugadores});
       this.tileSet = this.map.addTilesetImage('fichas');
       this.layer1 = this.map.createBlankDynamicLayer('layer1', this.tileSet);
+      this.layer1.setPosition(0, 0);
       this.layer1.setOrigin(0.5);
       this.layer1.randomize(0, 0, this.map.width, this.map.height, [ 40]);
-      //this.physics.world.setBounds(0, 0, this.layer1.width, this.layer1.height);
-      //this.layer1.putTilesAt
 
       var scale = this.game.scale.width / this.map.tileWidth / 8 ;
         if (scale > (this.game.scale.height / this.map.tileHeight / 8))
             scale = this.game.scale.height / this.map.tileHeight / 8;
 
       this.layer1.setScale(scale);
+      this.physics.world.setBounds(0, 0, this.layer1.width * scale, this.layer1.height * scale);
       
-
       var cursors = this.input.keyboard.createCursorKeys();
 
       var controlConfig = {
@@ -161,8 +160,14 @@ export class MapSceneService extends Phaser.Scene {
       }
     }
 
-    terminarTurno() {
-      this.activarJugador(this.getSiguienteJugador());      
+    terminarTurno(pointer, localX, localY, event) {
+      this.activarJugador(this.getSiguienteJugador());   
+      if (event)
+        event.stopPropagation();
+    }
+
+    seleccionarTropas(marcador: Phaser.GameObjects.Sprite) {
+
     }
 
     getSiguienteJugador() {
@@ -210,7 +215,7 @@ export class MapSceneService extends Phaser.Scene {
 
     }
 
-    clickear(pointer) {
+    clickear(pointer, localX, localY, event) {
       var xCamera = this.cameras.main.centerX - pointer.position.x;
       var yCamera = this.cameras.main.centerY - pointer.position.y;
       var worldPoint = <Phaser.Math.Vector2>pointer.positionToCamera(this.cameras.main);
@@ -242,16 +247,12 @@ export class MapSceneService extends Phaser.Scene {
           tile = this.layer1.putTileAt(indice,pointerTileX, pointerTileY);
           if (this.fichaColocando.oculta) {
             tile.tint = this.jugadorActivo.color.color;
-            this.fichaColocando.tint = this.jugadorActivo.color.color;
           }
-          this.fichaColocando.setPosition(this.marker.x + this.fichaColocando.width * this.fichaColocando.scaleX / 2, this.marker.y + this.fichaColocando.height * this.fichaColocando.scaleY / 2);                
-
+          
+          this.fichaColocando.colocar(this.marker.x, this.marker.y, this.jugadorActivo);
           this.mapa.add(this.fichaColocando);
-          this.fichaColocando.colocada = true;
-          if (this.fichaColocando.pueblo && !this.fichaColocando.oculta) {
-            this.fichaColocando.setMarcador(this.fichaColocando.pueblo.color);
-          }
-          this.terminarTurno();
+          
+          this.terminarTurno(pointer, localX, localY, event);
         }                                
 
       } else {

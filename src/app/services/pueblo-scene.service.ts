@@ -5,6 +5,7 @@ import { Edificio } from '../Model/edificio';
 import { Pueblo } from '../Model/pueblo';
 import { Ficha } from '../Model/ficha';
 import { MapSceneService } from './map-scene.service';
+import { Tropa } from '../Model/tropa';
 
 const COLOR_ZONA_CONSTRUCCION = 0x00ff00;
 const COLOR_ZONA_CONSTRUCCION_SELECCIONADA = 0x0000ff;
@@ -89,13 +90,22 @@ export class PuebloSceneService extends Phaser.Scene {
         for(var i = 0; i < 10; i++) {
             var zonaConstruccion = this.add.rectangle(10 , 10, ancho, ancho, COLOR_ZONA_CONSTRUCCION, 0.5);
             this.posicionar(zonaConstruccion, i, -1); 
-            if(i < 4)
+            if(i < 4 && !this.hayEdificioEnLaPosicion(i))
                 zonaConstruccion.setInteractive();
             zonaConstruccion.setStrokeStyle(4, 0xefc53f);
             zonaConstruccion.on('pointerup', this.seleccionarParaConstruir);
 
             this.zonasDeConstruccion.add(zonaConstruccion);
         }
+    }
+
+    hayEdificioEnLaPosicion(posicion) {
+        var listaEdificios = <Edificio[]>this.edificios.getChildren();
+        for(var i =0; i < listaEdificios.length; i++) {
+            if (listaEdificios[i].posicion == posicion)
+                return true;
+        }
+        return false;
     }
 
     seleccionarParaConstruir() {
@@ -225,23 +235,28 @@ export class PuebloSceneService extends Phaser.Scene {
         var leva = <Phaser.GameObjects.Sprite><unknown>this;
         var escenaPueblo = <PuebloSceneService><unknown>this.scene;
         if (leva.isTinted) {
-            escenaPueblo.comprarLeva(this);
+            escenaPueblo.comprarLeva(leva);
         } else {
             if (escenaPueblo.jugador.oro > 0)
                 leva.tint = COLOR_EDIFICIO_INACTIVO;
         }
     }
 
-    comprarLeva(leva) {
+    comprarLeva(leva: Phaser.GameObjects.Sprite) {
+        leva.setVisible(false);
         leva.destroy();
         this.jugador.setOro(this.jugador.oro - 1);
         this.fichaPueblo.pueblo.leva--;
-        this.fichaPueblo.addMarcadorTropas(this.jugador.color);
+        var tropa = new Tropa("leva", 1, 1, 1, 2, 0, 1, 0);
+        this.fichaPueblo.addTropa(this.jugador, tropa);
+        this.fichaPueblo.cargarMarcadoresTropas();
     }
 
-    cerrar() {
+    cerrar(pointer, localX, localY, event) {
         this.scene.resume('Map');
         this.scene.stop();
+        if (event) 
+            event.stopPropagation();
     }
 
     public update() {

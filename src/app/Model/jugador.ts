@@ -1,81 +1,9 @@
 import * as Phaser from 'phaser';
-import { Carta } from '../Model/carta';
-import { Ficha } from '../Model/ficha';
-import { Pueblo } from '../Model/pueblo';
+import { Carta } from './carta';
+import { Ficha } from './ficha';
+import { Pueblo } from './pueblo';
+import { INI_FICHAS } from './datosIniciales';
 
-var fichas = [{
-        frame: 0,
-        nombre: "pueblo ini",
-        nivel: 0,
-        colocada: false,
-        oculta: false,
-        pueblo: true,
-        minaMadera: false,
-        minaPiedra: false,
-        minaOro: false,
-        tropa: []
-    }/*,
-    {
-        frame: 8,
-        nombre: "mina madera ini",
-        nivel: 0,
-        colocada: false,
-        oculta: false,
-        pueblo: false,
-        minaMadera: true,
-        minaPiedra: false,
-        minaOro: false,
-        tropa: []
-    },
-    {
-        frame: 16,
-        nombre: "mina piedra ini",
-        nivel: 0,
-        colocada: false,
-        oculta: false,
-        pueblo: false,
-        minaMadera: false,
-        minaPiedra: true,
-        minaOro: false,
-        tropa: [{ leva: 1 }]
-    },
-    {
-        frame: 24,
-        nombre: "ficha 1",
-        nivel: 1,
-        colocada: false,
-        oculta: true,
-        pueblo: false,
-        minaMadera: false,
-        minaPiedra: false,
-        minaOro: false,
-        tropa: []
-    },
-    {
-        frame: 32,
-        nombre: "ficha 2",
-        nivel: 1,
-        colocada: false,
-        oculta: true,
-        pueblo: false,
-        minaMadera: false,
-        minaPiedra: false,
-        minaOro: false,
-        tropa: []
-    },
-    {
-        frame: 9,
-        nombre: "ficha 3",
-        nivel: 1,
-        colocada: false,
-        oculta: true,
-        pueblo: false,
-        minaMadera: false,
-        minaPiedra: false,
-        minaOro: false,
-        tropa: []
-    }*/
-];
 
 export class Jugador extends Phaser.Physics.Arcade.Sprite {
     nombre: string;
@@ -105,7 +33,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         if (this.CPU)
             this.setFrame(2);
 
-        this.oro = 3;
+        this.oro = 2;
         this.piedra = 0;
         this.madera = 0;
         this.puntos = 0;
@@ -152,8 +80,8 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
 
     inicializarFichas() {
         this.fichasTerreno = this.scene.physics.add.group();
-        for( var i = 0; i < fichas.length; i++) {
-            var ficha = fichas[i];
+        for( var i = 0; i < INI_FICHAS.length; i++) {
+            var ficha = INI_FICHAS[i];
             var fichaTerreno = new Ficha(
                 this.scene, 
                 ficha.frame,
@@ -169,6 +97,11 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
                 ficha.minaMadera,
                 ficha.minaPiedra
                 );
+            if (ficha.tropa) {
+                for (var j = 0; j < ficha.tropa.length; j++) {
+                    fichaTerreno.addTropas(ficha.tropa[j].jugador, ficha.tropa[j].tropas)
+                }
+            }
 
             if(fichaTerreno.pueblo)
                 fichaTerreno.pueblo.nombre = ficha.nombre;
@@ -202,7 +135,12 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
     }
 
     iniciarTurno() {
-        this.pueblos.forEach(pueblo => { pueblo.iniciarTurno(); })
+        this.pueblos.forEach(pueblo => { 
+            pueblo.iniciarTurno(); 
+            this.oro += pueblo.oroGenera;
+        });
+
+        this.setOro(this.oro);
     }
 
     activar() {
