@@ -3,11 +3,13 @@ import * as Phaser from 'phaser';
 import { Peloton } from './peloton';
 import { Ficha } from './ficha';
 import { Tropa } from './tropa';
+import { MapSceneService } from '../services/map-scene.service';
 
 export class PelotonSprite extends Phaser.Physics.Arcade.Sprite {
     peloton: Peloton;
     ficha: Ficha;
     grupoTropas: Phaser.GameObjects.Group;
+    seleccionado: boolean = false;
 
     public constructor (scene: Phaser.Scene, x: number, y:number, peloton: Peloton, ficha: Ficha){
         super(scene, x, y, 'marcadores',1);
@@ -28,13 +30,30 @@ export class PelotonSprite extends Phaser.Physics.Arcade.Sprite {
     }
 
     seleccionarMarcadorTropas() {
-
+        var escenaMapa = <MapSceneService>this.scene;
+        var jugadorActivo = escenaMapa.jugadorActivo;
+        var escala = 0;
+        if (this.peloton.jugador == jugadorActivo && this.peloton.puedeMover()) {            
+            if (this.seleccionado) {
+                this.setScale(this.scaleX / 2);
+                escala = this.scaleX * -1;                                
+                escenaMapa.pelotonSeleccionado = null;
+            } else {
+                escala = this.scaleX;                
+                this.setScale(this.scaleX * 2);
+                escenaMapa.pelotonSeleccionado = this;
+            }
+            this.grupoTropas.scaleXY(escala);    
+            this.seleccionado = !this.seleccionado;
+        }        
     }
 
     dibujarTropas(grupo: Phaser.GameObjects.Group,posicionX: number, posicionY: number, direccionX: number, direccionY: number) {
         var x = posicionX;
         var y = posicionY;
         var numeroFrame: number = 0;
+        grupo.clear(true,true);
+
         for (var i = 0; i < this.peloton.tropas.length; i++) {
             var tropa =  this.peloton.tropas[i];
             switch (tropa.tipo) {

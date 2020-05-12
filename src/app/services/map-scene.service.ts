@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as Phaser from 'phaser';
 import { Jugador } from '../Model/jugador';
 import { Ficha } from '../Model/ficha';
+import { PelotonSprite } from '../Model/pelotonSprite';
 
 var ini_jugadores = [{
   nombre: 'Jugador 1',
@@ -43,6 +44,7 @@ export class MapSceneService extends Phaser.Scene {
     layer1: Phaser.Tilemaps.DynamicTilemapLayer;
     tileSet: Phaser.Tilemaps.Tileset;
     tileSeleccionado: Phaser.Tilemaps.Tile;
+    pelotonSeleccionado: PelotonSprite;
 
     public constructor() {
       super({ key: 'Map' });
@@ -262,8 +264,34 @@ export class MapSceneService extends Phaser.Scene {
         if (tile && (!this.tileSeleccionado || this.tileSeleccionado != tile)) {
           this.tileSeleccionado = tile;
         }
+
+        if (this.pelotonSeleccionado)
+          this.moverPeloton();
         
       }
+    }
+
+    moverPeloton() {
+      var fichaOrigen = this.pelotonSeleccionado.ficha;
+      
+      
+      var xBuscado = this.map.tileToWorldX(this.tileSeleccionado.x) + fichaOrigen.width / 2 * fichaOrigen.scaleX;
+      var yBuscado = this.map.tileToWorldY(this.tileSeleccionado.y) + fichaOrigen.height / 2 * fichaOrigen.scaleY; 
+      
+      console.log("Mover peloton", this.pelotonSeleccionado, this.tileSeleccionado);
+      console.log("Tile X, Y", this.tileSeleccionado.pixelX, this.tileSeleccionado.pixelY);
+      console.log("Tile to World X, Y", xBuscado, yBuscado);
+      console.log("Origen X, Y", fichaOrigen.x, fichaOrigen.y); 
+
+      if (fichaOrigen.x != xBuscado || fichaOrigen.y != yBuscado) {
+        var fichas = <Ficha[]>this.mapa.getChildren();
+        var fichaDestino = fichas.find( ficha => ficha.x == xBuscado && ficha.y == yBuscado);
+        if (fichaDestino) {
+          fichaDestino.addTropas(this.pelotonSeleccionado.peloton.jugador, this.pelotonSeleccionado.peloton.tropas);
+          this.pelotonSeleccionado.peloton.mover();
+        }
+      }           
+      
     }
 
     generarZonaDeColocacion() {

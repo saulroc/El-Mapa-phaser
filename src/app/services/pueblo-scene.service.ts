@@ -10,6 +10,7 @@ import { Tropa } from '../Model/tropa';
 const COLOR_ZONA_CONSTRUCCION = 0x00ff00;
 const COLOR_ZONA_CONSTRUCCION_SELECCIONADA = 0x0000ff;
 const COLOR_EDIFICIO_INACTIVO = 0xA4A4A4;
+const COLOR_TROPA_SELECCIONADA = 0xA4A4A4;
 
 @Injectable({
   providedIn: 'root'
@@ -90,13 +91,38 @@ export class PuebloSceneService extends Phaser.Scene {
         for(var i = 0; i < 10; i++) {
             var zonaConstruccion = this.add.rectangle(10 , 10, ancho, ancho, COLOR_ZONA_CONSTRUCCION, 0.5);
             this.posicionar(zonaConstruccion, i, -1); 
-            if(i < 4 && !this.hayEdificioEnLaPosicion(i))
+            if(this.cumpleRequisitoNivel(i)) {
                 zonaConstruccion.setInteractive();
-            zonaConstruccion.setStrokeStyle(4, 0xefc53f);
-            zonaConstruccion.on('pointerup', this.seleccionarParaConstruir);
-
+                zonaConstruccion.setStrokeStyle(4, 0xefc53f);
+                zonaConstruccion.on('pointerup', this.seleccionarParaConstruir);
+                zonaConstruccion.setFillStyle(COLOR_ZONA_CONSTRUCCION_SELECCIONADA, 1);
+            }
+            if (this.hayEdificioEnLaPosicion(i))
+                zonaConstruccion.setVisible(false);
             this.zonasDeConstruccion.add(zonaConstruccion);
         }
+    }
+
+    cumpleRequisitoNivel(posicion: number) {
+        if (posicion < 4)
+            return true;
+
+        if (posicion >= 4 && posicion < 7 
+            && this.hayEdificioEnLaPosicion(posicion - 3) 
+            && this.hayEdificioEnLaPosicion(posicion - 4))
+            return true;
+
+        if (posicion >= 7 && posicion < 9
+            && this.hayEdificioEnLaPosicion(posicion - 2) 
+            && this.hayEdificioEnLaPosicion(posicion - 3))
+            return true;
+
+        if (posicion == 9 
+            && this.hayEdificioEnLaPosicion(posicion - 1) 
+            && this.hayEdificioEnLaPosicion(posicion - 2))
+            return true
+
+        return false;
     }
 
     hayEdificioEnLaPosicion(posicion) {
@@ -130,13 +156,15 @@ export class PuebloSceneService extends Phaser.Scene {
         this.edificios.getChildren().forEach((edificio: Edificio) => {
             if (edificio.posicion == -1 )
             {
+                edificio.removeAllListeners('pointerup');
+                edificio.clearTint();                
                 if (edificio.sePuedeConstruir(this.jugador.oro, this.jugador.madera, this.jugador.piedra, indice)) {
-                    edificio.clearTint();
-                    edificio.setInteractive();
-                    edificio.once('pointerup', this.construyendoEdificio);
+                    edificio.setInteractive();                    
+                    edificio.on('pointerup', this.construyendoEdificio);
 
                 } else {
                     edificio.tint = COLOR_EDIFICIO_INACTIVO;
+                    edificio.removeInteractive();
                 }
             }
         });
@@ -196,7 +224,7 @@ export class PuebloSceneService extends Phaser.Scene {
             case 4:
             case 5:
             case 6:
-                x = (posicion - 3.5) * objeto.width * objeto.scaleX + objeto.width / 2;
+                x = (posicion - 3) * objeto.width * objeto.scaleX;
                 y = (objeto.height * objeto.scaleY + 5) * 2 + (objeto.height * objeto.scaleY) / 2;
                 break;
             case 7:
@@ -205,7 +233,7 @@ export class PuebloSceneService extends Phaser.Scene {
                 y = (objeto.height * objeto.scaleY + 5) + (objeto.height * objeto.scaleY) / 2;
                 break;
             case 9:
-                x = (posicion - 7.5) * objeto.width * objeto.scaleX + objeto.width / 2;
+                x = (posicion - 7) * objeto.width * objeto.scaleX;
                 y = (objeto.height * objeto.scaleY) / 2;
                 break;
             default:
@@ -238,13 +266,13 @@ export class PuebloSceneService extends Phaser.Scene {
             escenaPueblo.comprarLeva(leva);
         } else {
             if (escenaPueblo.jugador.oro > 0)
-                leva.tint = COLOR_EDIFICIO_INACTIVO;
+                leva.tint = COLOR_TROPA_SELECCIONADA;
         }
     }
 
     comprarLeva(leva: Phaser.GameObjects.Sprite) {
         leva.setVisible(false);
-        leva.destroy();
+        //leva.destroy();
         this.jugador.setOro(this.jugador.oro - 1);
         this.fichaPueblo.pueblo.leva--;
         var tropa = new Tropa("leva", 1, 1, 1, 2, 0, 1, 0);

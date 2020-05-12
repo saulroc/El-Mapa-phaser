@@ -4,6 +4,10 @@ import { Ficha } from './ficha';
 import { Pueblo } from './pueblo';
 import { INI_FICHAS } from './datosIniciales';
 
+const COLOR_MADERA = '#b9340d';
+const COLOR_ORO = '#daa520';
+const COLOR_PIEDRA = '#696969';
+const COLOR_PUNTOS = '#008000';
 
 export class Jugador extends Phaser.Physics.Arcade.Sprite {
     nombre: string;
@@ -11,6 +15,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
     oroText: Phaser.GameObjects.Text;
     maderaText: Phaser.GameObjects.Text;
     piedraText: Phaser.GameObjects.Text;
+    puntosText: Phaser.GameObjects.Text;
     CPU: boolean;
     color:  Phaser.Display.Color;
     mano: Carta[];
@@ -22,6 +27,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
     piedra: number;
     puntos: number;
     numero: number;
+    minas: Ficha[];
 
     public constructor (scene: Phaser.Scene, color: Phaser.Display.Color, nombre: string, numero: number, cpu: boolean){
         super(scene, 0, 0, 'jugador',0);
@@ -37,6 +43,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         this.piedra = 0;
         this.madera = 0;
         this.puntos = 0;
+        this.minas = [];
 
         scene.add.existing(this);
 
@@ -58,17 +65,25 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         this.nombreText.setOrigin(0.5, 0);
         this.nombreText.setScrollFactor(0);
 
+        estilo.fill = COLOR_ORO;
         this.oroText = this.scene.add.text(this.x, this.nombreText.y + this.nombreText.height, "Oro: " + this.oro, estilo);
         this.oroText.setOrigin(0.5, 0);
         this.oroText.setScrollFactor(0);
         
-        this.maderaText = this.scene.add.text(this.x, this.oroText.y + this.oroText.height, "Piedra: " + this.piedra, estilo);
+        estilo.fill = COLOR_MADERA;
+        this.maderaText = this.scene.add.text(this.x, this.oroText.y + this.oroText.height, "Madera: " + this.madera, estilo);
         this.maderaText.setOrigin(0.5, 0);
         this.maderaText.setScrollFactor(0);
 
-        this.piedraText = this.scene.add.text(this.x, this.maderaText.y + this.maderaText.height, "Madera: " + this.madera, estilo);
+        estilo.fill = COLOR_PIEDRA;
+        this.piedraText = this.scene.add.text(this.x, this.maderaText.y + this.maderaText.height, "Piedra: " + this.piedra, estilo);
         this.piedraText.setOrigin(0.5, 0);
         this.piedraText.setScrollFactor(0);
+
+        estilo.fill = COLOR_PUNTOS;
+        this.puntosText = this.scene.add.text(this.x, this.piedraText.y + this.piedraText.height, "Puntos: " + this.puntos, estilo);
+        this.puntosText.setOrigin(0.5, 0);
+        this.puntosText.setScrollFactor(0);
     }
 
     posicionarDelante() {
@@ -139,8 +154,22 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
             pueblo.iniciarTurno(); 
             this.oro += pueblo.oroGenera;
         });
-
+        this.minas.forEach(mina => {
+            switch (true) {
+                case mina.minaMadera:
+                    this.madera++;
+                    break;
+                case mina.minaPiedra:
+                    this.piedra++;
+                    break;
+                case mina.minaOro:
+                    this.oro++;
+                    break;                
+            }
+        })
         this.setOro(this.oro);
+        this.setMadera(this.madera);
+        this.setPiedra(this.piedra);
     }
 
     activar() {

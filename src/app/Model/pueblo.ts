@@ -14,7 +14,6 @@ export class Pueblo  {
 
     constructor(color: Phaser.Display.Color) {
         this.color = color;
-        //ini_edificios.map(val => this.edificios.push(Object.assign({}, val)));
         this.edificios = JSON.parse(JSON.stringify(INI_EDIFICIOS));
         
     }

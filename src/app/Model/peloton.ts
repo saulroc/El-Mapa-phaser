@@ -24,4 +24,21 @@ export class Peloton {
 
         this.tropas.push(tropa);
     }
+
+    puedeMover() {
+        for (var i = 0; i < this.tropas.length; i++) {
+            if (this.tropas[i].movimiento <= this.tropas[i].movido)
+                return false;
+        }
+
+        return true;
+    }
+
+    mover() {
+        this.tropas.forEach( tropa => tropa.movido++);
+    }
+
+    iniciarTurno() {
+        this.tropas.forEach( tropa => tropa.movido = 0);
+    }
 }
