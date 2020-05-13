@@ -8,6 +8,7 @@ export const INI_FICHAS = [{
     minaMadera: false,
     minaPiedra: false,
     minaOro: false,
+    tesoro: 0,
     tropa: []
 },
 {
@@ -20,6 +21,7 @@ export const INI_FICHAS = [{
     minaMadera: true,
     minaPiedra: false,
     minaOro: false,
+    tesoro: 0,
     tropa: []
 },
 {
@@ -32,6 +34,7 @@ export const INI_FICHAS = [{
     minaMadera: false,
     minaPiedra: true,
     minaOro: false,
+    tesoro: 0,
     tropa: [{ jugador: null, 
         tropas: [{ tipo: "leva",
             cantidad: 1,
@@ -42,7 +45,7 @@ export const INI_FICHAS = [{
             velocidad: 1,
             distanciaDeAtaque: 0
     }] }]
-}/*,
+},
 {
     frame: 24,
     nombre: "ficha 1",
@@ -53,7 +56,17 @@ export const INI_FICHAS = [{
     minaMadera: false,
     minaPiedra: false,
     minaOro: false,
-    tropa: []
+    tesoro: 0,
+    tropa: [{ jugador: null, 
+        tropas: [{ tipo: "leva",
+            cantidad: 1,
+            vida: 1,
+            ataque: 1,
+            movimiento: 2,
+            movido: 0,
+            velocidad: 1,
+            distanciaDeAtaque: 0
+    }] }]
 },
 {
     frame: 32,
@@ -65,10 +78,11 @@ export const INI_FICHAS = [{
     minaMadera: false,
     minaPiedra: false,
     minaOro: false,
+    tesoro: 1,
     tropa: []
 },
 {
-    frame: 9,
+    frame: 1,
     nombre: "ficha 3",
     nivel: 1,
     colocada: false,
@@ -77,8 +91,92 @@ export const INI_FICHAS = [{
     minaMadera: false,
     minaPiedra: false,
     minaOro: false,
+    tesoro: 1,
+    tropa: [{ jugador: null, 
+        tropas: [{ tipo: "leva",
+            cantidad: 1,
+            vida: 1,
+            ataque: 1,
+            movimiento: 2,
+            movido: 0,
+            velocidad: 1,
+            distanciaDeAtaque: 0
+    }] }]
+},
+{
+    frame: 9,
+    nombre: "ficha 4",
+    nivel: 1,
+    colocada: false,
+    oculta: true,
+    pueblo: false,
+    minaMadera: false,
+    minaPiedra: false,
+    minaOro: false,
+    tesoro: 0,
     tropa: []
-}*/
+},
+{
+    frame: 17,
+    nombre: "ficha 5",
+    nivel: 1,
+    colocada: false,
+    oculta: true,
+    pueblo: false,
+    minaMadera: false,
+    minaPiedra: false,
+    minaOro: false,
+    tesoro: 0,
+    tropa: [{ jugador: null, 
+        tropas: [{ tipo: "leva",
+            cantidad: 1,
+            vida: 1,
+            ataque: 1,
+            movimiento: 2,
+            movido: 0,
+            velocidad: 1,
+            distanciaDeAtaque: 0
+    }] }]
+},
+{
+    frame: 25,
+    nombre: "ficha 6",
+    nivel: 1,
+    colocada: false,
+    oculta: true,
+    pueblo: false,
+    minaMadera: false,
+    minaPiedra: false,
+    minaOro: false,
+    tesoro: 0,
+    tropa: []
+},
+{
+    frame: 33,
+    nombre: "ficha 7",
+    nivel: 1,
+    colocada: false,
+    oculta: true,
+    pueblo: false,
+    minaMadera: false,
+    minaPiedra: false,
+    minaOro: false,
+    tesoro: 0,
+    tropa: []
+},
+{
+    frame: 2,
+    nombre: "ficha 8",
+    nivel: 1,
+    colocada: false,
+    oculta: true,
+    pueblo: false,
+    minaMadera: false,
+    minaPiedra: false,
+    minaOro: false,
+    tesoro: 0,
+    tropa: []
+}
 ];
 
 export const INI_EDIFICIOS = [{
@@ -88,6 +186,7 @@ export const INI_EDIFICIOS = [{
     oro: 2,
     madera: 0,
     piedra: 0,
+    puntos: 1,
     frame: 0
 },
 {
@@ -97,6 +196,7 @@ export const INI_EDIFICIOS = [{
     oro: 1,
     madera: 1,
     piedra: 0,
+    puntos: 1,
     frame: 1
 },
 {
@@ -106,6 +206,7 @@ export const INI_EDIFICIOS = [{
     oro: 3,
     madera: 1,
     piedra: 0,
+    puntos: 1,
     frame: 2
 },
 {
@@ -115,6 +216,7 @@ export const INI_EDIFICIOS = [{
     oro: 1,
     madera: 0,
     piedra: 0,
+    puntos: 4,
     frame: 3
 },
 {
@@ -124,6 +226,7 @@ export const INI_EDIFICIOS = [{
     oro: 3,
     madera: 1,
     piedra: 0,
+    puntos: 1,
     frame: 4
 },
 {
@@ -133,6 +236,7 @@ export const INI_EDIFICIOS = [{
     oro: 1,
     madera: 0,
     piedra: 0,
+    puntos: 1,
     frame: 5
 },
 {
@@ -142,6 +246,7 @@ export const INI_EDIFICIOS = [{
     oro: 3,
     madera: 2,
     piedra: 0,
+    puntos: 2,
     frame: 6
 },
 {
@@ -151,6 +256,7 @@ export const INI_EDIFICIOS = [{
     oro: 4,
     madera: 1,
     piedra: 0,
+    puntos: 2,
     frame: 7
 },
 {
@@ -160,6 +266,7 @@ export const INI_EDIFICIOS = [{
     oro: 3,
     madera: 1,
     piedra: 0,
+    puntos: 2,
     frame: 8
 },
 {
@@ -169,6 +276,7 @@ export const INI_EDIFICIOS = [{
     oro: 5,
     madera: 2,
     piedra: 0,
+    puntos: 2,
     frame: 9
 },
 {
@@ -178,6 +286,7 @@ export const INI_EDIFICIOS = [{
     oro: 4,
     madera: 2,
     piedra: 1,
+    puntos: 3,
     frame: 10
 },
 {
@@ -187,6 +296,7 @@ export const INI_EDIFICIOS = [{
     oro: 5,
     madera: 2,
     piedra: 1,
+    puntos: 3,
     frame: 11
 },
 {
@@ -196,6 +306,7 @@ export const INI_EDIFICIOS = [{
     oro: 5,
     madera: 2,
     piedra: 1,
+    puntos: 10,
     frame: 12
 },
 {
@@ -205,6 +316,7 @@ export const INI_EDIFICIOS = [{
     oro: 7,
     madera: 2,
     piedra: 1,
+    puntos: 3,
     frame: 13
 },
 {
@@ -214,6 +326,7 @@ export const INI_EDIFICIOS = [{
     oro: 3,
     madera: 1,
     piedra: 0,
+    puntos: 7,
     frame: 14
 },
 {
@@ -223,5 +336,6 @@ export const INI_EDIFICIOS = [{
     oro: 3,
     madera: 0,
     piedra: 1,
+    puntos: 2,
     frame: 15
 }];

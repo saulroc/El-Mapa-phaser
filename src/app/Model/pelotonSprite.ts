@@ -33,6 +33,8 @@ export class PelotonSprite extends Phaser.Physics.Arcade.Sprite {
         var escenaMapa = <MapSceneService>this.scene;
         var jugadorActivo = escenaMapa.jugadorActivo;
         var escala = 0;
+        console.log("Seleccionar peloton", this);
+
         if (this.peloton.jugador == jugadorActivo && this.peloton.puedeMover()) {            
             if (this.seleccionado) {
                 this.setScale(this.scaleX / 2);
@@ -83,6 +85,17 @@ export class PelotonSprite extends Phaser.Physics.Arcade.Sprite {
                 grupo.add(tropaSprite);
             }
         }
+    }
+
+    setVisible(value: boolean) {
+        if (this.grupoTropas && this.grupoTropas.children)
+            this.grupoTropas.setVisible(value);
+        return super.setVisible(value);
+    }
+
+    destroy(fromScene: boolean = false) {
+        this.grupoTropas.destroy(true);
+        super.destroy(fromScene);
     }
 
 }

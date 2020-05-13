@@ -81,6 +81,21 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
         
     }
 
+    voltear() {
+        if (this.oculta) {
+            this.clearTint();
+            this.setFrame(this.frameNumero);
+
+            if (this.pueblo)
+                this.setMarcador(this.pueblo.color);
+            
+            if (this.pelotones.length > 0)
+                this.cargarMarcadoresTropas();    
+                            
+        }
+        this.oculta = false;
+    }
+
     deleteMarcador() {
         if (this.marcador) {
             this.marcador.destroy();    
@@ -94,9 +109,17 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
                 return;
             }
         }
-
+        var nuevaTropa = new Tropa(
+            tropa.tipo, 
+            tropa.cantidad,
+            tropa.ataque,
+            tropa.vida,
+            tropa.movimiento,
+            tropa.movido,
+            tropa.velocidad,
+            tropa.distanciaDeAtaque);
         var tropas: Tropa[] = [];
-        tropas.push(tropa);
+        tropas.push(nuevaTropa);
         this.addPeloton(jugador, tropas);
 
     }
@@ -112,6 +135,21 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
+    deleteTropas(jugador: Jugador, tropas: Tropa[]) {        
+        for (var i = 0; i < this.pelotones.length; i++) {
+            var peloton = this.pelotones[i]
+            if (jugador == peloton.jugador) {
+                for(var j = 0; j < tropas.length; j++) {
+                    peloton.quitarTropa(tropas[j]);
+                }
+
+                if (peloton.tropas.length == 0) {
+                    this.pelotones.splice(i, 1);
+                }
+            }
+        }
+    }
+
     cargarMarcadoresTropas() {
         this.marcadoresTropas.forEach(marcadorTropas => { 
             marcadorTropas.clear(true, true);
@@ -122,23 +160,22 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
         this.pelotones.forEach(peloton => { this.addMarcadorTropas(peloton); });
     }
 
-    seleccionarMarcadorTropas(pointer, localX, localY, event) {
-        //this.tint = 0xffffff;
-        var escenaMapa = <MapSceneService>this.scene;
-        if (escenaMapa.jugadorActivo.color.color == this.tint)
-        {
-            console.log("seleccionado", this);            
-            this.setScale(this.scaleX * 2);
-        }
+    // seleccionarMarcadorTropas(pointer, localX, localY, event) {
+    //     //this.tint = 0xffffff;
+    //     var escenaMapa = <MapSceneService>this.scene;
+    //     if (escenaMapa.jugadorActivo.color.color == this.tint)
+    //     {
+    //         console.log("seleccionado", this);            
+    //         this.setScale(this.scaleX * 2);
+    //     }
 
-        event.stopPropagation();
-    }
+    //     event.stopPropagation();
+    // }
 
     addMarcadorTropas(peloton: Peloton) {
         var grupoMarcadorTropas = this.scene.add.group();
         var desplazamientoX = this.width * this.scaleX / 4;
         var desplazamientoY = this.height * this.scaleY / 4;
-        console.log("Ficha", this);
                 
         switch (this.marcadoresTropas.length) {
             case 0:
@@ -157,7 +194,23 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
         }
 
         this.marcadoresTropas.push(grupoMarcadorTropas);
-    }    
+    } 
+    
+    reclamar() {
+        if (this.pelotones.length == 1 
+            && this.pelotones[0].jugador
+            && (this.minaMadera || this.minaPiedra || this.minaOro)) {
+            
+            if (!this.marcador)
+                this.setMarcador(this.pelotones[0].jugador.color);
+            else 
+                this.marcador.setTint(this.pelotones[0].jugador.color.color);
+            
+            return true;
+        }
+
+        return false;
+    }
 
     getEscala() {
         var scale = this.scene.game.scale.width / this.width / 8 ;

@@ -7,11 +7,12 @@ export class Edificio extends Phaser.GameObjects.Sprite {
     madera: number = 0;
     piedra: number = 0;
     nivel: number = 1;
+    puntos: number = 1;
     numeroFrame: number = 0;
     /**
      *
      */
-    constructor(scene: Phaser.Scene, frame: number, nombre: string, nivel:number, posicion: number, oro: number, madera: number, piedra: number) {
+    constructor(scene: Phaser.Scene, frame: number, nombre: string, nivel:number, posicion: number, oro: number, madera: number, piedra: number, puntos: number) {
         super(scene, 0, 0, 'edificios',frame);
         this.scene = scene;
         this.nombre = nombre;
@@ -21,6 +22,7 @@ export class Edificio extends Phaser.GameObjects.Sprite {
         this.piedra = piedra;
         this.numeroFrame = frame;
         this.nivel = nivel;
+        this.puntos = puntos;
         
         scene.add.existing(this);
 

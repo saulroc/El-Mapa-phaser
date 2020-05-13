@@ -156,11 +156,9 @@ export class PuebloSceneService extends Phaser.Scene {
         this.edificios.getChildren().forEach((edificio: Edificio) => {
             if (edificio.posicion == -1 )
             {
-                edificio.removeAllListeners('pointerup');
                 edificio.clearTint();                
                 if (edificio.sePuedeConstruir(this.jugador.oro, this.jugador.madera, this.jugador.piedra, indice)) {
                     edificio.setInteractive();                    
-                    edificio.on('pointerup', this.construyendoEdificio);
 
                 } else {
                     edificio.tint = COLOR_EDIFICIO_INACTIVO;
@@ -179,7 +177,10 @@ export class PuebloSceneService extends Phaser.Scene {
                 edificios[i].posicion, 
                 edificios[i].oro, 
                 edificios[i].madera,
-                edificios[i].piedra );
+                edificios[i].piedra,
+                edificios[i].puntos );
+            
+            edificio.on('pointerup', this.construyendoEdificio);
             
             this.posicionar(edificio, edificio.posicion, edificio.numeroFrame);
             this.edificios.add(edificio);

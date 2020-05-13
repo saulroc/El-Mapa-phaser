@@ -274,23 +274,55 @@ export class MapSceneService extends Phaser.Scene {
     moverPeloton() {
       var fichaOrigen = this.pelotonSeleccionado.ficha;
       
-      
+      var vTileOrigen = this.map.worldToTileXY(fichaOrigen.x, fichaOrigen.y);
+
+      if (Math.abs(vTileOrigen.x - this.tileSeleccionado.x) > 1 ||
+        Math.abs(vTileOrigen.y - this.tileSeleccionado.y) > 1) return;
+
       var xBuscado = this.map.tileToWorldX(this.tileSeleccionado.x) + fichaOrigen.width / 2 * fichaOrigen.scaleX;
-      var yBuscado = this.map.tileToWorldY(this.tileSeleccionado.y) + fichaOrigen.height / 2 * fichaOrigen.scaleY; 
-      
-      console.log("Mover peloton", this.pelotonSeleccionado, this.tileSeleccionado);
-      console.log("Tile X, Y", this.tileSeleccionado.pixelX, this.tileSeleccionado.pixelY);
-      console.log("Tile to World X, Y", xBuscado, yBuscado);
-      console.log("Origen X, Y", fichaOrigen.x, fichaOrigen.y); 
+      var yBuscado = this.map.tileToWorldY(this.tileSeleccionado.y) + fichaOrigen.height / 2 * fichaOrigen.scaleY;           
 
       if (fichaOrigen.x != xBuscado || fichaOrigen.y != yBuscado) {
         var fichas = <Ficha[]>this.mapa.getChildren();
         var fichaDestino = fichas.find( ficha => ficha.x == xBuscado && ficha.y == yBuscado);
         if (fichaDestino) {
+          this.pelotonSeleccionado.peloton.mover();                    
           fichaDestino.addTropas(this.pelotonSeleccionado.peloton.jugador, this.pelotonSeleccionado.peloton.tropas);
-          this.pelotonSeleccionado.peloton.mover();
+          fichaOrigen.deleteTropas(this.pelotonSeleccionado.peloton.jugador, this.pelotonSeleccionado.peloton.tropas);
+          fichaDestino.cargarMarcadoresTropas();
+          if (fichaDestino.reclamar()) {
+            this.jugadores.getChildren().forEach((jugador: Jugador) => { jugador.quitarMina(fichaDestino);});
+            this.jugadorActivo.agregarMina(fichaDestino);
+          }
+          fichaOrigen.cargarMarcadoresTropas();
+          this.pelotonSeleccionado.setVisible(false);
+          this.pelotonSeleccionado.destroy();
+          this.pelotonSeleccionado = null;
+          this.voltearFichas(this.tileSeleccionado.x, this.tileSeleccionado.y);
+
         }
       }           
+      
+    }
+
+    voltearFichas(x:number, y:number) {
+      for(var i = x -1; i <= x +1; i++) {
+        for (var j = y - 1; j <= y + 1; j++) {
+          this.voltearFicha(i, j);
+        }
+      }
+    }
+
+    voltearFicha(x:number, y:number) {
+      var xBuscado = this.map.tileToWorldX(x) + this.map.tileWidth / 2 * this.layer1.scaleX;
+      var yBuscado = this.map.tileToWorldY(y) + this.map.tileHeight / 2 * this.layer1.scaleY;           
+
+      var fichas = <Ficha[]>this.mapa.getChildren();      
+      var fichaBuscada = fichas.find( ficha => ficha.x == xBuscado && ficha.y == yBuscado);
+      if (fichaBuscada && fichaBuscada.oculta) {
+        this.jugadorActivo.incrementarPuntos(1);
+        fichaBuscada.voltear();
+      }
       
     }
 

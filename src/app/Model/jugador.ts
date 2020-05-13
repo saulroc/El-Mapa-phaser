@@ -172,6 +172,17 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         this.setPiedra(this.piedra);
     }
 
+    agregarMina(mina: Ficha) {
+        if (this.minas.indexOf(mina) < 0)
+            this.minas.push(mina);
+    }
+
+    quitarMina(mina: Ficha) {
+        var indice = this.minas.indexOf(mina);
+        if (indice >= 0)
+            this.minas.splice(indice, 1);
+    }
+
     activar() {
         this.activo = true;
         if (this.CPU)
@@ -188,6 +199,11 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         else
             this.setFrame(0);
         this.setActive(false);
+    }
+
+    public incrementarPuntos(incremento: number) {
+        this.puntos += incremento;
+        this.puntosText.text = "Puntos: " + this.puntos;
     }
 
     public setOro(nuevoOro: number) {
