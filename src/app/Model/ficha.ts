@@ -157,20 +157,13 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
             this.marcadoresTropas.pop();
         });
 
-        this.pelotones.forEach(peloton => { this.addMarcadorTropas(peloton); });
-    }
-
-    // seleccionarMarcadorTropas(pointer, localX, localY, event) {
-    //     //this.tint = 0xffffff;
-    //     var escenaMapa = <MapSceneService>this.scene;
-    //     if (escenaMapa.jugadorActivo.color.color == this.tint)
-    //     {
-    //         console.log("seleccionado", this);            
-    //         this.setScale(this.scaleX * 2);
-    //     }
-
-    //     event.stopPropagation();
-    // }
+        this.pelotones.forEach(peloton => { 
+            this.addMarcadorTropas(peloton); 
+            if (this.pelotones.length > 1) {
+                peloton.paralizar();
+            }
+        });
+    }    
 
     addMarcadorTropas(peloton: Peloton) {
         var grupoMarcadorTropas = this.scene.add.group();
@@ -196,6 +189,13 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
         this.marcadoresTropas.push(grupoMarcadorTropas);
     } 
     
+    getPelotonesCombate() {
+        if (this.pelotones.length > 1) 
+            return this.pelotones;
+
+        return null;
+    }
+
     reclamar() {
         if (this.pelotones.length == 1 
             && this.pelotones[0].jugador

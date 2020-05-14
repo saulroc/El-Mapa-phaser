@@ -180,7 +180,8 @@ export class PuebloSceneService extends Phaser.Scene {
                 edificios[i].piedra,
                 edificios[i].puntos );
             
-            edificio.on('pointerup', this.construyendoEdificio);
+            if(edificio.posicion == -1)
+                edificio.on('pointerup', this.construyendoEdificio);
             
             this.posicionar(edificio, edificio.posicion, edificio.numeroFrame);
             this.edificios.add(edificio);
@@ -196,14 +197,16 @@ export class PuebloSceneService extends Phaser.Scene {
         edificio.posicion = this.posicionSeleccionada;
         this.posicionar(edificio, edificio.posicion, edificio.numeroFrame);        
         edificio.setDepth(1);
+        edificio.removeAllListeners();
         this.zonasDeConstruccion.setVisible(false);
 
         this.edificios.getChildren().forEach((edificio: Edificio) => edificio.clearTint() );
 
         this.pueblo.construirEdificio(this.posicionSeleccionada, edificio.nombre);
-        this.jugador.setOro(this.jugador.oro - edificio.oro);
-        this.jugador.setMadera(this.jugador.madera - edificio.madera);
-        this.jugador.setPiedra(this.jugador.piedra - edificio.piedra);
+        this.jugador.setOro(edificio.oro * -1);
+        this.jugador.setMadera(edificio.madera * -1);
+        this.jugador.setPiedra(edificio.piedra * -1);
+        this.jugador.incrementarPuntos(edificio.puntos);
     }
 
     posicionar(objeto: any, posicion: number, frame:number) {
@@ -249,7 +252,7 @@ export class PuebloSceneService extends Phaser.Scene {
     pintarLevas() {
         var x = 0.5 * this.fichaPueblo.width * this.fichaPueblo.scaleX;;
         var y = (this.fichaPueblo.height * this.fichaPueblo.scaleY) / 2;
-        var escala = this.fichaPueblo.getEscala() / 2;
+        var escala = this.fichaPueblo.getEscala();
         for(var i = 0; i < this.pueblo.leva; i++) {
             var leva = this.add.sprite(x, y, 'marcadores', 2);
             leva.setScale(escala);
@@ -273,8 +276,9 @@ export class PuebloSceneService extends Phaser.Scene {
 
     comprarLeva(leva: Phaser.GameObjects.Sprite) {
         leva.setVisible(false);
+        leva.setAlpha(0);
         //leva.destroy();
-        this.jugador.setOro(this.jugador.oro - 1);
+        this.jugador.setOro(-1);
         this.fichaPueblo.pueblo.leva--;
         var tropa = new Tropa("leva", 1, 1, 1, 2, 0, 1, 0);
         this.fichaPueblo.addTropa(this.jugador, tropa);

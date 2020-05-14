@@ -43,6 +43,7 @@ export const INI_FICHAS = [{
             movimiento: 2,
             movido: 0,
             velocidad: 1,
+            nivel: 1,
             distanciaDeAtaque: 0
     }] }]
 },
@@ -65,6 +66,7 @@ export const INI_FICHAS = [{
             movimiento: 2,
             movido: 0,
             velocidad: 1,
+            nivel: 1,
             distanciaDeAtaque: 0
     }] }]
 },
@@ -100,6 +102,7 @@ export const INI_FICHAS = [{
             movimiento: 2,
             movido: 0,
             velocidad: 1,
+            nivel: 1,
             distanciaDeAtaque: 0
     }] }]
 },
@@ -135,6 +138,7 @@ export const INI_FICHAS = [{
             movimiento: 2,
             movido: 0,
             velocidad: 1,
+            nivel: 1,
             distanciaDeAtaque: 0
     }] }]
 },

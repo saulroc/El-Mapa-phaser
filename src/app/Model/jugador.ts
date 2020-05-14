@@ -4,10 +4,12 @@ import { Ficha } from './ficha';
 import { Pueblo } from './pueblo';
 import { INI_FICHAS } from './datosIniciales';
 
+const COLOR_TEXTO = '#000000';
 const COLOR_MADERA = '#b9340d';
 const COLOR_ORO = '#daa520';
 const COLOR_PIEDRA = '#696969';
 const COLOR_PUNTOS = '#008000';
+const COLOR_ACTIVO = 0x000000;
 
 export class Jugador extends Phaser.Physics.Arcade.Sprite {
     nombre: string;
@@ -28,6 +30,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
     puntos: number;
     numero: number;
     minas: Ficha[];
+    mensajesInformacion: {color: string, mensaje: string}[];
 
     public constructor (scene: Phaser.Scene, color: Phaser.Display.Color, nombre: string, numero: number, cpu: boolean){
         super(scene, 0, 0, 'jugador',0);
@@ -57,7 +60,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         
         var estilo = { 
             font: 'bold 10pt Arial',
-            fill: '#000000',
+            fill: COLOR_TEXTO,
             align: 'center'
            }
 
@@ -80,7 +83,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         this.piedraText.setOrigin(0.5, 0);
         this.piedraText.setScrollFactor(0);
 
-        estilo.fill = COLOR_PUNTOS;
+        estilo.fill = COLOR_TEXTO;
         this.puntosText = this.scene.add.text(this.x, this.piedraText.y + this.piedraText.height, "Puntos: " + this.puntos, estilo);
         this.puntosText.setOrigin(0.5, 0);
         this.puntosText.setScrollFactor(0);
@@ -150,26 +153,30 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
     }
 
     iniciarTurno() {
+        var incrementoOro = 0;
+        var incrementoMadera = 0;
+        var incrementoPiedra = 0;
+
         this.pueblos.forEach(pueblo => { 
             pueblo.iniciarTurno(); 
-            this.oro += pueblo.oroGenera;
+            incrementoOro += pueblo.oroGenera;
         });
         this.minas.forEach(mina => {
             switch (true) {
                 case mina.minaMadera:
-                    this.madera++;
+                    incrementoMadera++;
                     break;
                 case mina.minaPiedra:
-                    this.piedra++;
+                    incrementoPiedra++;
                     break;
                 case mina.minaOro:
-                    this.oro++;
+                    incrementoOro++;
                     break;                
             }
         })
-        this.setOro(this.oro);
-        this.setMadera(this.madera);
-        this.setPiedra(this.piedra);
+        this.setOro(incrementoOro);
+        this.setMadera(incrementoMadera);
+        this.setPiedra(incrementoPiedra);
     }
 
     agregarMina(mina: Ficha) {
@@ -194,6 +201,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
 
     desactivar() {
         this.activo = false;
+        
         if (this.CPU)
             this.setFrame(2);
         else
@@ -204,21 +212,46 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
     public incrementarPuntos(incremento: number) {
         this.puntos += incremento;
         this.puntosText.text = "Puntos: " + this.puntos;
+        if (incremento > 0)
+            this.mensajesInformacion.push ({color: COLOR_PUNTOS, mensaje: "+" + incremento + " Puntos"});
+        if (incremento < 0)
+            this.mensajesInformacion.push ({color: COLOR_PUNTOS, mensaje: "-" + incremento + " Puntos"});
     }
 
-    public setOro(nuevoOro: number) {
-        this.oro = nuevoOro;
+    public setOro(incremento: number) {
+        this.oro += incremento;
         this.oroText.text = "Oro: " + this.oro;
+        if (incremento > 0)
+            this.mensajesInformacion.push ({color: COLOR_ORO, mensaje: "+" + incremento + " Oro"});
+        if (incremento < 0)
+            this.mensajesInformacion.push ({color: COLOR_ORO, mensaje: "-" + incremento + " Oro"});
     }
 
-    public setMadera(nuevoMadera: number) {
-        this.madera = nuevoMadera;
+    public setMadera(incremento: number) {
+        this.madera += incremento;
         this.maderaText.text = "Madera: " + this.madera;
+        if (incremento > 0)
+            this.mensajesInformacion.push ({color: COLOR_MADERA, mensaje: "+" + incremento + " Madera"});
+        if (incremento < 0)
+            this.mensajesInformacion.push ({color: COLOR_MADERA, mensaje: "-" + incremento + " Madera"});
     }
 
-    public setPiedra(nuevoPiedra: number) {
-        this.piedra = nuevoPiedra;
+    public setPiedra(incremento: number) {
+        this.piedra += incremento;
         this.piedraText.text = "Piedra: " + this.piedra;
+        if (incremento > 0)
+            this.mensajesInformacion.push ({color: COLOR_PIEDRA, mensaje: "+" + incremento + " Piedra"});
+        if (incremento < 0)
+            this.mensajesInformacion.push ({color: COLOR_PIEDRA, mensaje: "-" + incremento + " Piedra"});
+    }
+
+    update() {
+        // if (this.activo) {
+        //     if(this.isTinted)
+        //         this.clearTint();
+        //     else
+        //         this.tint = COLOR_ACTIVO;
+        // }
     }
 
 }

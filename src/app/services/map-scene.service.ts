@@ -3,6 +3,7 @@ import * as Phaser from 'phaser';
 import { Jugador } from '../Model/jugador';
 import { Ficha } from '../Model/ficha';
 import { PelotonSprite } from '../Model/pelotonSprite';
+import { Peloton } from '../Model/peloton';
 
 var ini_jugadores = [{
   nombre: 'Jugador 1',
@@ -19,6 +20,9 @@ var ini_jugadores = [{
   cpu: true,
   color: "0x008000"
 }*/];
+
+const FRAME_FICHA_FONDO = 44;
+const COLOR_LETRA_NEGRO = '#000000';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +42,11 @@ export class MapSceneService extends Phaser.Scene {
     colocandoFichas: boolean;
     controls;
     textoInformacion: Phaser.GameObjects.Text;
+    mensajesInformacion: {color: string, mensaje: string}[];
+    textoInformacionOroGanado: Phaser.GameObjects.Text;
+    textoInformacionMaderaGanada: Phaser.GameObjects.Text;
+    textoInformacionPiedraGanada: Phaser.GameObjects.Text;
+    textoInformacionPuntosGanados: Phaser.GameObjects.Text;
     textoTerminarTurno: Phaser.GameObjects.Text;
     marker: Phaser.GameObjects.Graphics;
     map: Phaser.Tilemaps.Tilemap;
@@ -49,6 +58,7 @@ export class MapSceneService extends Phaser.Scene {
     public constructor() {
       super({ key: 'Map' });
       this.numeroJugadores = ini_jugadores.length;
+      this.mensajesInformacion = [];
     }
 
     public preload() {
@@ -69,7 +79,7 @@ export class MapSceneService extends Phaser.Scene {
       this.layer1 = this.map.createBlankDynamicLayer('layer1', this.tileSet);
       this.layer1.setPosition(0, 0);
       this.layer1.setOrigin(0.5);
-      this.layer1.randomize(0, 0, this.map.width, this.map.height, [ 40]);
+      this.layer1.randomize(0, 0, this.map.width, this.map.height, [ FRAME_FICHA_FONDO]);
 
       var scale = this.game.scale.width / this.map.tileWidth / 8 ;
         if (scale > (this.game.scale.height / this.map.tileHeight / 8))
@@ -96,7 +106,7 @@ export class MapSceneService extends Phaser.Scene {
       this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
       var estilo = { 
         font: 'bold 16pt Arial',
-        fill: '#000000',
+        fill: COLOR_LETRA_NEGRO,
         align: 'center',
         wordWrap: true
        }
@@ -145,6 +155,7 @@ export class MapSceneService extends Phaser.Scene {
       this.marker.y = this.map.tileToWorldY(pointerTileY);          
 
       this.controls.update(delta);
+      this.actualizarTextoInformacion();
 
     }
 
@@ -159,18 +170,30 @@ export class MapSceneService extends Phaser.Scene {
         jugador.setCollideWorldBounds(true);
         jugador.setScrollFactor(0);
         jugador.inicializarFichas();
+        jugador.mensajesInformacion = this.mensajesInformacion;
       }
     }
 
     terminarTurno(pointer, localX, localY, event) {
+      
+      this.mapa.getChildren().forEach((ficha: Ficha) => {
+        var pelotonesCombate = ficha.getPelotonesCombate();
+        if (pelotonesCombate) {
+          this.resolverCombate(pelotonesCombate);
+          ficha.cargarMarcadoresTropas();
+          if (ficha.reclamar()) {
+            this.jugadores.getChildren().forEach((jugador: Jugador) => { jugador.quitarMina(ficha);});
+            this.jugadorActivo.agregarMina(ficha);
+          }
+        }
+
+        ficha.pelotones.forEach(peloton => peloton.iniciarTurno())
+      });
       this.activarJugador(this.getSiguienteJugador());   
+      
       if (event)
         event.stopPropagation();
-    }
-
-    seleccionarTropas(marcador: Phaser.GameObjects.Sprite) {
-
-    }
+    }    
 
     getSiguienteJugador() {
       var jugadoresVector = this.jugadores.getChildren();  
@@ -194,7 +217,7 @@ export class MapSceneService extends Phaser.Scene {
 
       this.fichaColocando = jugador.getSiguienteFicha();
       if (this.fichaColocando) {
-        this.textoInformacion.text = "Colocando ficha " + jugador.nombre;
+        this.mensajesInformacion.push( {color: COLOR_LETRA_NEGRO, mensaje: "Colocando ficha " + jugador.nombre})
         this.fichaColocando.setVisible(true);
         this.fichaColocando.setDepth(1);
                 
@@ -204,14 +227,14 @@ export class MapSceneService extends Phaser.Scene {
             this.game.scale.width / 2, 
             this.jugadorActivo.y + (this.jugadorActivo.height * this.jugadorActivo.scaleY),
              "Terminar turno", 
-             { fill: '#000000', font: 'bold 16pt arial'});
+             { fill: COLOR_LETRA_NEGRO, font: 'bold 16pt arial'});
           this.textoTerminarTurno.setInteractive();
           this.textoTerminarTurno.setScrollFactor(0);
           this.textoTerminarTurno.setDepth(3);
           this.textoTerminarTurno.on('pointerup', this.terminarTurno, this);
         }
         this.colocandoFichas = false;
-        this.textoInformacion.text = "Turno " + this.turno + " del jugador " + jugador.nombre;
+        this.mensajesInformacion.push( {color: COLOR_LETRA_NEGRO, mensaje: "Turno " + this.turno + " del jugador " + jugador.nombre})
         this.jugadorActivo.iniciarTurno();
       }
 
@@ -242,7 +265,7 @@ export class MapSceneService extends Phaser.Scene {
         this.generarZonaDeColocacion();                
 
         var tile = this.layer1.getTileAtWorldXY(worldPoint.x, worldPoint.y);
-        if (tile.index == 40)
+        if (tile.index == FRAME_FICHA_FONDO)
         {
           //
           var indice = +this.fichaColocando.frame.name;
@@ -290,6 +313,7 @@ export class MapSceneService extends Phaser.Scene {
           fichaDestino.addTropas(this.pelotonSeleccionado.peloton.jugador, this.pelotonSeleccionado.peloton.tropas);
           fichaOrigen.deleteTropas(this.pelotonSeleccionado.peloton.jugador, this.pelotonSeleccionado.peloton.tropas);
           fichaDestino.cargarMarcadoresTropas();
+          
           if (fichaDestino.reclamar()) {
             this.jugadores.getChildren().forEach((jugador: Jugador) => { jugador.quitarMina(fichaDestino);});
             this.jugadorActivo.agregarMina(fichaDestino);
@@ -330,6 +354,54 @@ export class MapSceneService extends Phaser.Scene {
         this.jugadorActivo.getZonaColocacion()
     }
   
+    resolverCombate(pelotones: Peloton[]) {
+      var velocidadMaxima = 0;
+      pelotones.forEach(peloton => {
+        var velocidadMaximaPeloton = peloton.obtenerVelocidadMaxima();
+        if (velocidadMaximaPeloton > velocidadMaxima)
+          velocidadMaxima = velocidadMaximaPeloton;
+      });
+
+      while (pelotones.length > 1) {
+        for (var i = velocidadMaxima; i >= 1; i--) {
+          var heridas = [];
+          pelotones.forEach(peloton => {
+            var herida = peloton.obtenerHeridasProvocadas(i);
+            heridas.push({ herida: herida, jugador: peloton.jugador});
+          });
+          var contadorPeloton = 0;
+          for (var j = 0; j < heridas.length; j++) {
+            var peloton = pelotones[contadorPeloton];
+            var puntos = peloton.repartirHeridasSufridas(heridas[heridas.length - 1 - j].herida);
+            if (peloton.tropas.length == 0) {
+              pelotones.splice(contadorPeloton,1);
+            } else {
+              contadorPeloton++;
+            }
+            var jugador = heridas[heridas.length - 1 - j].jugador;
+            if (puntos > 0 && jugador)
+              jugador.incrementarPuntos(puntos);
+          }
+
+        }
+      }
+
+
+    }
+
+    actualizarTextoInformacion() {
+      
+      if (this.textoInformacion.alpha == 0 && this.mensajesInformacion.length > 0) {
+        var mensajeInformacion = this.mensajesInformacion.pop();        
+        this.textoInformacion.setFill(mensajeInformacion.color);
+        this.textoInformacion.text = mensajeInformacion.mensaje;
+        this.textoInformacion.setAlpha();
+      } else {
+        this.textoInformacion.alpha -= (this.mensajesInformacion.length + 1) * 0.01;
+      }
+
+    }
+
     onDragStop(pointer, sprite) {
       
       if (!this.physics.overlap(sprite, this.zonaColocacion))
