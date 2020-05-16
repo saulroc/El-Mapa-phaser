@@ -57,7 +57,8 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
         if (! this.marcador) {
             this.marcador = this.scene.add.sprite(this.x, this.y, 'marcadores', 0);  
             this.marcador.setScale(this.scale / 2);  
-            this.marcador.setDepth(2);      
+            this.marcador.setDepth(2);    
+            this.marcador.setAlpha(0.5);  
         }
         this.marcador.tint = color.color;
         
@@ -66,7 +67,7 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
     colocar(posicionX: number, posicionY: number, jugador: Jugador) {
         
         this.setPosition(posicionX + this.width * this.scaleX / 2, posicionY + this.height * this.scaleY / 2);                
-
+        this.setScrollFactor(1);
         if (this.oculta)
             this.tint = jugador.color.color;
 
@@ -151,11 +152,11 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
     }
 
     cargarMarcadoresTropas() {
-        this.marcadoresTropas.forEach(marcadorTropas => { 
+        while (this.marcadoresTropas.length > 0) {
+            var marcadorTropas = this.marcadoresTropas.pop();
             marcadorTropas.clear(true, true);
             marcadorTropas.destroy();
-            this.marcadoresTropas.pop();
-        });
+        }        
 
         this.pelotones.forEach(peloton => { 
             this.addMarcadorTropas(peloton); 
@@ -223,6 +224,12 @@ export class Ficha extends Phaser.Physics.Arcade.Sprite {
         if (this.colocada && this.pueblo) {
             this.scene.game.scene.pause('Map');            
             this.scene.game.scene.start('Pueblo', this);
+        }
+    }
+
+    update() {
+        if(this.colocada && this.visible && this.pueblo && !this.pueblo.construido && this.marcador) {
+
         }
     }
 }

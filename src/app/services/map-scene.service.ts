@@ -5,6 +5,8 @@ import { Ficha } from '../Model/ficha';
 import { PelotonSprite } from '../Model/pelotonSprite';
 import { Peloton } from '../Model/peloton';
 
+import GesturesPlugin from 'phaser3-rex-plugins/plugins/gestures-plugin.js';
+
 var ini_jugadores = [{
   nombre: 'Jugador 1',
   cpu: false,
@@ -22,7 +24,11 @@ var ini_jugadores = [{
 }*/];
 
 const FRAME_FICHA_FONDO = 44;
-const COLOR_LETRA_NEGRO = '#000000';
+const COLOR_LETRA_BLANCO = '#FFFFFF';
+const COLOR_STROKE_LETRA = '#000000';
+const COLOR_FICHA_ACTIVA = 0xf4d03f;
+const COLOR_FICHA_NO_ACTIVA = 0xffffff;
+
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +37,7 @@ export class MapSceneService extends Phaser.Scene {
     
     sceneWidthHalf: number;
     mapa: Phaser.Physics.Arcade.Group;
-    zonaColocacion: Phaser.Physics.Arcade.Group;
+    //zonaColocacion: Phaser.Physics.Arcade.Group;
     jugadores: Phaser.Physics.Arcade.Group; //Jugador[];
     jugadorActivo: Jugador;
     fichaColocando: Ficha;
@@ -54,6 +60,12 @@ export class MapSceneService extends Phaser.Scene {
     tileSet: Phaser.Tilemaps.Tileset;
     tileSeleccionado: Phaser.Tilemaps.Tile;
     pelotonSeleccionado: PelotonSprite;
+    ultimoTurno: boolean = false;
+
+    distancia: number;
+    distanciaAnterior: number;
+    distanciaDelta: number;
+    escalarMundo: number;
 
     public constructor() {
       super({ key: 'Map' });
@@ -106,7 +118,7 @@ export class MapSceneService extends Phaser.Scene {
       this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
       var estilo = { 
         font: 'bold 16pt Arial',
-        fill: COLOR_LETRA_NEGRO,
+        fill: COLOR_LETRA_BLANCO,
         align: 'center',
         wordWrap: true
        }
@@ -114,14 +126,16 @@ export class MapSceneService extends Phaser.Scene {
       this.textoInformacion.setOrigin(0.5);
       this.textoInformacion.setScrollFactor(0);
       this.textoInformacion.setDepth(3);
+      this.textoInformacion.setStroke(COLOR_STROKE_LETRA, 2);
+      this.textoInformacion.setShadow(2, 2, COLOR_STROKE_LETRA, 2, true, true);
       this.textoInformacion.text = "Cargando partida";
       
       this.iniciarJugadores();
 
       this.colocandoFichas = true;
       this.mapa = this.physics.add.group();
-      this.zonaColocacion = this.physics.add.group();
-      this.zonaColocacion.create(this.cameras.main.centerX, this.cameras.main.centerY);
+      //this.zonaColocacion = this.physics.add.group();
+      //this.zonaColocacion.create(this.cameras.main.centerX, this.cameras.main.centerY);
         
       this.marker = this.add.graphics();
       this.marker.lineStyle(4, 0xFFFFFF, 1);
@@ -138,8 +152,22 @@ export class MapSceneService extends Phaser.Scene {
       this.input.on('pointerup', this.clickear, this);
 
       this.activarJugador(<Jugador>this.jugadores.getChildren()[0]);
-      this.cameras.main.setScroll(this.physics.world.bounds.centerX, this.physics.world.bounds.centerY)
-      
+      this.cameras.main.setScroll(this.physics.world.bounds.centerX - this.cameras.main.width / 2, this.physics.world.bounds.centerY  - this.cameras.main.height / 2)
+      this.input.addPointer(1);
+      //var pinch = this.rexGestures.add.pinch();
+
+      // var camera = this.cameras.main;
+      // pinch
+      //     .on('drag1', function (pinch) {
+      //         var drag1Vector = pinch.drag1Vector;
+      //         camera.scrollX -= drag1Vector.x / camera.zoom;
+      //         camera.scrollY -= drag1Vector.y / camera.zoom;
+      //     })
+      //     .on('pinch', function (pinch) {
+      //         var scaleFactor = pinch.scaleFactor;
+      //         camera.zoom *= scaleFactor;
+      //     }, this)
+
     }
 
     public update(time, delta) {
@@ -156,6 +184,37 @@ export class MapSceneService extends Phaser.Scene {
 
       this.controls.update(delta);
       this.actualizarTextoInformacion();
+      var punteros = this.game.input.pointers;
+      if(punteros.length == 2 && punteros[0].isDown && punteros[1].isDown) {
+        this.mensajesInformacion.push({color: COLOR_LETRA_BLANCO, mensaje: "2 Punteros Down"});
+        this.mensajesInformacion.push({color: COLOR_LETRA_BLANCO, mensaje: "Puntero 1 X: " + punteros[0].x + ", Y:" + punteros[0].y});
+        this.mensajesInformacion.push({color: COLOR_LETRA_BLANCO, mensaje: "Puntero 2 X: " + punteros[1].x + ", Y:" + punteros[1].y});
+
+
+        this.distanciaAnterior = this.distancia;    
+        this.distancia = Phaser.Math.Distance.Between(punteros[0].x, punteros[0].y, punteros[1].x,punteros[1].y);
+        this.distanciaDelta = Math.abs(this.distanciaAnterior - this.distancia);        
+        if (this.distanciaAnterior > this.distancia && this.distanciaDelta > 4) { 
+          this.escalarMundo -= 0.02; 
+        } else if (this.distanciaAnterior < this.distancia && this.distanciaDelta > 4){ 
+          this.escalarMundo += 0.02;
+        }  
+          
+        this.escalarMundo = Phaser.Math.Clamp(this.escalarMundo, 0.5, 2); // set a minimum and maximum scale value    
+        this.mensajesInformacion.push({color: COLOR_LETRA_BLANCO, mensaje: "Escalar : " + this.escalarMundo});
+        
+        if (this.escalarMundo<2){        
+          this.cameras.main.setZoom(this.escalarMundo);
+          // zoomed=true;        
+          // stageGroup.scale.set(this.escalarMundo);        
+          // if (follow){            
+          //   ease=0.1;            
+          //   cameraPos.x += (follow.x * this.escalarMundo- cameraPos.x) * ease ;
+          //   cameraPos.y += (follow.y * this.escalarMundo- cameraPos.y) * ease ;
+          //   game.camera.focusOnXY(cameraPos.x, cameraPos.y);        
+          // }
+        }          
+      }
 
     }
 
@@ -189,7 +248,13 @@ export class MapSceneService extends Phaser.Scene {
 
         ficha.pelotones.forEach(peloton => peloton.iniciarTurno())
       });
-      this.activarJugador(this.getSiguienteJugador());   
+      var jugador = this.getSiguienteJugador();
+      if (this.ultimoTurno && jugador.numero == 0) {
+        this.game.scene.start('GameOver', <Jugador[]>this.jugadores.getChildren());
+        this.game.scene.pause('Map');
+      }
+
+      this.activarJugador(jugador);   
       
       if (event)
         event.stopPropagation();
@@ -203,7 +268,7 @@ export class MapSceneService extends Phaser.Scene {
         this.turno++;
 
       return <Jugador>jugadoresVector[indice];
-    }
+    }  
 
     activarJugador(jugador: Jugador) {
       if(this.jugadorActivo) {
@@ -217,9 +282,16 @@ export class MapSceneService extends Phaser.Scene {
 
       this.fichaColocando = jugador.getSiguienteFicha();
       if (this.fichaColocando) {
-        this.mensajesInformacion.push( {color: COLOR_LETRA_NEGRO, mensaje: "Colocando ficha " + jugador.nombre})
+        
+        this.mensajesInformacion.push( {color: COLOR_LETRA_BLANCO, mensaje: "Colocando ficha " + jugador.nombre})
+        this.fichaColocando.setPosition(jugador.x,jugador.y + jugador.height*jugador.scaleY);
         this.fichaColocando.setVisible(true);
+        if (this.fichaColocando.oculta)
+          this.fichaColocando.tint = jugador.color.color;
+          
+        this.fichaColocando.setScrollFactor(0);
         this.fichaColocando.setDepth(1);
+        this.generarZonaDeColocacion();                        
                 
       } else {
         if(this.colocandoFichas) {
@@ -227,14 +299,15 @@ export class MapSceneService extends Phaser.Scene {
             this.game.scale.width / 2, 
             this.jugadorActivo.y + (this.jugadorActivo.height * this.jugadorActivo.scaleY),
              "Terminar turno", 
-             { fill: COLOR_LETRA_NEGRO, font: 'bold 16pt arial'});
+             { fill: COLOR_LETRA_BLANCO, font: 'bold 16pt arial'});
           this.textoTerminarTurno.setInteractive();
+          this.textoTerminarTurno.setStroke(COLOR_STROKE_LETRA, 2);
           this.textoTerminarTurno.setScrollFactor(0);
           this.textoTerminarTurno.setDepth(3);
           this.textoTerminarTurno.on('pointerup', this.terminarTurno, this);
         }
         this.colocandoFichas = false;
-        this.mensajesInformacion.push( {color: COLOR_LETRA_NEGRO, mensaje: "Turno " + this.turno + " del jugador " + jugador.nombre})
+        this.mensajesInformacion.push( {color: COLOR_LETRA_BLANCO, mensaje: "Turno " + this.turno + " del jugador " + jugador.nombre})
         this.jugadorActivo.iniciarTurno();
       }
 
@@ -262,10 +335,8 @@ export class MapSceneService extends Phaser.Scene {
       
       if (this.colocandoFichas) {
        
-        this.generarZonaDeColocacion();                
-
         var tile = this.layer1.getTileAtWorldXY(worldPoint.x, worldPoint.y);
-        if (tile.index == FRAME_FICHA_FONDO)
+        if (tile.index == FRAME_FICHA_FONDO && tile.tint == COLOR_FICHA_ACTIVA)
         {
           //
           var indice = +this.fichaColocando.frame.name;
@@ -276,7 +347,7 @@ export class MapSceneService extends Phaser.Scene {
           
           this.fichaColocando.colocar(this.marker.x, this.marker.y, this.jugadorActivo);
           this.mapa.add(this.fichaColocando);
-          
+          this.borrarZonaDeColocacion();
           this.terminarTurno(pointer, localX, localY, event);
         }                                
 
@@ -335,6 +406,22 @@ export class MapSceneService extends Phaser.Scene {
           this.voltearFicha(i, j);
         }
       }
+
+      this.comprobarUltimoTurno();
+
+    }
+
+    comprobarUltimoTurno() {
+      var fichas = <Ficha[]>this.mapa.getChildren();     
+      for(var i = 0; i < fichas.length; i++) {
+        if (fichas[i].oculta) {
+          this.ultimoTurno = false;
+          return;
+        }
+      }
+
+      this.ultimoTurno = true;
+      this.mensajesInformacion.push({color: COLOR_LETRA_BLANCO, mensaje: "Último turno"});
     }
 
     voltearFicha(x:number, y:number) {
@@ -350,9 +437,40 @@ export class MapSceneService extends Phaser.Scene {
       
     }
 
-    generarZonaDeColocacion() {
-        this.jugadorActivo.getZonaColocacion()
+    borrarZonaDeColocacion() {
+      var tiles = this.map.filterTiles((tile:Phaser.Tilemaps.Tile) => { 
+        if (tile.index == FRAME_FICHA_FONDO)
+         return tile;
+      });
+
+      tiles.forEach(tile => {
+        tile.tint = COLOR_FICHA_NO_ACTIVA;
+      });
+
     }
+
+    generarZonaDeColocacion() {
+        var puntos = this.jugadorActivo.getZonaColocacion();
+
+        if (puntos.length == 0) {
+          if (this.jugadorActivo.numero == 0) {
+            var tile = this.map.getTileAt(Math.floor(this.map.width/2),Math.floor(this.map.height / 2));
+            var punto = new Phaser.Math.Vector2(this.map.tileToWorldX(tile.x), this.map.tileToWorldY(tile.y));
+            puntos.push(punto);
+          } else {
+            var jugadores = <Jugador[]>this.jugadores.getChildren();
+            puntos = jugadores[this.jugadorActivo.numero-1].getZonaColocacion();
+          }
+        }        
+        
+        puntos.forEach((punto: Phaser.Math.Vector2) => {
+          var tile = this.map.getTileAtWorldXY(punto.x, punto.y);
+          if (tile.index == FRAME_FICHA_FONDO && tile.tint != COLOR_FICHA_ACTIVA) {
+            tile.tint = COLOR_FICHA_ACTIVA;
+          }
+        });
+        
+    } 
   
     resolverCombate(pelotones: Peloton[]) {
       var velocidadMaxima = 0;
@@ -392,7 +510,7 @@ export class MapSceneService extends Phaser.Scene {
     actualizarTextoInformacion() {
       
       if (this.textoInformacion.alpha == 0 && this.mensajesInformacion.length > 0) {
-        var mensajeInformacion = this.mensajesInformacion.pop();        
+        var mensajeInformacion = this.mensajesInformacion.splice(0,1).pop();        
         this.textoInformacion.setFill(mensajeInformacion.color);
         this.textoInformacion.text = mensajeInformacion.mensaje;
         this.textoInformacion.setAlpha();
@@ -404,18 +522,7 @@ export class MapSceneService extends Phaser.Scene {
 
     onDragStop(pointer, sprite) {
       
-      if (!this.physics.overlap(sprite, this.zonaColocacion))
-      {
-        console.log("No Overlap");  
-        //this.game.add.tween(sprite).to( { x: this.game.scale.width / 2, y: this.game.scale.height / 2 }, 500, "Back.easeOut", true);
-          // this.tweens.add({
-
-          // });
-      } else {
-        console.log("Overlap");  
-        this.mapa.add(sprite);
-        sprite.setDraggable(false);
-      }
+      
     
     }
     

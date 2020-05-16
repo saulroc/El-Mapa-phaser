@@ -4,7 +4,8 @@ import { Ficha } from './ficha';
 import { Pueblo } from './pueblo';
 import { INI_FICHAS } from './datosIniciales';
 
-const COLOR_TEXTO = '#000000';
+const COLOR_TEXTO = '#FFFFFF';
+const COLOR_STROKE = '#000000';
 const COLOR_MADERA = '#b9340d';
 const COLOR_ORO = '#daa520';
 const COLOR_PIEDRA = '#696969';
@@ -31,6 +32,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
     numero: number;
     minas: Ficha[];
     mensajesInformacion: {color: string, mensaje: string}[];
+    tweenActivo: Phaser.Tweens.Tween;
 
     public constructor (scene: Phaser.Scene, color: Phaser.Display.Color, nombre: string, numero: number, cpu: boolean){
         super(scene, 0, 0, 'jugador',0);
@@ -67,33 +69,49 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         this.nombreText = this.scene.add.text(this.x, this.y, this.nombre, estilo);
         this.nombreText.setOrigin(0.5, 0);
         this.nombreText.setScrollFactor(0);
+        this.nombreText.setStroke(COLOR_STROKE, 1);
 
         estilo.fill = COLOR_ORO;
         this.oroText = this.scene.add.text(this.x, this.nombreText.y + this.nombreText.height, "Oro: " + this.oro, estilo);
         this.oroText.setOrigin(0.5, 0);
         this.oroText.setScrollFactor(0);
+        this.oroText.setStroke(COLOR_STROKE, 1);
         
         estilo.fill = COLOR_MADERA;
         this.maderaText = this.scene.add.text(this.x, this.oroText.y + this.oroText.height, "Madera: " + this.madera, estilo);
         this.maderaText.setOrigin(0.5, 0);
         this.maderaText.setScrollFactor(0);
+        this.maderaText.setStroke(COLOR_STROKE, 1);
 
         estilo.fill = COLOR_PIEDRA;
         this.piedraText = this.scene.add.text(this.x, this.maderaText.y + this.maderaText.height, "Piedra: " + this.piedra, estilo);
         this.piedraText.setOrigin(0.5, 0);
         this.piedraText.setScrollFactor(0);
+        this.piedraText.setStroke(COLOR_STROKE, 1);
 
         estilo.fill = COLOR_TEXTO;
         this.puntosText = this.scene.add.text(this.x, this.piedraText.y + this.piedraText.height, "Puntos: " + this.puntos, estilo);
         this.puntosText.setOrigin(0.5, 0);
         this.puntosText.setScrollFactor(0);
+        this.puntosText.setStroke(COLOR_STROKE, 1);
+
+        this.tweenActivo = this.scene.tweens.add({ 
+            targets: this,
+            alpha: { start: 1, to:0, duration: 1000, ease: 'Power1' },
+            paused: true,
+            yoyo: true,
+            loop: -1
+        });
+        //this.tweenActivo.stop();
     }
 
     posicionarDelante() {
         this.setDepth(3);
         this.oroText.setDepth(4) ;    
         this.maderaText.setDepth(4) ;    
-        this.piedraText.setDepth(4) ;    
+        this.piedraText.setDepth(4) ; 
+        this.puntosText.setDepth(4) ;    
+
     }
 
     inicializarFichas() {
@@ -149,7 +167,23 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
     }
 
     getZonaColocacion() {
-        
+        var zona = [];
+        this.fichasTerreno.getChildren().forEach((ficha: Ficha) => {
+            if (ficha.colocada) {
+                var x = ficha.x;
+                var y = ficha.y;
+                var derecha = new Phaser.Math.Vector2(x + ficha.width * ficha.scaleX, y);
+                zona.push(derecha);
+                var izquierda = new  Phaser.Math.Vector2(x - ficha.width * ficha.scaleX, y);
+                zona.push(izquierda);
+                var arriba = new Phaser.Math.Vector2(x, y  - ficha.height * ficha.scaleY);
+                zona.push(arriba);
+                var abajo = new  Phaser.Math.Vector2(x, y  + ficha.height * ficha.scaleY);
+                zona.push(abajo);
+            }           
+        });
+
+        return zona;
     }
 
     iniciarTurno() {
@@ -197,6 +231,8 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         else
             this.setFrame(1);
         this.setActive(true);
+        this.tweenActivo.restart();
+        this.tweenActivo.play();
     }
 
     desactivar() {
@@ -207,6 +243,8 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         else
             this.setFrame(0);
         this.setActive(false);
+        this.tweenActivo.stop();
+        this.setAlpha(1);
     }
 
     public incrementarPuntos(incremento: number) {
@@ -215,7 +253,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         if (incremento > 0)
             this.mensajesInformacion.push ({color: COLOR_PUNTOS, mensaje: "+" + incremento + " Puntos"});
         if (incremento < 0)
-            this.mensajesInformacion.push ({color: COLOR_PUNTOS, mensaje: "-" + incremento + " Puntos"});
+            this.mensajesInformacion.push ({color: COLOR_PUNTOS, mensaje: incremento + " Puntos"});
     }
 
     public setOro(incremento: number) {
@@ -224,7 +262,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         if (incremento > 0)
             this.mensajesInformacion.push ({color: COLOR_ORO, mensaje: "+" + incremento + " Oro"});
         if (incremento < 0)
-            this.mensajesInformacion.push ({color: COLOR_ORO, mensaje: "-" + incremento + " Oro"});
+            this.mensajesInformacion.push ({color: COLOR_ORO, mensaje: incremento + " Oro"});
     }
 
     public setMadera(incremento: number) {
@@ -233,7 +271,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         if (incremento > 0)
             this.mensajesInformacion.push ({color: COLOR_MADERA, mensaje: "+" + incremento + " Madera"});
         if (incremento < 0)
-            this.mensajesInformacion.push ({color: COLOR_MADERA, mensaje: "-" + incremento + " Madera"});
+            this.mensajesInformacion.push ({color: COLOR_MADERA, mensaje: incremento + " Madera"});
     }
 
     public setPiedra(incremento: number) {
@@ -242,7 +280,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         if (incremento > 0)
             this.mensajesInformacion.push ({color: COLOR_PIEDRA, mensaje: "+" + incremento + " Piedra"});
         if (incremento < 0)
-            this.mensajesInformacion.push ({color: COLOR_PIEDRA, mensaje: "-" + incremento + " Piedra"});
+            this.mensajesInformacion.push ({color: COLOR_PIEDRA, mensaje: incremento + " Piedra"});
     }
 
     update() {
@@ -252,6 +290,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         //     else
         //         this.tint = COLOR_ACTIVO;
         // }
+        //this.scene.game.add.tween(text).to( { alpha: 1 }, 2000, "Linear", true);
     }
 
 }

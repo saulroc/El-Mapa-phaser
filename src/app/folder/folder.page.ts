@@ -5,7 +5,8 @@ import { MapSceneService } from '../services/map-scene.service';
 import { PuebloSceneService } from '../services/pueblo-scene.service';
 
 import * as Phaser from 'phaser';
-
+import GesturesPlugin from 'phaser3-rex-plugins/plugins/gestures-plugin.js';
+import { GameOverSceneService } from '../services/game-over-scene.service';
 
 
 interface GameInstance extends Phaser.Types.Core.GameConfig {
@@ -16,7 +17,7 @@ interface GameInstance extends Phaser.Types.Core.GameConfig {
   selector: 'app-folder',
   templateUrl: './folder.page.html',
   styleUrls: ['./folder.page.scss'],
-  providers: [MapSceneService, PuebloSceneService]
+  providers: [MapSceneService, PuebloSceneService, GameOverSceneService]
 })
 export class FolderPage implements OnInit {
   public folder: string;
@@ -31,14 +32,22 @@ export class FolderPage implements OnInit {
     scale: {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH
-    },  
+    },     
     physics: {
       default: 'arcade',
       arcade: {
           debug: true
       }
     },
-    scene: [MapSceneService, PuebloSceneService],
+    scene: [MapSceneService, PuebloSceneService, GameOverSceneService],
+    plugins: {
+      scene: [{
+          key: 'rexGestures',
+          plugin: GesturesPlugin,
+          mapping: 'rexGestures'
+      },
+      ]
+  }, 
     instance: null
   }
 
