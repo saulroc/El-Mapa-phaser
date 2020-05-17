@@ -11,6 +11,7 @@ const COLOR_ZONA_CONSTRUCCION = 0x00ff00;
 const COLOR_ZONA_CONSTRUCCION_SELECCIONADA = 0x0000ff;
 const COLOR_EDIFICIO_INACTIVO = 0xA4A4A4;
 const COLOR_TROPA_SELECCIONADA = 0xA4A4A4;
+const COLOR_STROKE = '#000000';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,7 @@ export class PuebloSceneService extends Phaser.Scene {
     posicionSeleccionada: number = -1;
     zonasDeConstruccion: Phaser.GameObjects.Group;
     jugador: Jugador;
+    textoVolver: Phaser.GameObjects.Text;
     
 
     public constructor() {
@@ -59,7 +61,7 @@ export class PuebloSceneService extends Phaser.Scene {
 
         var estilo = { 
             font: 'bold 16pt Arial',
-            fill: '#000000',
+            fill: '#ffffff',
             align: 'center',
             wordWrap: true
            }
@@ -67,10 +69,12 @@ export class PuebloSceneService extends Phaser.Scene {
         var x = 3.5 * this.fichaPueblo.width * this.fichaPueblo.scaleX;
         var y = (this.fichaPueblo.height * this.fichaPueblo.scaleY + 5) + (this.fichaPueblo.height * this.fichaPueblo.scaleY) / 2;
            
-        var textoVolver = this.add.text(x, y, 'Cerrar', estilo);
-        textoVolver.setInteractive();
-        textoVolver.on('pointerup', this.cerrar, this);
-        textoVolver.setOrigin(0.5);
+        this.textoVolver = this.add.text(x, y, 'Cerrar', estilo);
+        this.textoVolver.setInteractive();
+        this.textoVolver.on('pointerup', this.cerrar, this);
+        this.textoVolver.setOrigin(0.5);
+        this.textoVolver.setStroke(COLOR_STROKE, 1);
+
 
         if(this.pueblo && this.pueblo.edificios)
             this.cargarEdificios(this.pueblo.edificios);
@@ -293,6 +297,11 @@ export class PuebloSceneService extends Phaser.Scene {
     }
 
     public update() {
-
+        if (this.pueblo.color != this.jugador.color || this.pueblo.construido) {
+            if (this.textoVolver.style.strokeThickness == 1)    
+                this.textoVolver.setStroke(COLOR_STROKE, 2);
+            else
+                this.textoVolver.setStroke(COLOR_STROKE, 1);    
+        }
     }
 }

@@ -149,7 +149,37 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
                 this.pueblos.push(fichaTerreno.pueblo);
             }
         }
+        this.barajarFichas();
         
+    }
+
+    shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    barajarFichas() {
+        var fichas = <Ficha[]>this.fichasTerreno.getChildren();
+        var fichasNiveles = [[]];
+        this.fichasTerreno.clear();
+        while (fichas.length > 0) {
+            var ficha = fichas.pop();
+            if(ficha.nivel == fichasNiveles.length) {
+                fichasNiveles.push(new Array());                
+            }
+            fichasNiveles[ficha.nivel].push(ficha);
+        }
+        for(var i = 1; i < fichasNiveles.length; i++) {
+            this.shuffleArray(fichasNiveles[i]);            
+        }
+        fichasNiveles.forEach(fichas => {
+            fichas.forEach(ficha => {
+                this.fichasTerreno.add(ficha);
+            })
+        });
+
     }
 
     getSiguienteFicha() {
