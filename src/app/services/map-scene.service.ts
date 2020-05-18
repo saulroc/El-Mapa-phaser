@@ -151,9 +151,9 @@ export class MapSceneService extends Phaser.Scene {
       this.input.on('dragend', this.onDragStop, this);
       this.input.on('pointerup', this.clickear, this);
 
-      this.activarJugador(<Jugador>this.jugadores.getChildren()[0]);
       this.cameras.main.setScroll(this.physics.world.bounds.centerX - this.cameras.main.width / 2, this.physics.world.bounds.centerY  - this.cameras.main.height / 2)
       this.input.addPointer(1);
+      this.activarJugador(<Jugador>this.jugadores.getChildren()[0]);
       //var pinch = this.rexGestures.add.pinch();
 
       // var camera = this.cameras.main;
@@ -185,7 +185,7 @@ export class MapSceneService extends Phaser.Scene {
       this.controls.update(delta);
       this.actualizarTextoInformacion();
       var punteros = this.game.input.pointers;
-      if(punteros.length == 2 && punteros[0].isDown && punteros[1].isDown) {
+      if(punteros.length >= 2 && punteros[0].isDown && punteros[1].isDown) {
         this.mensajesInformacion.push({color: COLOR_LETRA_BLANCO, mensaje: "2 Punteros Down"});
         this.mensajesInformacion.push({color: COLOR_LETRA_BLANCO, mensaje: "Puntero 1 X: " + punteros[0].x + ", Y:" + punteros[0].y});
         this.mensajesInformacion.push({color: COLOR_LETRA_BLANCO, mensaje: "Puntero 2 X: " + punteros[1].x + ", Y:" + punteros[1].y});
@@ -194,9 +194,9 @@ export class MapSceneService extends Phaser.Scene {
         this.distanciaAnterior = this.distancia;    
         this.distancia = Phaser.Math.Distance.Between(punteros[0].x, punteros[0].y, punteros[1].x,punteros[1].y);
         this.distanciaDelta = Math.abs(this.distanciaAnterior - this.distancia);        
-        if (this.distanciaAnterior > this.distancia && this.distanciaDelta > 4) { 
+        if (this.distanciaAnterior > this.distancia && this.distanciaDelta > 2) { 
           this.escalarMundo -= 0.02; 
-        } else if (this.distanciaAnterior < this.distancia && this.distanciaDelta > 4){ 
+        } else if (this.distanciaAnterior < this.distancia && this.distanciaDelta > 2){ 
           this.escalarMundo += 0.02;
         }  
           
@@ -214,6 +214,11 @@ export class MapSceneService extends Phaser.Scene {
           //   game.camera.focusOnXY(cameraPos.x, cameraPos.y);        
           // }
         }          
+      } if (punteros.length >= 1 && punteros[0].isDown) {
+        var diferenciaX = punteros[0].position.x - punteros[0].prevPosition.x;
+        var diferenciaY = punteros[0].position.y - punteros[0].prevPosition.y;
+
+        this.cameras.main.setScroll(this.cameras.main.x - diferenciaX, this.cameras.main.y - diferenciaY);
       }
 
     }
@@ -240,10 +245,8 @@ export class MapSceneService extends Phaser.Scene {
         if (pelotonesCombate) {
           this.resolverCombate(pelotonesCombate);
           ficha.cargarMarcadoresTropas();
-          if (ficha.reclamar()) {
-            this.jugadores.getChildren().forEach((jugador: Jugador) => { jugador.quitarMina(ficha);});
-            this.jugadorActivo.agregarMina(ficha);
-          }
+          this.reclamarFicha(ficha);          
+          ficha.reclamarTesoros(this.jugadorActivo);
         }
 
         ficha.pelotones.forEach(peloton => peloton.iniciarTurno())
@@ -383,12 +386,10 @@ export class MapSceneService extends Phaser.Scene {
           this.pelotonSeleccionado.peloton.mover();                    
           fichaDestino.addTropas(this.pelotonSeleccionado.peloton.jugador, this.pelotonSeleccionado.peloton.tropas);
           fichaOrigen.deleteTropas(this.pelotonSeleccionado.peloton.jugador, this.pelotonSeleccionado.peloton.tropas);
-          fichaDestino.cargarMarcadoresTropas();
-          
-          if (fichaDestino.reclamar()) {
-            this.jugadores.getChildren().forEach((jugador: Jugador) => { jugador.quitarMina(fichaDestino);});
-            this.jugadorActivo.agregarMina(fichaDestino);
-          }
+          fichaDestino.cargarMarcadoresTropas();          
+          this.reclamarFicha(fichaDestino);
+          fichaDestino.reclamarTesoros(this.jugadorActivo);
+
           fichaOrigen.cargarMarcadoresTropas();
           this.pelotonSeleccionado.setVisible(false);
           this.pelotonSeleccionado.destroy();
@@ -398,6 +399,18 @@ export class MapSceneService extends Phaser.Scene {
         }
       }           
       
+    }
+
+    reclamarFicha(ficha: Ficha) {
+      if (ficha.reclamar()) {            
+        if(ficha.tieneMina()) {
+          this.jugadores.getChildren().forEach((jugador: Jugador) => { jugador.quitarMina(ficha);});
+          this.jugadorActivo.agregarMina(ficha);
+        } else if (ficha.pueblo) {
+          if(this.jugadorActivo.pueblos.indexOf(ficha.pueblo) < 0)
+            this.jugadorActivo.pueblos.push(ficha.pueblo);
+        }
+      }
     }
 
     voltearFichas(x:number, y:number) {

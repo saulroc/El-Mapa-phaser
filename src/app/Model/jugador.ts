@@ -3,6 +3,7 @@ import { Carta } from './carta';
 import { Ficha } from './ficha';
 import { Pueblo } from './pueblo';
 import { INI_FICHAS } from './datosIniciales';
+import { Peloton } from './peloton';
 
 const COLOR_TEXTO = '#FFFFFF';
 const COLOR_STROKE = '#000000';
@@ -33,6 +34,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
     minas: Ficha[];
     mensajesInformacion: {color: string, mensaje: string}[];
     tweenActivo: Phaser.Tweens.Tween;
+    pelotonesMoviendo: Peloton[];
 
     public constructor (scene: Phaser.Scene, color: Phaser.Display.Color, nombre: string, numero: number, cpu: boolean){
         super(scene, 0, 0, 'jugador',0);
@@ -131,7 +133,10 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
                         : new Pueblo(new Phaser.Display.Color(255, 255, 255, 255)) 
                     : null,
                 ficha.minaMadera,
-                ficha.minaPiedra
+                ficha.minaPiedra,
+                ficha.minaOro,
+                ficha.minaTecnologia,
+                ficha.tesoro
                 );
             if (ficha.tropa) {
                 for (var j = 0; j < ficha.tropa.length; j++) {
@@ -163,9 +168,8 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
     barajarFichas() {
         var fichas = <Ficha[]>this.fichasTerreno.getChildren();
         var fichasNiveles = [[]];
-        this.fichasTerreno.clear();
         while (fichas.length > 0) {
-            var ficha = fichas.pop();
+            var ficha = fichas.splice(0,1)[0];
             if(ficha.nivel == fichasNiveles.length) {
                 fichasNiveles.push(new Array());                
             }
@@ -174,10 +178,12 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         for(var i = 1; i < fichasNiveles.length; i++) {
             this.shuffleArray(fichasNiveles[i]);            
         }
+        this.fichasTerreno.clear();
         fichasNiveles.forEach(fichas => {
-            fichas.forEach(ficha => {
-                this.fichasTerreno.add(ficha);
-            })
+            this.fichasTerreno.addMultiple(fichas);
+            // fichas.forEach(ficha => {
+            //     this.fichasTerreno.add(ficha);
+            // })
         });
 
     }
@@ -190,6 +196,20 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         {
             var ficha = <Ficha>fichasArray[i];
             if (!ficha.colocada)
+                return ficha;
+        }
+
+        return null;
+    }
+
+    getUltimaFichaColocada() {
+        if (!this.fichasTerreno) return null;
+        var fichasArray = this.fichasTerreno.getChildren();
+
+        for (var i = 0; i < fichasArray.length; i++) 
+        {
+            var ficha = <Ficha>fichasArray[i];
+            if (ficha.colocada)
                 return ficha;
         }
 
@@ -241,6 +261,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         this.setOro(incrementoOro);
         this.setMadera(incrementoMadera);
         this.setPiedra(incrementoPiedra);
+        this.pelotonesMoviendo = [];
     }
 
     agregarMina(mina: Ficha) {
@@ -262,7 +283,18 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
             this.setFrame(1);
         this.setActive(true);
         this.tweenActivo.restart();
-        this.tweenActivo.play();
+        this.tweenActivo.resume();
+        var ficha = this.getUltimaFichaColocada();
+        if (ficha) {
+            //this.scene.cameras.main.setScroll(ficha.x  - this.scene.cameras.main.width / 2, ficha.y - this.scene.cameras.main.height / 2);
+            var x = ficha.x;  //- this.scene.cameras.main.width / 2;
+            var y = ficha.y; // - this.scene.cameras.main.height / 2;
+            console.log("Pan to ", x, y);
+            if (this.scene.cameras.main.panEffect.isRunning)
+                this.scene.cameras.main.panEffect.effectComplete();
+
+            this.scene.cameras.main.pan(x, y);
+        }
     }
 
     desactivar() {
@@ -273,7 +305,7 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         else
             this.setFrame(0);
         this.setActive(false);
-        this.tweenActivo.stop();
+        this.tweenActivo.pause();
         this.setAlpha(1);
     }
 
@@ -281,36 +313,36 @@ export class Jugador extends Phaser.Physics.Arcade.Sprite {
         this.puntos += incremento;
         this.puntosText.text = "Puntos: " + this.puntos;
         if (incremento > 0)
-            this.mensajesInformacion.push ({color: COLOR_PUNTOS, mensaje: "+" + incremento + " Puntos"});
+            this.mensajesInformacion.push ({color: COLOR_PUNTOS, mensaje: this.nombre + ": +" + incremento + " Puntos"});
         if (incremento < 0)
-            this.mensajesInformacion.push ({color: COLOR_PUNTOS, mensaje: incremento + " Puntos"});
+            this.mensajesInformacion.push ({color: COLOR_PUNTOS, mensaje: this.nombre + ": " + incremento + " Puntos"});
     }
 
     public setOro(incremento: number) {
         this.oro += incremento;
         this.oroText.text = "Oro: " + this.oro;
         if (incremento > 0)
-            this.mensajesInformacion.push ({color: COLOR_ORO, mensaje: "+" + incremento + " Oro"});
+            this.mensajesInformacion.push ({color: COLOR_ORO, mensaje: this.nombre + ": +" + incremento + " Oro"});
         if (incremento < 0)
-            this.mensajesInformacion.push ({color: COLOR_ORO, mensaje: incremento + " Oro"});
+            this.mensajesInformacion.push ({color: COLOR_ORO, mensaje: this.nombre + ": " + incremento + " Oro"});
     }
 
     public setMadera(incremento: number) {
         this.madera += incremento;
         this.maderaText.text = "Madera: " + this.madera;
         if (incremento > 0)
-            this.mensajesInformacion.push ({color: COLOR_MADERA, mensaje: "+" + incremento + " Madera"});
+            this.mensajesInformacion.push ({color: COLOR_MADERA, mensaje: this.nombre + ": +" + incremento + " Madera"});
         if (incremento < 0)
-            this.mensajesInformacion.push ({color: COLOR_MADERA, mensaje: incremento + " Madera"});
+            this.mensajesInformacion.push ({color: COLOR_MADERA, mensaje: this.nombre + ": " + incremento + " Madera"});
     }
 
     public setPiedra(incremento: number) {
         this.piedra += incremento;
         this.piedraText.text = "Piedra: " + this.piedra;
         if (incremento > 0)
-            this.mensajesInformacion.push ({color: COLOR_PIEDRA, mensaje: "+" + incremento + " Piedra"});
+            this.mensajesInformacion.push ({color: COLOR_PIEDRA, mensaje: this.nombre + ": +" + incremento + " Piedra"});
         if (incremento < 0)
-            this.mensajesInformacion.push ({color: COLOR_PIEDRA, mensaje: incremento + " Piedra"});
+            this.mensajesInformacion.push ({color: COLOR_PIEDRA, mensaje: this.nombre + ": " + incremento + " Piedra"});
     }
 
     update() {

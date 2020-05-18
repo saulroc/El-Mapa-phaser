@@ -26,6 +26,7 @@ export class PuebloSceneService extends Phaser.Scene {
     zonasDeConstruccion: Phaser.GameObjects.Group;
     jugador: Jugador;
     textoVolver: Phaser.GameObjects.Text;
+    contador: number;
     
 
     public constructor() {
@@ -35,6 +36,8 @@ export class PuebloSceneService extends Phaser.Scene {
     public init(ficha: Ficha) {
         this.pueblo = ficha.pueblo;
         this.fichaPueblo = ficha;
+        this.posicionSeleccionada = -1;
+        this.contador = 0;
     }
 
     public preload() {
@@ -298,10 +301,16 @@ export class PuebloSceneService extends Phaser.Scene {
 
     public update() {
         if (this.pueblo.color != this.jugador.color || this.pueblo.construido) {
-            if (this.textoVolver.style.strokeThickness == 1)    
-                this.textoVolver.setStroke(COLOR_STROKE, 2);
-            else
-                this.textoVolver.setStroke(COLOR_STROKE, 1);    
+            if(this.contador < 10) {
+                this.contador++;
+            } else {
+                this.contador = 0;
+                if (this.textoVolver.style.strokeThickness == 1)    
+                    this.textoVolver.setStroke(COLOR_STROKE, 2);
+                else
+                    this.textoVolver.setStroke(COLOR_STROKE, 1);  
+            }
+              
         }
     }
 }

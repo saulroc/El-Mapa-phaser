@@ -197,6 +197,30 @@ export const INI_FICHAS = [{
     tropa: []
 },
 {
+    frame: 18,
+    nombre: "ficha 10",
+    nivel: 2,
+    colocada: false,
+    oculta: true,
+    pueblo: false,
+    minaMadera: false,
+    minaPiedra: false,
+    minaOro: false,
+    minaTecnologia: 1,
+    tesoro: 0,
+    tropa: [{ jugador: null, 
+        tropas: [{ tipo: "leva",
+            cantidad: 1,
+            vida: 1,
+            ataque: 1,
+            movimiento: 2,
+            movido: 0,
+            velocidad: 1,
+            nivel: 1,
+            distanciaDeAtaque: 0
+    }] }]
+},
+{
     frame: 26,
     nombre: "ficha 11",
     nivel: 2,
@@ -287,7 +311,7 @@ export const INI_FICHAS = [{
     tropa: []
 },
 {
-    frame: 28,
+    frame: 27,
     nombre: "ficha 16",
     nivel: 2,
     colocada: false,
@@ -301,7 +325,7 @@ export const INI_FICHAS = [{
     tropa: []
 },
 {
-    frame: 36,
+    frame: 35,
     nombre: "ficha 17",
     nivel: 2,
     colocada: false,
