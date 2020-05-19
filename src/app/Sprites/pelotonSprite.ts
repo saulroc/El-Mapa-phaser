@@ -1,21 +1,24 @@
 import * as Phaser from 'phaser';
 
-import { Peloton } from './peloton';
-import { Ficha } from './ficha';
-import { Tropa } from './tropa';
+import { Peloton } from '../Model/peloton';
 import { MapSceneService } from '../services/map-scene.service';
+import { FichaSprite } from './fichaSprite';
 
 export class PelotonSprite extends Phaser.Physics.Arcade.Sprite {
     peloton: Peloton;
-    ficha: Ficha;
+    ficha: FichaSprite;
     grupoTropas: Phaser.GameObjects.Group;
     seleccionado: boolean = false;
 
-    public constructor (scene: Phaser.Scene, x: number, y:number, peloton: Peloton, ficha: Ficha){
+    public constructor (scene: Phaser.Scene, x: number, y:number, peloton: Peloton, ficha: FichaSprite){
         super(scene, x, y, 'marcadores',1);
         this.peloton = peloton;
-        if (peloton.jugador && peloton.jugador.color)
-            this.tint = peloton.jugador.color.color;
+
+        if (peloton.jugador && peloton.jugador.color) {
+            var color = Phaser.Display.Color.HexStringToColor(peloton.jugador.color);
+            this.tint = color.color;
+        }        
+        
         this.ficha = ficha;
         
         scene.add.existing(this);
@@ -34,7 +37,7 @@ export class PelotonSprite extends Phaser.Physics.Arcade.Sprite {
         var jugadorActivo = escenaMapa.jugadorActivo;
         var escala = 0;
 
-        if (this.peloton.jugador == jugadorActivo && this.peloton.puedeMover()) {            
+        if (this.peloton.jugador == jugadorActivo.jugador && this.peloton.puedeMover()) {            
             if (this.seleccionado) {
                 this.setScale(this.scaleX / 2);
                 escala = this.scaleX * -1;                                

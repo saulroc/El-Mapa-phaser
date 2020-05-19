@@ -1,3 +1,18 @@
+export const ini_jugadores = [{
+    nombre: 'Jugador 1',
+    cpu: false,
+    color: "0xff0000"
+  },
+  {
+    nombre: 'Jugador 2',
+    cpu: false,
+    color: "0x0000ff"
+  }/*,
+  {
+    nombre: 'CPU 1',
+    cpu: true,
+    color: "0x008000"
+  }*/];
 export const INI_FICHAS = [{
     frame: 0,
     nombre: "pueblo ini",
@@ -178,7 +193,7 @@ export const INI_FICHAS = [{
     minaMadera: false,
     minaPiedra: false,
     minaOro: false,
-    minaTecnologia: 1,
+    minaTecnologia: 0,
     tesoro: 0,
     tropa: []
 },

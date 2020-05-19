@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import * as Phaser from 'phaser';
-import { Jugador } from '../Model/jugador';
+import { JugadorSprite } from '../Sprites/jugadorSprite';
 import { Edificio } from '../Model/edificio';
 import { Pueblo } from '../Model/pueblo';
-import { Ficha } from '../Model/ficha';
+import { FichaSprite } from '../Sprites/fichaSprite';
 import { MapSceneService } from './map-scene.service';
 import { Tropa } from '../Model/tropa';
 
@@ -20,11 +20,11 @@ export class PuebloSceneService extends Phaser.Scene {
     
     background: Phaser.GameObjects.Image;
     pueblo: Pueblo;
-    fichaPueblo: Ficha;
+    fichaPueblo: FichaSprite;
     edificios: Phaser.GameObjects.Group;
     posicionSeleccionada: number = -1;
     zonasDeConstruccion: Phaser.GameObjects.Group;
-    jugador: Jugador;
+    jugador: JugadorSprite;
     textoVolver: Phaser.GameObjects.Text;
     contador: number;
     
@@ -33,8 +33,8 @@ export class PuebloSceneService extends Phaser.Scene {
         super({ key: 'Pueblo' });
     }
 
-    public init(ficha: Ficha) {
-        this.pueblo = ficha.pueblo;
+    public init(ficha: FichaSprite) {
+        this.pueblo = ficha.ficha.pueblo;
         this.fichaPueblo = ficha;
         this.posicionSeleccionada = -1;
         this.contador = 0;
@@ -164,7 +164,7 @@ export class PuebloSceneService extends Phaser.Scene {
             if (edificio.posicion == -1 )
             {
                 edificio.clearTint();                
-                if (edificio.sePuedeConstruir(this.jugador.oro, this.jugador.madera, this.jugador.piedra, indice)) {
+                if (edificio.sePuedeConstruir(this.jugador.jugador.oro, this.jugador.jugador.madera, this.jugador.jugador.piedra, indice)) {
                     edificio.setInteractive();                    
 
                 } else {
@@ -276,7 +276,7 @@ export class PuebloSceneService extends Phaser.Scene {
         if (leva.isTinted) {
             escenaPueblo.comprarLeva(leva);
         } else {
-            if (escenaPueblo.jugador.oro > 0)
+            if (escenaPueblo.jugador.jugador.oro > 0)
                 leva.tint = COLOR_TROPA_SELECCIONADA;
         }
     }
@@ -286,9 +286,9 @@ export class PuebloSceneService extends Phaser.Scene {
         leva.setAlpha(0);
         //leva.destroy();
         this.jugador.setOro(-1);
-        this.fichaPueblo.pueblo.leva--;
+        this.fichaPueblo.ficha.pueblo.leva--;
         var tropa = new Tropa("leva", 1, 1, 1, 2, 0, 1, 0);
-        this.fichaPueblo.addTropa(this.jugador, tropa);
+        this.fichaPueblo.ficha.addTropa(this.jugador.jugador, tropa);
         this.fichaPueblo.cargarMarcadoresTropas();
     }
 
@@ -306,7 +306,7 @@ export class PuebloSceneService extends Phaser.Scene {
             } else {
                 this.contador = 0;
                 if (this.textoVolver.style.strokeThickness == 1)    
-                    this.textoVolver.setStroke(COLOR_STROKE, 2);
+                    this.textoVolver.setStroke(COLOR_STROKE, 3);
                 else
                     this.textoVolver.setStroke(COLOR_STROKE, 1);  
             }
