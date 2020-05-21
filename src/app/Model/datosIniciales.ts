@@ -23,6 +23,7 @@ export const INI_FICHAS = [{
     minaMadera: false,
     minaPiedra: false,
     minaOro: false,
+    minaTecnologia: 0,
     tesoro: 0,
     tropa: []
 },
@@ -36,6 +37,7 @@ export const INI_FICHAS = [{
     minaMadera: true,
     minaPiedra: false,
     minaOro: false,
+    minaTecnologia: 0,
     tesoro: 0,
     tropa: []
 },
@@ -49,6 +51,7 @@ export const INI_FICHAS = [{
     minaMadera: false,
     minaPiedra: true,
     minaOro: false,
+    minaTecnologia: 0,
     tesoro: 0,
     tropa: [{ jugador: null, 
         tropas: [{ tipo: "leva",
@@ -61,7 +64,7 @@ export const INI_FICHAS = [{
             nivel: 1,
             distanciaDeAtaque: 0
     }] }]
-},
+}/*,
 {
     frame: 24,
     nombre: "ficha 1",
@@ -72,6 +75,7 @@ export const INI_FICHAS = [{
     minaMadera: false,
     minaPiedra: false,
     minaOro: false,
+    minaTecnologia: 0,
     tesoro: 0,
     tropa: [{ jugador: null, 
         tropas: [{ tipo: "leva",
@@ -95,6 +99,7 @@ export const INI_FICHAS = [{
     minaMadera: false,
     minaPiedra: false,
     minaOro: false,
+    minaTecnologia: 0,
     tesoro: 1,
     tropa: []
 },
@@ -108,6 +113,7 @@ export const INI_FICHAS = [{
     minaMadera: false,
     minaPiedra: false,
     minaOro: false,
+    minaTecnologia: 0,
     tesoro: 1,
     tropa: [{ jugador: null, 
         tropas: [{ tipo: "leva",
@@ -131,6 +137,7 @@ export const INI_FICHAS = [{
     minaMadera: false,
     minaPiedra: false,
     minaOro: false,
+    minaTecnologia: 0,
     tesoro: 0,
     tropa: []
 },
@@ -144,6 +151,7 @@ export const INI_FICHAS = [{
     minaMadera: false,
     minaPiedra: false,
     minaOro: false,
+    minaTecnologia: 0,
     tesoro: 0,
     tropa: [{ jugador: null, 
         tropas: [{ tipo: "leva",
@@ -167,6 +175,7 @@ export const INI_FICHAS = [{
     minaMadera: false,
     minaPiedra: false,
     minaOro: false,
+    minaTecnologia: 0,
     tesoro: 0,
     tropa: []
 },
@@ -180,6 +189,7 @@ export const INI_FICHAS = [{
     minaMadera: false,
     minaPiedra: false,
     minaOro: false,
+    minaTecnologia: 0,
     tesoro: 0,
     tropa: []
 },
@@ -414,7 +424,7 @@ export const INI_FICHAS = [{
             nivel: 1,
             distanciaDeAtaque: 0
     }] }]
-}
+}*/
 ];
 
 export const INI_EDIFICIOS = [{
@@ -425,7 +435,10 @@ export const INI_EDIFICIOS = [{
     madera: 0,
     piedra: 0,
     puntos: 1,
-    frame: 0
+    generaOro: 1,
+    numeroFrame: 0,
+    tropa: null,
+    incrementoTropa: 0
 },
 {
     nombre: 'almacen',
@@ -435,7 +448,10 @@ export const INI_EDIFICIOS = [{
     madera: 1,
     piedra: 0,
     puntos: 1,
-    frame: 1
+    generaOro: 0,
+    numeroFrame: 1,
+    tropa: null,
+    incrementoTropa: 0
 },
 {
     nombre: 'cuartel',
@@ -445,7 +461,21 @@ export const INI_EDIFICIOS = [{
     madera: 1,
     piedra: 0,
     puntos: 1,
-    frame: 2
+    generaOro: 0,
+    numeroFrame: 2,
+    tropa: {
+        tipo: 'soldado',
+        cantidad: 1,
+        ataque: 2,
+        vida: 2,
+        movimiento: 2,
+        velocidad: 1,
+        movido: 0,
+        distanciaDeAtaque: 0,
+        nivel: 2,
+        coste: {oro: 2, madera: 0, piedra: 0}
+    },
+    incrementoTropa: 0.5
 },
 {
     nombre: 'estatua',
@@ -455,7 +485,10 @@ export const INI_EDIFICIOS = [{
     madera: 0,
     piedra: 0,
     puntos: 4,
-    frame: 3
+    generaOro: 0,
+    numeroFrame: 3,
+    tropa: null,
+    incrementoTropa: 0
 },
 {
     nombre: 'biblioteca',
@@ -465,7 +498,10 @@ export const INI_EDIFICIOS = [{
     madera: 1,
     piedra: 0,
     puntos: 1,
-    frame: 4
+    generaOro: 0,
+    numeroFrame: 4,
+    tropa: null,
+    incrementoTropa: 0
 },
 {
     nombre: 'mercado',
@@ -475,7 +511,11 @@ export const INI_EDIFICIOS = [{
     madera: 0,
     piedra: 0,
     puntos: 1,
-    frame: 5
+    generaOro: 0,
+    numeroFrame: 5,
+    tropa: null,
+    incrementoTropa: 0,
+    incrementaComercio: 1
 },
 {
     nombre: 'arqueria',
@@ -485,7 +525,21 @@ export const INI_EDIFICIOS = [{
     madera: 2,
     piedra: 0,
     puntos: 2,
-    frame: 6
+    generaOro: 0,
+    numeroFrame: 6,
+    tropa: {
+        tipo: 'arquero',
+        cantidad: 1,
+        ataque: 1,
+        vida: 1,
+        movimiento: 2,
+        velocidad: 1,
+        movido: 0,
+        distanciaDeAtaque: 1,
+        nivel: 3,
+        coste: {oro: 2, madera: 0, piedra: 0}
+    },
+    incrementoTropa: 1
 },
 {
     nombre: 'atalaya',
@@ -495,7 +549,10 @@ export const INI_EDIFICIOS = [{
     madera: 1,
     piedra: 0,
     puntos: 2,
-    frame: 7
+    generaOro: 0,
+    numeroFrame: 7,
+    tropa: null,
+    incrementoTropa: 0
 },
 {
     nombre: 'banco',
@@ -505,7 +562,10 @@ export const INI_EDIFICIOS = [{
     madera: 1,
     piedra: 0,
     puntos: 2,
-    frame: 8
+    generaOro: 1,
+    numeroFrame: 8,
+    tropa: null,
+    incrementoTropa: 0
 },
 {
     nombre: 'laboratorio',
@@ -515,7 +575,10 @@ export const INI_EDIFICIOS = [{
     madera: 2,
     piedra: 0,
     puntos: 2,
-    frame: 9
+    generaOro: 0,
+    numeroFrame: 9,
+    tropa: null,
+    incrementoTropa: 0
 },
 {
     nombre: 'tesoreria',
@@ -525,7 +588,10 @@ export const INI_EDIFICIOS = [{
     madera: 2,
     piedra: 1,
     puntos: 3,
-    frame: 10
+    generaOro: 2,
+    numeroFrame: 10,
+    tropa: null,
+    incrementoTropa: 0
 },
 {
     nombre: 'establos',
@@ -535,7 +601,21 @@ export const INI_EDIFICIOS = [{
     madera: 2,
     piedra: 1,
     puntos: 3,
-    frame: 11
+    generaOro: 0,
+    numeroFrame: 11,
+    tropa: {
+        tipo: 'caballero',
+        cantidad: 1,
+        ataque: 2,
+        vida: 3,
+        movimiento: 3,
+        velocidad: 2,
+        movido: 0,
+        distanciaDeAtaque: 0,
+        nivel: 4,
+        coste: {oro: 2, madera: 1, piedra: 0}
+    },
+    incrementoTropa: 0.333
 },
 {
     nombre: 'coliseo',
@@ -545,7 +625,10 @@ export const INI_EDIFICIOS = [{
     madera: 2,
     piedra: 1,
     puntos: 10,
-    frame: 12
+    generaOro: 0,
+    numeroFrame: 12,
+    tropa: null,
+    incrementoTropa: 0
 },
 {
     nombre: 'universidad',
@@ -555,7 +638,10 @@ export const INI_EDIFICIOS = [{
     madera: 2,
     piedra: 1,
     puntos: 3,
-    frame: 13
+    generaOro: 0,
+    numeroFrame: 13,
+    tropa: null,
+    incrementoTropa: 0
 },
 {
     nombre: 'teatro',
@@ -565,7 +651,10 @@ export const INI_EDIFICIOS = [{
     madera: 1,
     piedra: 0,
     puntos: 7,
-    frame: 14
+    generaOro: 0,
+    numeroFrame: 14,
+    tropa: null,
+    incrementoTropa: 0
 },
 {
     nombre: 'armeria',
@@ -575,5 +664,8 @@ export const INI_EDIFICIOS = [{
     madera: 0,
     piedra: 1,
     puntos: 2,
-    frame: 15
+    generaOro: 0,
+    numeroFrame: 15,
+    tropa: null,
+    incrementoTropa: 0
 }];

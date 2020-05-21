@@ -37,7 +37,8 @@ export class PelotonSprite extends Phaser.Physics.Arcade.Sprite {
         var jugadorActivo = escenaMapa.jugadorActivo;
         var escala = 0;
 
-        if (this.peloton.jugador == jugadorActivo.jugador && this.peloton.puedeMover()) {            
+        if (this.peloton.jugador == jugadorActivo.jugador && this.peloton.puedeMover()
+            && (!this.peloton.estaIniciandoMovimiento() || this.peloton.jugador.puedeMoverNuevoPeloton())) {            
             if (this.seleccionado) {
                 this.setScale(this.scaleX / 2);
                 escala = this.scaleX * -1;                                
@@ -82,7 +83,7 @@ export class PelotonSprite extends Phaser.Physics.Arcade.Sprite {
                 x += 1 * direccionX;
                 y += 1 * direccionY;
                 var tropaSprite = this.scene.add.sprite(x, y, 'marcadores', numeroFrame);
-                tropaSprite.setScale(this.scale);  
+                tropaSprite.setScale(this.scale * 0.75);  
                 tropaSprite.setDepth(2); 
                 grupo.add(tropaSprite);
             }

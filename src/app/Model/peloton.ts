@@ -57,7 +57,20 @@ export class Peloton {
         return true;
     }
 
+    estaIniciandoMovimiento() {
+        var resultado = true;
+
+        this.tropas.forEach(tropa => {
+            if (tropa.movido > 0)
+                resultado = false;
+        });
+        return resultado;
+    }
+
     mover() {
+        if(this.estaIniciandoMovimiento()) {
+            this.jugador.pelotonesMoviendo++;
+        }
         this.tropas.forEach( tropa => tropa.movido++);
     }
 

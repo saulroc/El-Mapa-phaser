@@ -5,7 +5,7 @@ import { FichaSprite } from '../Sprites/fichaSprite';
 import { PelotonSprite } from '../Sprites/pelotonSprite';
 import { Peloton } from '../Model/peloton';
 
-import GesturesPlugin from 'phaser3-rex-plugins/plugins/gestures-plugin.js';
+//import GesturesPlugin from 'phaser3-rex-plugins/plugins/gestures-plugin.js';
 import { ini_jugadores } from '../Model/datosIniciales';
 import { Jugador } from '../Model/jugador';
 import { Partida } from '../Model/partida';
@@ -220,8 +220,16 @@ export class MapSceneService extends Phaser.Scene {
 
     terminarTurno(pointer, localX, localY, event) {
       
-      this.partida.terminarTurno();      
-       
+      this.partida.terminarTurno(); 
+           
+      this.jugadores.getChildren().forEach((jugador: JugadorSprite)=>{
+        jugador.refrescarDatos();
+      });
+      this.mapaFichas.getChildren().forEach((fichaSprite: FichaSprite) => {
+        fichaSprite.reclamar();
+        fichaSprite.cargarMarcadoresTropas();
+      });
+
       if (this.partida.partidaAcabada) {
         this.game.scene.start('GameOver', <Jugador[]>this.partida.jugadores);
         this.game.scene.pause('Map');
@@ -347,6 +355,7 @@ export class MapSceneService extends Phaser.Scene {
         var fichas = <FichaSprite[]>this.mapaFichas.getChildren();
         var fichaDestino = fichas.find( ficha => ficha.x == xBuscado && ficha.y == yBuscado);
         if (fichaDestino) {
+                                                  
           this.pelotonSeleccionado.peloton.mover();                    
           fichaDestino.ficha.addTropas(this.pelotonSeleccionado.peloton.jugador, this.pelotonSeleccionado.peloton.tropas);
           fichaOrigen.ficha.deleteTropas(this.pelotonSeleccionado.peloton.jugador, this.pelotonSeleccionado.peloton.tropas);
@@ -394,7 +403,8 @@ export class MapSceneService extends Phaser.Scene {
       var fichas = <FichaSprite[]>this.mapaFichas.getChildren();      
       var fichaBuscada = fichas.find( ficha => ficha.x == xBuscado && ficha.y == yBuscado);
       if (fichaBuscada && fichaBuscada.ficha.oculta) {
-        this.jugadorActivo.incrementarPuntos(1);
+        this.jugadorActivo.jugador.setPuntos(1);
+        this.jugadorActivo.refrescarDatos();
         fichaBuscada.voltear();
       }
       

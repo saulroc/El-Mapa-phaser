@@ -16,7 +16,8 @@ export class Jugador {
     numero: number;
     fichas: Ficha[];
     minas: Ficha[];
-    pelotonesMoviendo: Peloton[];
+    pelotonesMoviendo: number;
+    maximoPelotonesMoviendo: number;
 
     /**
      *
@@ -34,35 +35,35 @@ export class Jugador {
         this.minas = [];
 
         this.activo = false;
+        this.maximoPelotonesMoviendo = 0;
 
 
     }
 
     iniciarTurno() {
-        var incrementoOro = 0;
-        var incrementoMadera = 0;
-        var incrementoPiedra = 0;
-
+        
         this.pueblos.forEach(pueblo => { 
             pueblo.iniciarTurno(); 
-            incrementoOro += pueblo.oroGenera;
+            this.oro += pueblo.oroGenera;
         });
         this.minas.forEach(mina => {
             switch (true) {
                 case mina.minaMadera:
-                    incrementoMadera++;
+                    this.madera++;
                     break;
                 case mina.minaPiedra:
-                    incrementoPiedra++;
+                    this.piedra++;
                     break;
                 case mina.minaOro:
-                    incrementoOro++;
+                    this.oro++;
+                    break;
+                case mina.minaTecnologia>0:
+                    this.robarCarta(mina.minaTecnologia);
                     break;                
             }
         })
-        this.pelotonesMoviendo = [];
-
-        return [incrementoOro, incrementoMadera, incrementoPiedra];
+        this.pelotonesMoviendo = 0;
+        
     }
 
     agregarMina(mina: Ficha) {
@@ -74,5 +75,57 @@ export class Jugador {
         var indice = this.minas.indexOf(mina);
         if (indice >= 0)
             this.minas.splice(indice, 1);
+    }
+
+    robarCarta(nivel: number) {
+
+    }
+
+    agregarPueblo(pueblo: Pueblo) {
+        if(this.pueblos.indexOf(pueblo) < 0) {
+            this.maximoPelotonesMoviendo++;
+            this.pueblos.push(pueblo);
+            this.puntos += pueblo.getPuntos();
+        }            
+    }
+
+    quitarPueblo(pueblo: Pueblo) {
+        var indice = this.pueblos.indexOf(pueblo);
+        if(indice >= 0) {
+            this.pueblos.splice(indice, 1);
+            this.puntos -= pueblo.getPuntos();
+            this.maximoPelotonesMoviendo--;
+        }
+    }
+
+    esPropietario(pueblo:Pueblo) {
+        var indice = this.pueblos.indexOf(pueblo);
+        return indice >= 0;
+    }
+
+    public setOro(incremento: number) {
+        this.oro += incremento;        
+    }
+
+    public setMadera(incremento: number) {
+        this.madera += incremento;        
+    }
+
+    public setPiedra(incremento: number) {
+        this.piedra += incremento;
+    }
+
+    public setPuntos(incremento: number) {
+        this.puntos += incremento;
+    }
+
+    puedeComprar(oroPedido: number, maderaPedida: number = 0, piedraPedida: number = 0) {
+        return this.oro >= oroPedido
+            && this.madera >= maderaPedida
+            && this.piedra >= piedraPedida;
+    }
+
+    puedeMoverNuevoPeloton() {
+        return this.pelotonesMoviendo < this.maximoPelotonesMoviendo;
     }
 }

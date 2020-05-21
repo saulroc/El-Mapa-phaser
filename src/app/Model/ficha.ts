@@ -116,4 +116,30 @@ export class Ficha {
 
         return false;
     }
+
+    reclamarTesoros(jugador: Jugador) {
+        for (var i = 0; i< this.tesoros; i++) {
+            var tipoRecursos = Phaser.Math.Between(1, 6);
+            switch (tipoRecursos) {
+                case 1: //oro
+                case 2:
+                case 3:
+                    var cantidad = Phaser.Math.Between(1, 6);
+                    jugador.setOro(cantidad);
+                    break;
+                case 4:
+                case 5:
+                    var cantidad = Phaser.Math.Between(1, 3);
+                    jugador.setMadera(cantidad);
+                    break;
+                case 6:
+                    var cantidad = Phaser.Math.Between(1, 2);
+                    jugador.setPiedra(cantidad);
+                    break;
+                default:
+                    break;
+            }
+        }
+        this.tesoros = 0;
+    }
 }

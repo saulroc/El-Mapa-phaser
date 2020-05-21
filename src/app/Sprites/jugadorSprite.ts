@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import { Carta } from '../Model/carta';
+import { CartaSprite } from './cartaSprite';
 import { FichaSprite } from './fichaSprite';
 import { Pueblo } from '../Model/pueblo';
 import { INI_FICHAS } from '../Model/datosIniciales';
@@ -21,13 +21,19 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
     maderaText: Phaser.GameObjects.Text;
     piedraText: Phaser.GameObjects.Text;
     puntosText: Phaser.GameObjects.Text;
+    textos: Phaser.GameObjects.Group;
     color:  Phaser.Display.Color;
-    mano: Carta[];
+    mano: CartaSprite[];
     fichasTerreno: Phaser.Physics.Arcade.Group;
     
+
     mensajesInformacion: {color: string, mensaje: string}[];
     tweenActivo: Phaser.Tweens.Tween;
     jugador: Jugador;
+    oroAnterior: number;
+    maderaAnterior: number;
+    piedraAnterior: number;
+    puntosAnterior: number;
 
     public constructor (scene: Phaser.Scene, jugador: Jugador){
         super(scene, 0, 0, 'jugador',0);
@@ -52,6 +58,8 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
             align: 'center'
            }
 
+        this.textos = this.scene.add.group();
+
         this.nombreText = this.scene.add.text(this.x, this.y, this.jugador.nombre, estilo);
         this.nombreText.setOrigin(0.5, 0);
         this.nombreText.setScrollFactor(0);
@@ -62,24 +70,28 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
         this.oroText.setOrigin(0.5, 0);
         this.oroText.setScrollFactor(0);
         this.oroText.setStroke(COLOR_STROKE, 1);
-        
+        this.textos.add(this.oroText);
+
         estilo.fill = COLOR_MADERA;
         this.maderaText = this.scene.add.text(this.x, this.oroText.y + this.oroText.height, "Madera: " + this.jugador.madera, estilo);
         this.maderaText.setOrigin(0.5, 0);
         this.maderaText.setScrollFactor(0);
         this.maderaText.setStroke(COLOR_STROKE, 1);
+        this.textos.add(this.maderaText);
 
         estilo.fill = COLOR_PIEDRA;
         this.piedraText = this.scene.add.text(this.x, this.maderaText.y + this.maderaText.height, "Piedra: " + this.jugador.piedra, estilo);
         this.piedraText.setOrigin(0.5, 0);
         this.piedraText.setScrollFactor(0);
         this.piedraText.setStroke(COLOR_STROKE, 1);
+        this.textos.add(this.piedraText);
 
         estilo.fill = COLOR_TEXTO;
         this.puntosText = this.scene.add.text(this.x, this.piedraText.y + this.piedraText.height, "Puntos: " + this.jugador.puntos, estilo);
         this.puntosText.setOrigin(0.5, 0);
         this.puntosText.setScrollFactor(0);
         this.puntosText.setStroke(COLOR_STROKE, 1);
+        this.textos.add(this.puntosText);
 
         this.tweenActivo = this.scene.tweens.add({ 
             targets: this,
@@ -90,6 +102,7 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
         });
         //this.tweenActivo.stop();
         this.setInteractive();
+        this.on('pointerup', this.mostrarDatos);
     }
 
     posicionarDelante() {
@@ -113,8 +126,8 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
                 datosficha.oculta,
                 datosficha.pueblo ? 
                     (i == 0) ? 
-                        new Pueblo(this.color) 
-                        : new Pueblo(new Phaser.Display.Color(255, 255, 255, 255)) 
+                        new Pueblo(this.jugador.color) 
+                        : new Pueblo('#FFFFFF') 
                     : null,
                 datosficha.minaMadera,
                 datosficha.minaPiedra,
@@ -139,7 +152,7 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
             fichaTerreno.setPosition(50 * i * this.jugador.numero + fichaTerreno.width, 50 * i * this.jugador.numero + fichaTerreno.height);
             this.fichasTerreno.add(fichaTerreno);
             if (i == 0 && ficha.pueblo) {                
-                this.jugador.pueblos.push(ficha.pueblo);
+                this.jugador.agregarPueblo(ficha.pueblo);
             }
         }
         this.barajarFichas();
@@ -226,11 +239,9 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
 
     iniciarTurno() {
         
-        var incrementos = this.jugador.iniciarTurno();
+        this.jugador.iniciarTurno();
+        this.refrescarDatos();
         
-        this.setOro(incrementos[0]);
-        this.setMadera(incrementos[1]);
-        this.setPiedra(incrementos[2]);
     }
 
     agregarMina(mina: FichaSprite) {
@@ -247,7 +258,7 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
             this.setFrame(3);
         else
             this.setFrame(1);
-        this.setActive(true);
+        //this.setActive(true);
         this.tweenActivo.restart();
         this.tweenActivo.resume();
         var ficha = this.getUltimaFichaColocada();
@@ -268,7 +279,7 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
             this.setFrame(2);
         else
             this.setFrame(0);
-        this.setActive(false);
+        //this.setActive(false);
         this.tweenActivo.pause();
         this.setAlpha(1);
     }
@@ -282,45 +293,62 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
             this.mensajesInformacion.push ({color: COLOR_PUNTOS, mensaje: this.jugador.nombre + ": " + incremento + " Puntos"});
     }
 
-    public setOro(incremento: number) {
-        this.jugador.oro += incremento;
+    refrescarDatos() {
+        var incremento: number = 0;
+
         this.oroText.text = "Oro: " + this.jugador.oro;
-        if (incremento > 0)
-            this.mensajesInformacion.push ({color: COLOR_ORO, mensaje: this.jugador.nombre + ": +" + incremento + " Oro"});
-        if (incremento < 0)
-            this.mensajesInformacion.push ({color: COLOR_ORO, mensaje: this.jugador.nombre + ": " + incremento + " Oro"});
-    }
+        if (this.oroAnterior != this.jugador.oro) {
+            incremento = this.jugador.oro - this.oroAnterior;
+            if (incremento > 0)
+                this.mensajesInformacion.push ({color: COLOR_ORO, mensaje: this.jugador.nombre + ": +" + incremento + " Oro"});
+            if (incremento < 0)
+                this.mensajesInformacion.push ({color: COLOR_ORO, mensaje: this.jugador.nombre + ": " + incremento + " Oro"});
+            this.oroAnterior = this.jugador.oro;
+        }
 
-    public setMadera(incremento: number) {
-        this.jugador.madera += incremento;
         this.maderaText.text = "Madera: " + this.jugador.madera;
-        if (incremento > 0)
-            this.mensajesInformacion.push ({color: COLOR_MADERA, mensaje: this.jugador.nombre + ": +" + incremento + " Madera"});
-        if (incremento < 0)
-            this.mensajesInformacion.push ({color: COLOR_MADERA, mensaje: this.jugador.nombre + ": " + incremento + " Madera"});
+        if (this.maderaAnterior != this.jugador.madera) {
+            incremento = this.jugador.madera - this.maderaAnterior;
+            if (incremento > 0)
+                this.mensajesInformacion.push ({color: COLOR_MADERA, mensaje: this.jugador.nombre + ": +" + incremento + " Madera"});
+            if (incremento < 0)
+                this.mensajesInformacion.push ({color: COLOR_MADERA, mensaje: this.jugador.nombre + ": " + incremento + " Madera"});
+            this.maderaAnterior = this.jugador.madera;
+        }
+
+        this.piedraText.text = "Piedra: " + this.jugador.piedra;
+        if (this.piedraAnterior != this.jugador.piedra) {
+            incremento = this.jugador.piedra - this.piedraAnterior;
+            if (incremento > 0)
+                this.mensajesInformacion.push ({color: COLOR_PIEDRA, mensaje: this.jugador.nombre + ": +" + incremento + " Piedra"});
+            if (incremento < 0)
+                this.mensajesInformacion.push ({color: COLOR_PIEDRA, mensaje: this.jugador.nombre + ": " + incremento + " Piedra"});
+            this.piedraAnterior = this.jugador.piedra;
+        }
+
+        this.puntosText.text = "Puntos: " + this.jugador.puntos;
+        if (this.puntosAnterior != this.jugador.puntos) {
+            incremento = this.jugador.puntos - this.puntosAnterior;
+            if (incremento > 0)
+                this.mensajesInformacion.push ({color: COLOR_PUNTOS, mensaje: this.jugador.nombre + ": +" + incremento + " Puntos"});
+            if (incremento < 0)
+                this.mensajesInformacion.push ({color: COLOR_PUNTOS, mensaje: this.jugador.nombre + ": " + incremento + " Puntos"});
+            this.puntosAnterior = this.jugador.puntos;
+        }
     }
 
-    public setPiedra(incremento: number) {
-        this.jugador.piedra += incremento;
-        this.piedraText.text = "Piedra: " + this.jugador.piedra;
-        if (incremento > 0)
-            this.mensajesInformacion.push ({color: COLOR_PIEDRA, mensaje: this.jugador.nombre + ": +" + incremento + " Piedra"});
-        if (incremento < 0)
-            this.mensajesInformacion.push ({color: COLOR_PIEDRA, mensaje: this.jugador.nombre + ": " + incremento + " Piedra"});
+    mostrarDatos(pointer, localX, localY, event) {
+        this.textos.setAlpha(1);
+        
     }
 
     update() {
 
-        if (this.puntosText.text != "Puntos: " + this.jugador.puntos) {
-            this.incrementarPuntos(0);
+        if (this.oroText.alpha > 0 && !this.jugador.activo) {
+            this.textos.propertyValueInc('alpha', -0.01);
+            //this.oroText.alpha -= 0.01;
         }
-        // if (this.activo) {
-        //     if(this.isTinted)
-        //         this.clearTint();
-        //     else
-        //         this.tint = COLOR_ACTIVO;
-        // }
-        //this.scene.game.add.tween(text).to( { alpha: 1 }, 2000, "Linear", true);
+        
     }
 
 }

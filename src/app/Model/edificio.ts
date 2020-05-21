@@ -1,6 +1,6 @@
-import * as Phaser from 'phaser';
+import { Tropa } from "./tropa";
 
-export class Edificio extends Phaser.GameObjects.Sprite {
+export class Edificio {
     nombre: string;
     posicion: number;
     oro: number = 0;
@@ -9,12 +9,15 @@ export class Edificio extends Phaser.GameObjects.Sprite {
     nivel: number = 1;
     puntos: number = 1;
     numeroFrame: number = 0;
+    generaOro: number = 0;
+    tropa: Tropa;
+    incrementoTropa: number = 0;
+    incrementaComercio?: number = 0;
+
     /**
      *
      */
-    constructor(scene: Phaser.Scene, frame: number, nombre: string, nivel:number, posicion: number, oro: number, madera: number, piedra: number, puntos: number) {
-        super(scene, 0, 0, 'edificios',frame);
-        this.scene = scene;
+    constructor(nombre: string, posicion: number,nivel:number = 1, frame: number = 0, oro: number = 0, madera: number = 0, piedra: number = 0, puntos: number = 1, generaOro: number = 0, tropa: Tropa = null, incrementoTropa: number = 0, incrementaComercio: number = 0) {
         this.nombre = nombre;
         this.posicion = posicion;
         this.oro = oro;
@@ -23,20 +26,11 @@ export class Edificio extends Phaser.GameObjects.Sprite {
         this.numeroFrame = frame;
         this.nivel = nivel;
         this.puntos = puntos;
-        
-        scene.add.existing(this);
-
-        scene.physics.world.enableBody(this);
-        //this.body.immovable = true;
-        var scale = this.scene.game.scale.width / this.width / 8 ;
-        if (scale > (this.scene.game.scale.height / this.height / 8))
-            scale = this.scene.game.scale.height / this.height / 8;
-
-        this.setScale(scale);
-
-        this.setInteractive();
-        //this.on("pointerup", this.clicked, this);
-    }    
+        this.generaOro = generaOro;
+        this.tropa = tropa;
+        this.incrementoTropa = incrementoTropa;
+        this.incrementaComercio = incrementaComercio;
+    }
 
     sePuedeConstruir(oro:number, madera: number, piedra: number, posicion: number) {
         return this.oro <= oro 
@@ -46,5 +40,19 @@ export class Edificio extends Phaser.GameObjects.Sprite {
                 || (this.nivel == 2 && posicion > 3) 
                 || (this.nivel == 3 && posicion > 6)
                 || (this.nivel == 4 && posicion > 8));
+    }
+
+    estaConstruido() {
+        return this.posicion >= 0;
+    }
+
+    incrementarTropa() {
+        if(this.tropa)
+            this.tropa.cantidad+= this.incrementoTropa;
+    }
+
+    decrementarTropa() {
+        if(this.tropa && this.tropa.cantidad > 0)
+            this.tropa.cantidad--;
     }
 }

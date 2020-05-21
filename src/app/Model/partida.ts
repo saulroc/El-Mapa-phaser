@@ -38,20 +38,21 @@ export class Partida {
             var pelotonesCombate = ficha.getPelotonesCombate();
             if (pelotonesCombate) {
               this.resolverCombate(pelotonesCombate);
-              //fichaSprite.cargarMarcadoresTropas();
-              this.reclamarFicha(ficha);          
-              //ficha.reclamarTesoros(this.jugadorActivo);
+              this.reclamarFicha(ficha);  
+              if(ficha.sePuedeReclamarTesoros(this.jugadorActivo))        
+                ficha.reclamarTesoros(this.jugadorActivo);
             }
     
             ficha.pelotones.forEach(peloton => peloton.iniciarTurno())
         });
         var jugador = this.getSiguienteJugador();
-          
+        
+        this.esUltimoTurno();
           
         if (!this.ultimoTurno || jugador.numero != 0)
             this.activarJugador(jugador); 
         else
-            this.partidaAcabada = true;
+            this.partidaAcabada = false;
     }
 
     getSiguienteJugador() {
@@ -63,48 +64,11 @@ export class Partida {
         return this.jugadores[indice];
     } 
     
-    activarJugador(jugador: Jugador) {
-        // if(this.jugadorActivo) {
-        //   this.jugadorActivo.desactivar();
-        // }
+    activarJugador(jugador: Jugador) {        
   
-        this.jugadorActivo = jugador;
-        // jugador.activar();
-        // this.marker.lineStyle(4, jugador.color.color, 1);
-        // this.marker.strokeRect(0, 0, this.map.tileWidth * this.layer1.scaleX, this.map.tileHeight * this.layer1.scaleY);
+        this.jugadorActivo = jugador;        
   
-        // this.fichaColocando = jugador.getSiguienteFicha();
-        // if (this.fichaColocando) {
-          
-        //   this.mensajesInformacion.push( {color: COLOR_LETRA_BLANCO, mensaje: "Colocando ficha " + jugador.jugador.nombre})
-        //   this.fichaColocando.setPosition(jugador.x,jugador.y + jugador.height*jugador.scaleY);
-        //   this.fichaColocando.setVisible(true);
-        //   if (this.fichaColocando.ficha.oculta)
-        //     this.fichaColocando.tint = jugador.color.color;
-            
-        //   this.fichaColocando.setScrollFactor(0);
-        //   this.fichaColocando.setDepth(1);
-        //   this.generarZonaDeColocacion();                        
-                  
-        // } else {
-        //   if(this.colocandoFichas) {
-        //     this.textoTerminarTurno = this.add.text(
-        //       this.game.scale.width / 2, 
-        //       this.jugadorActivo.y + (this.jugadorActivo.height * this.jugadorActivo.scaleY),
-        //        "Terminar turno", 
-        //        { fill: COLOR_LETRA_BLANCO, font: 'bold 16pt arial'});
-        //     this.textoTerminarTurno.setInteractive();
-        //     this.textoTerminarTurno.setStroke(COLOR_STROKE_LETRA, 2);
-        //     this.textoTerminarTurno.setScrollFactor(0);
-        //     this.textoTerminarTurno.setDepth(3);
-        //     this.textoTerminarTurno.on('pointerup', this.terminarTurno, this);
-        //   }
-        //   this.colocandoFichas = false;
-        //   this.mensajesInformacion.push( {color: COLOR_LETRA_BLANCO, mensaje: "Turno " + this.turno + " del jugador " + jugador.jugador.nombre})
-        //   this.jugadorActivo.iniciarTurno();
-        // }
-  
-      }
+    }
 
     reclamarFicha(ficha: Ficha) {
         if (ficha.sePuedeReclamar()) { 
@@ -113,8 +77,11 @@ export class Partida {
                 this.jugadores.forEach((jugador) => { jugador.quitarMina(ficha);});
                 this.jugadorActivo.agregarMina(ficha);
             } else if (ficha.pueblo) {
-                if(this.jugadorActivo.pueblos.indexOf(ficha.pueblo) < 0)
-                    this.jugadorActivo.pueblos.push(ficha.pueblo);
+                this.jugadorActivo.agregarPueblo(ficha.pueblo);
+                this.jugadores.forEach(jugador => {
+                  if (jugador != this.jugadorActivo)
+                    jugador.quitarPueblo(ficha.pueblo);
+                });
             }
         }
     }
@@ -155,15 +122,30 @@ export class Partida {
     }
 
     esUltimoTurno() {
+      this.ultimoTurno = this.estanTodasLasFichasVolteadas() 
+      || (this.jugadorSinPueblos() && !this.colocandoFichas);
+
+      this.ultimoTurno = false;
+
+      return this.ultimoTurno;
+    }
+
+    estanTodasLasFichasVolteadas() {
       for(var i = 0; i < this.mapa.length; i++) {
         if (this.mapa[i].oculta) {
-          this.ultimoTurno = false;
-          return this.ultimoTurno;
+          return false;
         }
       }
+      return true;
+    }
 
-      this.ultimoTurno = true;
-      return this.ultimoTurno;
+    jugadorSinPueblos() {
+      for(var i = 0; i < this.jugadores.length; i++) {
+        if(this.jugadores[i].pueblos.length == 0)
+          return true;
+      }
+
+      return false;
     }
 
 }

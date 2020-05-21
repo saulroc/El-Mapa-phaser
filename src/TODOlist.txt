@@ -1,0 +1,21 @@
+- Persistencia de datos
+    - firestore
+- login
+- configuracion del juego
+    - volumen de la musica
+    - efectos de sonido
+- ventana de partida nueva 
+    - numero de jugadores
+    - hotseat vs online
+- Juego
+    - IA de CPU
+    - Edificios especiales
+    - comercio
+        comercio entre jugadores
+    - cartas de tecnologia
+    - mover varios pelotones
+    - bordes de las fichas
+    - rotar las fichas al voltearlas
+    - los arqueros en el combate
+    - meter instrucciones en el juego
+

@@ -5,7 +5,7 @@ import { MapSceneService } from '../services/map-scene.service';
 import { PuebloSceneService } from '../services/pueblo-scene.service';
 
 import * as Phaser from 'phaser';
-import GesturesPlugin from 'phaser3-rex-plugins/plugins/gestures-plugin.js';
+//import GesturesPlugin from 'phaser3-rex-plugins/plugins/gestures-plugin.js';
 import { GameOverSceneService } from '../services/game-over-scene.service';
 
 
@@ -40,14 +40,14 @@ export class FolderPage implements OnInit {
       }
     },
     scene: [MapSceneService, PuebloSceneService, GameOverSceneService],
-    plugins: {
+    /*plugins: {
       scene: [{
           key: 'rexGestures',
           plugin: GesturesPlugin,
           mapping: 'rexGestures'
       },
       ]
-  }, 
+  },*/ 
     instance: null
   }
 

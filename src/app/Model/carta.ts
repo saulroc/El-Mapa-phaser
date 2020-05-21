@@ -1,7 +1,14 @@
-import * as Phaser from 'phaser';
 
-export class Carta extends Phaser.GameObjects.Sprite {
-    nombre: string;
-    
+export class Carta {
 
+    tipo: string;
+    numeroFrame: number;
+    nivel: number;
+    /**
+     *
+     */
+    constructor() {
+        
+        
+    }
 }

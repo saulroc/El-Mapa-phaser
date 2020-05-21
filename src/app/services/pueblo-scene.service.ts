@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import * as Phaser from 'phaser';
 import { JugadorSprite } from '../Sprites/jugadorSprite';
-import { Edificio } from '../Model/edificio';
 import { Pueblo } from '../Model/pueblo';
 import { FichaSprite } from '../Sprites/fichaSprite';
 import { MapSceneService } from './map-scene.service';
 import { Tropa } from '../Model/tropa';
+import { EdificioSprite } from '../Sprites/edificioSprite';
+import { Edificio } from '../Model/edificio';
 
 const COLOR_ZONA_CONSTRUCCION = 0x00ff00;
 const COLOR_ZONA_CONSTRUCCION_SELECCIONADA = 0x0000ff;
@@ -27,6 +28,9 @@ export class PuebloSceneService extends Phaser.Scene {
     jugador: JugadorSprite;
     textoVolver: Phaser.GameObjects.Text;
     contador: number;
+    opcionesComercio : Phaser.GameObjects.Group[];
+    textoComercio: Phaser.GameObjects.Text;
+    
     
 
     public constructor() {
@@ -38,6 +42,7 @@ export class PuebloSceneService extends Phaser.Scene {
         this.fichaPueblo = ficha;
         this.posicionSeleccionada = -1;
         this.contador = 0;
+        this.opcionesComercio = [];
     }
 
     public preload() {
@@ -77,19 +82,23 @@ export class PuebloSceneService extends Phaser.Scene {
         this.textoVolver.on('pointerup', this.cerrar, this);
         this.textoVolver.setOrigin(0.5);
         this.textoVolver.setStroke(COLOR_STROKE, 1);
-
+        
+        this.pintarComercio();
 
         if(this.pueblo && this.pueblo.edificios)
             this.cargarEdificios(this.pueblo.edificios);
 
-        if (this.pueblo.color == this.jugador.color && !this.pueblo.construido) {
-            this.cargarZonasConstruccion();
+        if (this.jugador.jugador.esPropietario(this.pueblo) ) {
             this.pintarLevas();
+            if (!this.pueblo.construido)
+                this.cargarZonasConstruccion();
+            
         }
 
-        this.pintarLevas();
         //this.input.on('pointerup', this.seleccionadoParaConstruir, this);
     }    
+
+    //#region Edificios
 
     cargarZonasConstruccion() {
         
@@ -98,48 +107,17 @@ export class PuebloSceneService extends Phaser.Scene {
         for(var i = 0; i < 10; i++) {
             var zonaConstruccion = this.add.rectangle(10 , 10, ancho, ancho, COLOR_ZONA_CONSTRUCCION, 0.5);
             this.posicionar(zonaConstruccion, i, -1); 
-            if(this.cumpleRequisitoNivel(i)) {
+            if(this.pueblo.cumpleRequisitoNivel(i)) {
                 zonaConstruccion.setInteractive();
                 zonaConstruccion.setStrokeStyle(4, 0xefc53f);
                 zonaConstruccion.on('pointerup', this.seleccionarParaConstruir);
                 zonaConstruccion.setFillStyle(COLOR_ZONA_CONSTRUCCION_SELECCIONADA, 1);
             }
-            if (this.hayEdificioEnLaPosicion(i))
+            if (this.pueblo.hayEdificioEnLaPosicion(i))
                 zonaConstruccion.setVisible(false);
             this.zonasDeConstruccion.add(zonaConstruccion);
         }
-    }
-
-    cumpleRequisitoNivel(posicion: number) {
-        if (posicion < 4)
-            return true;
-
-        if (posicion >= 4 && posicion < 7 
-            && this.hayEdificioEnLaPosicion(posicion - 3) 
-            && this.hayEdificioEnLaPosicion(posicion - 4))
-            return true;
-
-        if (posicion >= 7 && posicion < 9
-            && this.hayEdificioEnLaPosicion(posicion - 2) 
-            && this.hayEdificioEnLaPosicion(posicion - 3))
-            return true;
-
-        if (posicion == 9 
-            && this.hayEdificioEnLaPosicion(posicion - 1) 
-            && this.hayEdificioEnLaPosicion(posicion - 2))
-            return true
-
-        return false;
-    }
-
-    hayEdificioEnLaPosicion(posicion) {
-        var listaEdificios = <Edificio[]>this.edificios.getChildren();
-        for(var i =0; i < listaEdificios.length; i++) {
-            if (listaEdificios[i].posicion == posicion)
-                return true;
-        }
-        return false;
-    }
+    }    
 
     seleccionarParaConstruir() {
         var escenaPueblo = <PuebloSceneService><unknown>this.scene;
@@ -160,16 +138,16 @@ export class PuebloSceneService extends Phaser.Scene {
         var zona = <Phaser.GameObjects.Rectangle>this.zonasDeConstruccion.getChildren()[indice];
         zona.setFillStyle(COLOR_ZONA_CONSTRUCCION_SELECCIONADA, 0.5);
 
-        this.edificios.getChildren().forEach((edificio: Edificio) => {
-            if (edificio.posicion == -1 )
+        this.edificios.getChildren().forEach((edificioSprite: EdificioSprite) => {
+            if (!edificioSprite.edificio.estaConstruido())
             {
-                edificio.clearTint();                
-                if (edificio.sePuedeConstruir(this.jugador.jugador.oro, this.jugador.jugador.madera, this.jugador.jugador.piedra, indice)) {
-                    edificio.setInteractive();                    
+                edificioSprite.clearTint();                
+                if (edificioSprite.edificio.sePuedeConstruir(this.jugador.jugador.oro, this.jugador.jugador.madera, this.jugador.jugador.piedra, indice)) {
+                    edificioSprite.setInteractive();                    
 
                 } else {
-                    edificio.tint = COLOR_EDIFICIO_INACTIVO;
-                    edificio.removeInteractive();
+                    edificioSprite.tint = COLOR_EDIFICIO_INACTIVO;
+                    edificioSprite.removeInteractive();
                 }
             }
         });
@@ -177,21 +155,16 @@ export class PuebloSceneService extends Phaser.Scene {
 
     cargarEdificios(edificios){
         for (var i = 0; i < edificios.length; i ++) {
-            var edificio = new Edificio(this,
-                edificios[i].frame, 
-                edificios[i].nombre, 
-                edificios[i].nivel,
-                edificios[i].posicion, 
-                edificios[i].oro, 
-                edificios[i].madera,
-                edificios[i].piedra,
-                edificios[i].puntos );
             
-            if(edificio.posicion == -1)
-                edificio.on('pointerup', this.construyendoEdificio);
+            var edificioSprite = new EdificioSprite(this, edificios[i] );            
+            this.posicionar(edificioSprite, edificioSprite.edificio.posicion, edificioSprite.edificio.numeroFrame);
+
+            if(!edificioSprite.edificio.estaConstruido())
+                edificioSprite.on('pointerup', this.construyendoEdificio);
+            else
+                edificioSprite.pintarTropas();
             
-            this.posicionar(edificio, edificio.posicion, edificio.numeroFrame);
-            this.edificios.add(edificio);
+            this.edificios.add(edificioSprite);
         }
     }
 
@@ -200,20 +173,23 @@ export class PuebloSceneService extends Phaser.Scene {
         escenaPueblo.construirEdificio(this);
     }
 
-    construirEdificio(edificio) {
-        edificio.posicion = this.posicionSeleccionada;
-        this.posicionar(edificio, edificio.posicion, edificio.numeroFrame);        
-        edificio.setDepth(1);
-        edificio.removeAllListeners();
+    construirEdificio(edificioSprite) {
+        edificioSprite.edificio.posicion = this.posicionSeleccionada;
+        this.posicionar(edificioSprite, edificioSprite.edificio.posicion, edificioSprite.edificio.numeroFrame);        
+        edificioSprite.setDepth(1);
+        edificioSprite.removeAllListeners();
+        edificioSprite.pintarTropas();
         this.zonasDeConstruccion.setVisible(false);
 
-        this.edificios.getChildren().forEach((edificio: Edificio) => edificio.clearTint() );
+        this.edificios.getChildren().forEach((edificio: EdificioSprite) => edificio.clearTint() );
 
-        this.pueblo.construirEdificio(this.posicionSeleccionada, edificio.nombre);
-        this.jugador.setOro(edificio.oro * -1);
-        this.jugador.setMadera(edificio.madera * -1);
-        this.jugador.setPiedra(edificio.piedra * -1);
-        this.jugador.incrementarPuntos(edificio.puntos);
+        this.pueblo.construirEdificio(this.posicionSeleccionada, edificioSprite.edificio.nombre);
+        var jugador = this.jugador.jugador;
+        jugador.setOro(edificioSprite.edificio.oro * -1);
+        jugador.setMadera(edificioSprite.edificio.madera * -1);
+        jugador.setPiedra(edificioSprite.edificio.piedra * -1);
+        jugador.setPuntos(edificioSprite.edificio.puntos);
+        this.jugador.refrescarDatos();
     }
 
     posicionar(objeto: any, posicion: number, frame:number) {
@@ -256,13 +232,18 @@ export class PuebloSceneService extends Phaser.Scene {
         objeto.setPosition(x, y);
     }
 
+    //#endregion Edificios
+
+    //#region Tropas
+
     pintarLevas() {
         var x = 0.5 * this.fichaPueblo.width * this.fichaPueblo.scaleX;;
         var y = (this.fichaPueblo.height * this.fichaPueblo.scaleY) / 2;
         var escala = this.fichaPueblo.getEscala();
-        for(var i = 0; i < this.pueblo.leva; i++) {
+        for(var i = 0; i < this.pueblo.leva.cantidad; i++) {
             var leva = this.add.sprite(x, y, 'marcadores', 2);
-            leva.setScale(escala);
+            leva.setData('tropa', this.pueblo.leva);
+            leva.setScale(escala / 2);
             leva.setInteractive();
             leva.on('pointerup', this.seleccionarTropaParaComprar);            
             x += 5;
@@ -271,26 +252,167 @@ export class PuebloSceneService extends Phaser.Scene {
     }
 
     seleccionarTropaParaComprar() {
-        var leva = <Phaser.GameObjects.Sprite><unknown>this;
+        var tropaSprite = <Phaser.GameObjects.Sprite><unknown>this;
         var escenaPueblo = <PuebloSceneService><unknown>this.scene;
-        if (leva.isTinted) {
-            escenaPueblo.comprarLeva(leva);
+        var tropa = <Tropa>tropaSprite.getData('tropa');
+        if (tropaSprite.isTinted) {
+            if (escenaPueblo.jugador.jugador.puedeComprar(tropa.coste.oro, tropa.coste.madera, tropa.coste.piedra))
+                escenaPueblo.comprarTropa(tropaSprite);
+            else
+                tropaSprite.clearTint();
         } else {
-            if (escenaPueblo.jugador.jugador.oro > 0)
-                leva.tint = COLOR_TROPA_SELECCIONADA;
+            if (escenaPueblo.jugador.jugador.puedeComprar(tropa.coste.oro, tropa.coste.madera, tropa.coste.piedra))
+                tropaSprite.tint = COLOR_TROPA_SELECCIONADA;
         }
     }
 
-    comprarLeva(leva: Phaser.GameObjects.Sprite) {
-        leva.setVisible(false);
-        leva.setAlpha(0);
-        //leva.destroy();
-        this.jugador.setOro(-1);
-        this.fichaPueblo.ficha.pueblo.leva--;
-        var tropa = new Tropa("leva", 1, 1, 1, 2, 0, 1, 0);
-        this.fichaPueblo.ficha.addTropa(this.jugador.jugador, tropa);
+    comprarTropa(tropaSprite: Phaser.GameObjects.Sprite) {
+        tropaSprite.setVisible(false);
+        var tropa = <Tropa>tropaSprite.getData('tropa');
+        this.jugador.jugador.setOro(-1 * tropa.coste.oro);
+        this.jugador.jugador.setMadera(-1 * tropa.coste.madera);
+        this.jugador.jugador.setPiedra(-1 * tropa.coste.piedra);
+
+        var nuevaTropa = Object.assign({}, tropa);
+        nuevaTropa.cantidad = 1;
+        this.fichaPueblo.ficha.addTropa(this.jugador.jugador, nuevaTropa);
         this.fichaPueblo.cargarMarcadoresTropas();
+        this.jugador.refrescarDatos();
+        tropa.cantidad -= 1;
+        tropaSprite.destroy();
+
     }
+    //#endregion Tropas
+
+    //#region Comercio
+    pintarComercio() {
+        var estilo = { 
+            font: 'bold 16pt Arial',
+            fill: '#ffffff',
+            align: 'center',
+            wordWrap: true
+           }
+
+        var x = 0.5 * this.fichaPueblo.width * this.fichaPueblo.scaleX;
+        var y = 1.5 * (this.fichaPueblo.height * this.fichaPueblo.scaleY + 5);
+        
+        this.crearOpcionesComercio();
+           
+        this.textoComercio = this.add.text(x, y, 'Comercio', estilo);
+        this.textoComercio.setOrigin(0.5);
+        this.textoComercio.setInteractive();
+        this.textoComercio.on('pointerup', this.mostrarOcultarComercio, this);
+        this.textoComercio.setStroke(COLOR_STROKE, 2);
+
+    }
+
+    crearOpcionesComercio() {
+        this.pueblo.opcionesComercio.forEach((value, index) => {
+            this.crearOpcionComercio(index, value[0], value[1]);
+        });
+        this.opcionesComercio.forEach(grupo => {
+            grupo.toggleVisible();
+        })
+    }
+
+    mostrarOcultarComercio() {
+        if (this.pueblo.puedeComerciar() && this.jugador.jugador.esPropietario(this.pueblo)) {
+            this.opcionesComercio.forEach(grupo => {
+                grupo.toggleVisible();
+            })
+        }        
+    }
+
+    crearOpcionComercio(indice: number, dar: {oro: number, madera: number, piedra: number}, recibir: {oro: number, madera: number, piedra: number}) {
+        var grupoOpcion: Phaser.GameObjects.Group;
+
+        if (this.opcionesComercio.length - 1 < indice) {
+            grupoOpcion = this.add.group();  
+            if (dar.oro > 0) {
+                this.pintarIconos(grupoOpcion, 7, dar.oro);
+            } 
+            if (dar.madera > 0) {
+                this.pintarIconos(grupoOpcion, 8, dar.madera);
+            }
+            if (dar.piedra > 0) {
+                this.pintarIconos(grupoOpcion, 9, dar.piedra);
+            }
+            this.pintarIconos(grupoOpcion, 6, 1);
+            if (recibir.oro > 0) {
+                this.pintarIconos(grupoOpcion, 7, recibir.oro);
+            } 
+            if (recibir.madera > 0) {
+                this.pintarIconos(grupoOpcion, 8, recibir.madera);
+            }
+            if (recibir.piedra > 0) {
+                this.pintarIconos(grupoOpcion, 9, recibir.piedra);
+            }
+            grupoOpcion.setY(indice * 50);
+            grupoOpcion.getChildren().forEach(sprite => {
+                sprite.setData("comercio", [dar, recibir]);
+                sprite.on("pointerup", this.seleccionarComercio);
+            });   
+            this.opcionesComercio.push(grupoOpcion);
+       
+        }        
+
+    }
+
+    pintarIconos(grupo: Phaser.GameObjects.Group, numeroFrame: number, cantidad: number) {
+        for(var i =0; i < cantidad; i++) {
+            var spriteIcono = this.add.sprite(100, 100, 'marcadores', numeroFrame);
+            spriteIcono.setScale(this.fichaPueblo.getEscala() / 2);
+            spriteIcono.setInteractive();
+            grupo.add(spriteIcono);
+            spriteIcono.setX(spriteIcono.x + (grupo.getChildren().length * spriteIcono.width * spriteIcono.scaleX));
+        }
+    }
+
+    seleccionarComercio() {
+        var comercioSprite = <Phaser.GameObjects.Sprite><unknown>this;
+        var escenaPueblo = <PuebloSceneService><unknown>this.scene;
+        var comercio = comercioSprite.getData('comercio');
+        if (comercioSprite.isTinted) {
+            if (escenaPueblo.jugador.jugador.puedeComprar(comercio[0].oro,comercio[0].madera, comercio[0].piedra))
+                escenaPueblo.comerciar(comercioSprite);
+            else
+                comercioSprite.clearTint();
+        } else {
+            if (escenaPueblo.jugador.jugador.puedeComprar(comercio[0].oro,comercio[0].madera, comercio[0].piedra)) {
+                comercioSprite.tint = COLOR_TROPA_SELECCIONADA;
+                escenaPueblo.opcionesComercio.forEach(opcion => {
+                    if (opcion.getChildren().includes(comercioSprite)) {
+                        opcion.setTint(COLOR_TROPA_SELECCIONADA);
+                    } else {
+                        opcion.getChildren().forEach((sprite: Phaser.GameObjects.Sprite) => {
+                            sprite.clearTint()
+                        });
+                    }
+                })
+            }
+        }
+    }
+
+    comerciar(spriteComercio: Phaser.GameObjects.Sprite) {
+
+        var comercio = spriteComercio.getData('comercio');
+        this.jugador.jugador.setOro(-1 * comercio[0].oro);
+        this.jugador.jugador.setMadera(-1 * comercio[0].madera);
+        this.jugador.jugador.setPiedra(-1 * comercio[0].piedra);
+        this.jugador.jugador.setOro(comercio[1].oro);
+        this.jugador.jugador.setMadera(comercio[1].madera);
+        this.jugador.jugador.setPiedra(comercio[1].piedra);
+        this.jugador.refrescarDatos();
+        this.pueblo.comerciar();
+
+        this.opcionesComercio.forEach(opcion => {
+            opcion.setVisible(false);
+            opcion.getChildren().forEach((sprite: Phaser.GameObjects.Sprite) => {
+                sprite.clearTint()
+            });
+        });
+    }
+    //#endregion Comercio
 
     cerrar(pointer, localX, localY, event) {
         this.scene.resume('Map');
@@ -300,7 +422,7 @@ export class PuebloSceneService extends Phaser.Scene {
     }
 
     public update() {
-        if (this.pueblo.color != this.jugador.color || this.pueblo.construido) {
+        if (!this.jugador.jugador.esPropietario(this.pueblo) || this.pueblo.construido) {
             if(this.contador < 10) {
                 this.contador++;
             } else {
