@@ -96,6 +96,9 @@ export class Partida {
   
         while (pelotones.length > 1) {
           for (var i = velocidadMaxima; i >= 1; i--) {
+            
+            if (pelotones.length == 1) break;
+
             var heridas = [];
             pelotones.forEach(peloton => {
               var herida = peloton.obtenerHeridasProvocadas(i);
