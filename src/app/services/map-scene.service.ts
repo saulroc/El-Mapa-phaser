@@ -221,6 +221,7 @@ export class MapSceneService extends Phaser.Scene {
         if(!fichaSprite.ficha.oculta) {
           fichaSprite.reclamar();
           fichaSprite.cargarMarcadoresTropas();
+          fichaSprite.cargarMarcadoresTesoros();
         }        
       });
 
