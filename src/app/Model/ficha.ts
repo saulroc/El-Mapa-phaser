@@ -76,13 +76,19 @@ export class Ficha {
         for (var i = 0; i < this.pelotones.length; i++) {
             var peloton = this.pelotones[i]
             if (jugador == peloton.jugador) {
-                for(var j = 0; j < tropas.length; j++) {
-                    peloton.quitarTropa(tropas[j]);
-                }
+                var copiaTropas = [];
+                tropas.forEach(tropa => {
+                    copiaTropas.push(tropa);
+                });
+                while( copiaTropas.length > 0) {
+                    peloton.quitarTropa(copiaTropas.pop());
+                }                
 
                 if (peloton.tropas.length == 0) {
                     this.pelotones.splice(i, 1);
                 }
+
+                return;
             }
         }
     }
