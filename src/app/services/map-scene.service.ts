@@ -91,7 +91,7 @@ export class MapSceneService extends Phaser.Scene {
           zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
           zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
           acceleration: 0.06,
-          drag: 0.0005,
+          drag: 0.90,
           maxSpeed: 1.0
       };
   
@@ -167,32 +167,32 @@ export class MapSceneService extends Phaser.Scene {
       this.controls.update(delta);
       this.actualizarTextoInformacion();
       var punteros = this.game.input.pointers;
-      if(punteros.length >= 2 && this.input.pointer1.isDown && this.input.pointer2.isDown) {        
+      // if(punteros.length >= 2 && this.input.pointer1.isDown && this.input.pointer2.isDown) {        
 
-        this.distanciaAnterior = this.distancia;    
-        this.distancia = Phaser.Math.Distance.Between(this.input.pointer1.x, this.input.pointer1.y, this.input.pointer2.x,this.input.pointer2.y);
-        this.distanciaDelta = Math.abs(this.distanciaAnterior - this.distancia);        
-        if (this.distanciaAnterior > this.distancia && this.distanciaDelta > 4) { 
-          this.escalarMundo -= 0.02; 
-        } else if (this.distanciaAnterior < this.distancia && this.distanciaDelta > 4){ 
-          this.escalarMundo += 0.02;
-        }  
+      //   this.distanciaAnterior = this.distancia;    
+      //   this.distancia = Phaser.Math.Distance.Between(this.input.pointer1.x, this.input.pointer1.y, this.input.pointer2.x,this.input.pointer2.y);
+      //   this.distanciaDelta = Math.abs(this.distanciaAnterior - this.distancia);        
+      //   if (this.distanciaAnterior > this.distancia && this.distanciaDelta > 4) { 
+      //     this.escalarMundo -= 0.02; 
+      //   } else if (this.distanciaAnterior < this.distancia && this.distanciaDelta > 4){ 
+      //     this.escalarMundo += 0.02;
+      //   }  
           
-        this.escalarMundo = Phaser.Math.Clamp(this.escalarMundo, 0.5, 2); // set a minimum and maximum scale value    
+      //   this.escalarMundo = Phaser.Math.Clamp(this.escalarMundo, 0.5, 2); // set a minimum and maximum scale value    
         
-        if (this.escalarMundo<2){        
-          this.cameras.main.setZoom(this.escalarMundo);
+      //   if (this.escalarMundo<2){        
+      //     this.cameras.main.setZoom(this.escalarMundo);
           
-        }          
-      } else if (punteros.length >= 1 && this.input.pointer1.isDown) {
-        if (this.input.pointer1.prevPosition.x != 0) {
-          var diferenciaX = this.input.pointer1.position.x - this.input.pointer1.prevPosition.x;
-          var diferenciaY = this.input.pointer1.position.y - this.input.pointer1.prevPosition.y;
+      //   }          
+      // } else if (punteros.length >= 1 && this.input.pointer1.isDown) {
+      //   if (this.input.pointer1.prevPosition.x != 0) {
+      //     var diferenciaX = this.input.pointer1.position.x - this.input.pointer1.prevPosition.x;
+      //     var diferenciaY = this.input.pointer1.position.y - this.input.pointer1.prevPosition.y;
   
-          this.cameras.main.setScroll(this.cameras.main.x + diferenciaX, this.cameras.main.y + diferenciaY);
-        }
+      //     this.cameras.main.setScroll(this.cameras.main.x + diferenciaX, this.cameras.main.y + diferenciaY);
+      //   }
         
-      }
+      // }
 
     }
 
@@ -217,12 +217,12 @@ export class MapSceneService extends Phaser.Scene {
       this.jugadores.getChildren().forEach((jugador: JugadorSprite)=>{
         jugador.refrescarDatos();
       });
-      if (!this.partida.colocandoFichas) {
-        this.mapaFichas.getChildren().forEach((fichaSprite: FichaSprite) => {
+      this.mapaFichas.getChildren().forEach((fichaSprite: FichaSprite) => {
+        if(!fichaSprite.ficha.oculta) {
           fichaSprite.reclamar();
           fichaSprite.cargarMarcadoresTropas();
-        });
-      }      
+        }        
+      });
 
       if (this.partida.partidaAcabada) {
         this.game.scene.start('GameOver', <Jugador[]>this.partida.jugadores);
