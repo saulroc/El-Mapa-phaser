@@ -44,7 +44,7 @@ export class MapSceneService extends Phaser.Scene {
     distancia: number;
     distanciaAnterior: number;
     distanciaDelta: number;
-    escalarMundo: number;
+    escalarMundo: number = 1;
 
     public constructor() {
       super({ key: 'Map' });
@@ -133,7 +133,8 @@ export class MapSceneService extends Phaser.Scene {
       this.mapaFichas = this.add.group();
 
       this.cameras.main.setScroll(this.physics.world.bounds.centerX - this.cameras.main.width / 2, this.physics.world.bounds.centerY  - this.cameras.main.height / 2)
-      this.input.addPointer(1);
+      if (this.game.input.pointers.length < 2)
+        this.input.addPointer(1);
       this.activarJugador(0);
       //var pinch = this.rexGestures.add.pinch();
 
@@ -166,11 +167,7 @@ export class MapSceneService extends Phaser.Scene {
       this.controls.update(delta);
       this.actualizarTextoInformacion();
       var punteros = this.game.input.pointers;
-      if(punteros.length >= 2 && this.input.pointer1.isDown && this.input.pointer2.isDown) {
-        this.mensajesInformacion.push({color: COLOR_LETRA_BLANCO, mensaje: "2 Punteros Down"});
-        this.mensajesInformacion.push({color: COLOR_LETRA_BLANCO, mensaje: "Puntero 1 X: " + punteros[0].x + ", Y:" + punteros[0].y});
-        this.mensajesInformacion.push({color: COLOR_LETRA_BLANCO, mensaje: "Puntero 2 X: " + punteros[1].x + ", Y:" + punteros[1].y});
-
+      if(punteros.length >= 2 && this.input.pointer1.isDown && this.input.pointer2.isDown) {        
 
         this.distanciaAnterior = this.distancia;    
         this.distancia = Phaser.Math.Distance.Between(this.input.pointer1.x, this.input.pointer1.y, this.input.pointer2.x,this.input.pointer2.y);
@@ -182,24 +179,19 @@ export class MapSceneService extends Phaser.Scene {
         }  
           
         this.escalarMundo = Phaser.Math.Clamp(this.escalarMundo, 0.5, 2); // set a minimum and maximum scale value    
-        this.mensajesInformacion.push({color: COLOR_LETRA_BLANCO, mensaje: "Escalar : " + this.escalarMundo});
         
         if (this.escalarMundo<2){        
           this.cameras.main.setZoom(this.escalarMundo);
-          // zoomed=true;        
-          // stageGroup.scale.set(this.escalarMundo);        
-          // if (follow){            
-          //   ease=0.1;            
-          //   cameraPos.x += (follow.x * this.escalarMundo- cameraPos.x) * ease ;
-          //   cameraPos.y += (follow.y * this.escalarMundo- cameraPos.y) * ease ;
-          //   game.camera.focusOnXY(cameraPos.x, cameraPos.y);        
-          // }
+          
         }          
-      } if (punteros.length >= 1 && this.input.pointer1.isDown) {
-        var diferenciaX = this.input.pointer1.position.x - this.input.pointer1.prevPosition.x;
-        var diferenciaY = this.input.pointer1.position.y - this.input.pointer1.prevPosition.y;
-
-        this.cameras.main.setScroll(this.cameras.main.x - diferenciaX, this.cameras.main.y - diferenciaY);
+      } else if (punteros.length >= 1 && this.input.pointer1.isDown) {
+        if (this.input.pointer1.prevPosition.x != 0) {
+          var diferenciaX = this.input.pointer1.position.x - this.input.pointer1.prevPosition.x;
+          var diferenciaY = this.input.pointer1.position.y - this.input.pointer1.prevPosition.y;
+  
+          this.cameras.main.setScroll(this.cameras.main.x + diferenciaX, this.cameras.main.y + diferenciaY);
+        }
+        
       }
 
     }
