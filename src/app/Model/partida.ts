@@ -52,7 +52,7 @@ export class Partida {
         if (!this.ultimoTurno || jugador.numero != 0)
             this.activarJugador(jugador); 
         else
-            this.partidaAcabada = false;
+            this.partidaAcabada = true;
     }
 
     getSiguienteJugador() {
@@ -128,7 +128,7 @@ export class Partida {
       this.ultimoTurno = this.estanTodasLasFichasVolteadas() 
       || (this.jugadorSinPueblos() && !this.colocandoFichas);
 
-      this.ultimoTurno = false;
+      //this.ultimoTurno = false;
 
       return this.ultimoTurno;
     }
