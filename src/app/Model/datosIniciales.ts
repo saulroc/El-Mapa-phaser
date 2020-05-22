@@ -64,7 +64,7 @@ export const INI_FICHAS = [{
             nivel: 1,
             distanciaDeAtaque: 0
     }] }]
-}/*,
+},
 {
     frame: 24,
     nombre: "ficha 1",
@@ -424,7 +424,7 @@ export const INI_FICHAS = [{
             nivel: 1,
             distanciaDeAtaque: 0
     }] }]
-}*/
+}
 ];
 
 export const INI_EDIFICIOS = [{
