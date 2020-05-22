@@ -90,7 +90,6 @@ export class FichaSprite extends Phaser.Physics.Arcade.Sprite {
         if (this.ficha.oculta) {
             this.clearTint();
             this.setFrame(this.ficha.frameNumero);
-            var color = Phaser.Display.Color.HexStringToColor(this.ficha.pueblo.color);
 
             if (this.ficha.pueblo) {
                 var color = Phaser.Display.Color.HexStringToColor(this.ficha.pueblo.color);
