@@ -225,10 +225,12 @@ export class MapSceneService extends Phaser.Scene {
       this.jugadores.getChildren().forEach((jugador: JugadorSprite)=>{
         jugador.refrescarDatos();
       });
-      this.mapaFichas.getChildren().forEach((fichaSprite: FichaSprite) => {
-        fichaSprite.reclamar();
-        fichaSprite.cargarMarcadoresTropas();
-      });
+      if (!this.partida.colocandoFichas) {
+        this.mapaFichas.getChildren().forEach((fichaSprite: FichaSprite) => {
+          fichaSprite.reclamar();
+          fichaSprite.cargarMarcadoresTropas();
+        });
+      }      
 
       if (this.partida.partidaAcabada) {
         this.game.scene.start('GameOver', <Jugador[]>this.partida.jugadores);
