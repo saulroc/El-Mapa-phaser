@@ -347,7 +347,9 @@ export class PuebloSceneService extends Phaser.Scene {
             if (recibir.piedra > 0) {
                 this.pintarIconos(grupoOpcion, 9, recibir.piedra);
             }
-            grupoOpcion.setY(indice * 50);
+            var sprite = (<Phaser.GameObjects.Sprite>grupoOpcion.getChildren()[0])
+            var y = sprite.height * sprite.scaleY;
+            grupoOpcion.setY((indice + 0.5) * y);
             grupoOpcion.getChildren().forEach(sprite => {
                 sprite.setData("comercio", [dar, recibir]);
                 sprite.on("pointerup", this.seleccionarComercio);
@@ -363,6 +365,7 @@ export class PuebloSceneService extends Phaser.Scene {
             var spriteIcono = this.add.sprite(100, 100, 'marcadores', numeroFrame);
             spriteIcono.setScale(this.fichaPueblo.getEscala() / 2);
             spriteIcono.setInteractive();
+            spriteIcono.setDepth(2);
             grupo.add(spriteIcono);
             spriteIcono.setX(spriteIcono.x + (grupo.getChildren().length * spriteIcono.width * spriteIcono.scaleX));
         }
