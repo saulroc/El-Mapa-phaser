@@ -7,12 +7,12 @@ import { Peloton } from '../Model/peloton';
 import { Jugador } from '../Model/jugador';
 import { Ficha } from '../Model/ficha';
 
-const COLOR_TEXTO = '#FFFFFF';
-const COLOR_STROKE = '#000000';
-const COLOR_MADERA = '#b9340d';
-const COLOR_ORO = '#daa520';
-const COLOR_PIEDRA = '#696969';
-const COLOR_PUNTOS = '#008000';
+export const COLOR_TEXTO = '#FFFFFF';
+export const COLOR_STROKE = '#000000';
+export const COLOR_MADERA = '#b9340d';
+export const COLOR_ORO = '#daa520';
+export const COLOR_PIEDRA = '#696969';
+export const COLOR_PUNTOS = '#008000';
 const COLOR_ACTIVO = 0x000000;
 
 export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {

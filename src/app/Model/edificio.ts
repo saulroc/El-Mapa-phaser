@@ -13,11 +13,12 @@ export class Edificio {
     tropa: Tropa;
     incrementoTropa: number = 0;
     incrementaComercio?: number = 0;
+    descripcion: string;
 
     /**
      *
      */
-    constructor(nombre: string, posicion: number,nivel:number = 1, frame: number = 0, oro: number = 0, madera: number = 0, piedra: number = 0, puntos: number = 1, generaOro: number = 0, tropa: Tropa = null, incrementoTropa: number = 0, incrementaComercio: number = 0) {
+    constructor(nombre: string, posicion: number,descripcion:string = '',nivel:number = 1, frame: number = 0, oro: number = 0, madera: number = 0, piedra: number = 0, puntos: number = 1, generaOro: number = 0, tropa: Tropa = null, incrementoTropa: number = 0, incrementaComercio: number = 0) {
         this.nombre = nombre;
         this.posicion = posicion;
         this.oro = oro;
@@ -30,6 +31,7 @@ export class Edificio {
         this.tropa = tropa;
         this.incrementoTropa = incrementoTropa;
         this.incrementaComercio = incrementaComercio;
+        this.descripcion = descripcion;
     }
 
     sePuedeConstruir(oro:number, madera: number, piedra: number, posicion: number) {

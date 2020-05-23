@@ -88,7 +88,7 @@ export const INI_FICHAS = [{
             nivel: 1,
             distanciaDeAtaque: 0
     }] }]
-},
+}/*,
 {
     frame: 32,
     nombre: "ficha 2",
@@ -424,7 +424,7 @@ export const INI_FICHAS = [{
             nivel: 1,
             distanciaDeAtaque: 0
     }] }]
-}
+}*/
 ];
 
 export const INI_EDIFICIOS = [{
@@ -438,7 +438,8 @@ export const INI_EDIFICIOS = [{
     generaOro: 1,
     numeroFrame: 0,
     tropa: null,
-    incrementoTropa: 0
+    incrementoTropa: 0,
+    descripcion: 'Incrementa la ganancia de oro en uno.'
 },
 {
     nombre: 'almacen',
@@ -451,7 +452,8 @@ export const INI_EDIFICIOS = [{
     generaOro: 0,
     numeroFrame: 1,
     tropa: null,
-    incrementoTropa: 0
+    incrementoTropa: 0,
+    descripcion: 'Incrementa las tropas que se pueden mover en el mapa en uno.'
 },
 {
     nombre: 'cuartel',
@@ -475,7 +477,8 @@ export const INI_EDIFICIOS = [{
         nivel: 2,
         coste: {oro: 2, madera: 0, piedra: 0}
     },
-    incrementoTropa: 0.5
+    incrementoTropa: 0.5,
+    descripcion: 'Permite reclutar soldados.'
 },
 {
     nombre: 'estatua',
@@ -488,7 +491,8 @@ export const INI_EDIFICIOS = [{
     generaOro: 0,
     numeroFrame: 3,
     tropa: null,
-    incrementoTropa: 0
+    incrementoTropa: 0,
+    descripcion: 'Suma tres puntos más.'
 },
 {
     nombre: 'biblioteca',
@@ -501,7 +505,8 @@ export const INI_EDIFICIOS = [{
     generaOro: 0,
     numeroFrame: 4,
     tropa: null,
-    incrementoTropa: 0
+    incrementoTropa: 0,
+    descripcion: 'Genera una carta de tecnología de nivel 1 por turno.'
 },
 {
     nombre: 'mercado',
@@ -515,7 +520,8 @@ export const INI_EDIFICIOS = [{
     numeroFrame: 5,
     tropa: null,
     incrementoTropa: 0,
-    incrementaComercio: 1
+    incrementaComercio: 1,
+    descripcion: 'Incrementa los trueques que se pueden realizar en uno.'
 },
 {
     nombre: 'arqueria',
@@ -539,7 +545,8 @@ export const INI_EDIFICIOS = [{
         nivel: 3,
         coste: {oro: 2, madera: 0, piedra: 0}
     },
-    incrementoTropa: 1
+    incrementoTropa: 1,
+    descripcion: 'Permite reclutar arqueros.'
 },
 {
     nombre: 'atalaya',
@@ -552,7 +559,8 @@ export const INI_EDIFICIOS = [{
     generaOro: 0,
     numeroFrame: 7,
     tropa: null,
-    incrementoTropa: 0
+    incrementoTropa: 0,
+    descripcion: 'Permite voltear una ficha del mapa por turno.'
 },
 {
     nombre: 'banco',
@@ -565,7 +573,8 @@ export const INI_EDIFICIOS = [{
     generaOro: 1,
     numeroFrame: 8,
     tropa: null,
-    incrementoTropa: 0
+    incrementoTropa: 0,
+    descripcion: 'Incrementa la ganancia de oro en uno.'
 },
 {
     nombre: 'laboratorio',
@@ -578,7 +587,8 @@ export const INI_EDIFICIOS = [{
     generaOro: 0,
     numeroFrame: 9,
     tropa: null,
-    incrementoTropa: 0
+    incrementoTropa: 0,
+    descripcion: 'Genera una carta de tecnología de nivel 2 por turno.'
 },
 {
     nombre: 'tesoreria',
@@ -591,7 +601,8 @@ export const INI_EDIFICIOS = [{
     generaOro: 2,
     numeroFrame: 10,
     tropa: null,
-    incrementoTropa: 0
+    incrementoTropa: 0,
+    descripcion: 'Incrementa la ganancia de oro en dos.'
 },
 {
     nombre: 'establos',
@@ -615,7 +626,8 @@ export const INI_EDIFICIOS = [{
         nivel: 4,
         coste: {oro: 2, madera: 1, piedra: 0}
     },
-    incrementoTropa: 0.333
+    incrementoTropa: 0.333,
+    descripcion: 'Permite reclutar caballeros.'
 },
 {
     nombre: 'coliseo',
@@ -628,7 +640,8 @@ export const INI_EDIFICIOS = [{
     generaOro: 0,
     numeroFrame: 12,
     tropa: null,
-    incrementoTropa: 0
+    incrementoTropa: 0,
+    descripcion: 'Suma 7 puntos más.'
 },
 {
     nombre: 'universidad',
@@ -641,7 +654,8 @@ export const INI_EDIFICIOS = [{
     generaOro: 0,
     numeroFrame: 13,
     tropa: null,
-    incrementoTropa: 0
+    incrementoTropa: 0,
+    descripcion: 'Genera una carta de tecnología de nivel 3 por turno.'
 },
 {
     nombre: 'teatro',
@@ -654,7 +668,8 @@ export const INI_EDIFICIOS = [{
     generaOro: 0,
     numeroFrame: 14,
     tropa: null,
-    incrementoTropa: 0
+    incrementoTropa: 0,
+    descripcion: 'Suma 5 puntos más.'
 },
 {
     nombre: 'armeria',
@@ -667,5 +682,6 @@ export const INI_EDIFICIOS = [{
     generaOro: 0,
     numeroFrame: 15,
     tropa: null,
-    incrementoTropa: 0
+    incrementoTropa: 0,
+    descripcion: 'Dobla las tropas disponibles para reclutar.'
 }];

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as Phaser from 'phaser';
-import { JugadorSprite } from '../Sprites/jugadorSprite';
+import { JugadorSprite, COLOR_TEXTO, COLOR_STROKE, COLOR_ORO, COLOR_PIEDRA, COLOR_MADERA, COLOR_PUNTOS } from '../Sprites/jugadorSprite';
 import { Pueblo } from '../Model/pueblo';
 import { FichaSprite } from '../Sprites/fichaSprite';
 import { MapSceneService } from './map-scene.service';
@@ -12,7 +12,6 @@ const COLOR_ZONA_CONSTRUCCION = 0x00ff00;
 const COLOR_ZONA_CONSTRUCCION_SELECCIONADA = 0x0000ff;
 const COLOR_EDIFICIO_INACTIVO = 0xA4A4A4;
 const COLOR_TROPA_SELECCIONADA = 0xA4A4A4;
-const COLOR_STROKE = '#000000';
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +30,13 @@ export class PuebloSceneService extends Phaser.Scene {
     opcionesComercio : Phaser.GameObjects.Group[];
     textoComercio: Phaser.GameObjects.Text;
     
-    
+    grupoInformacion: Phaser.GameObjects.Group;
+    textoOro: Phaser.GameObjects.Text;
+    textoMadera: Phaser.GameObjects.Text;
+    textoPiedra: Phaser.GameObjects.Text;
+    textoNivel: Phaser.GameObjects.Text;
+    textoInformacion: Phaser.GameObjects.Text;
+    textoDescripcion: Phaser.GameObjects.Text;
 
     public constructor() {
         super({ key: 'Pueblo' });
@@ -66,10 +71,11 @@ export class PuebloSceneService extends Phaser.Scene {
         
         this.edificios = this.add.group();
         this.zonasDeConstruccion = this.add.group();;
+        this.grupoInformacion = this.add.group();
 
         var estilo = { 
             font: 'bold 16pt Arial',
-            fill: '#ffffff',
+            fill: COLOR_TEXTO,
             align: 'center',
             wordWrap: true
            }
@@ -83,6 +89,9 @@ export class PuebloSceneService extends Phaser.Scene {
         this.textoVolver.setOrigin(0.5);
         this.textoVolver.setStroke(COLOR_STROKE, 1);
         
+        this.crearInformacion()
+        
+
         this.pintarComercio();
 
         if(this.pueblo && this.pueblo.edificios)
@@ -143,11 +152,11 @@ export class PuebloSceneService extends Phaser.Scene {
             {
                 edificioSprite.clearTint();                
                 if (edificioSprite.edificio.sePuedeConstruir(this.jugador.jugador.oro, this.jugador.jugador.madera, this.jugador.jugador.piedra, indice)) {
-                    edificioSprite.setInteractive();                    
+                    // edificioSprite.setInteractive();                    
 
                 } else {
                     edificioSprite.tint = COLOR_EDIFICIO_INACTIVO;
-                    edificioSprite.removeInteractive();
+                    // edificioSprite.removeInteractive();
                 }
             }
         });
@@ -159,25 +168,95 @@ export class PuebloSceneService extends Phaser.Scene {
             var edificioSprite = new EdificioSprite(this, edificios[i] );            
             this.posicionar(edificioSprite, edificioSprite.edificio.posicion, edificioSprite.edificio.numeroFrame);
 
-            if(!edificioSprite.edificio.estaConstruido())
-                edificioSprite.on('pointerup', this.construyendoEdificio);
-            else
+            if(edificioSprite.edificio.estaConstruido())
                 edificioSprite.pintarTropas();
             
             this.edificios.add(edificioSprite);
         }
     }
 
-    construyendoEdificio() {
-        var escenaPueblo = <PuebloSceneService><unknown>this.scene;
-        escenaPueblo.construirEdificio(this);
+    mostrarInformacion(edificioSprite: EdificioSprite) {
+        var edificio = edificioSprite.edificio;
+        this.textoInformacion.text = edificio.nombre.charAt(0).toUpperCase() + edificio.nombre.slice(1) + " coste: ";
+        this.textoNivel.text = "nivel " + edificio.nivel;
+        this.textoOro.text = edificio.oro + " Oro";
+        this.textoMadera.text = edificio.madera + " Madera";
+        this.textoPiedra.text = edificio.piedra + " Piedra";
+        this.textoDescripcion.text = edificio.descripcion;
+        this.grupoInformacion.setVisible(true);
     }
 
-    construirEdificio(edificioSprite) {
+    ocultarInformacion() {
+        this.grupoInformacion.setVisible(false);
+    }
+
+    crearInformacion() {
+        var estilo = { 
+            font: 'bold 16pt Arial',
+            fill: COLOR_TEXTO,
+            align: 'center',
+            wordWrap: true
+           }
+
+        this.textoInformacion = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, "", estilo);
+        this.textoInformacion.setInteractive();
+        this.textoInformacion.on('pointerup', this.ocultarInformacion, this);
+        this.textoInformacion.setOrigin(0.5);
+        this.textoInformacion.setDepth(2);
+        this.textoInformacion.setStroke(COLOR_STROKE, 2);
+        this.grupoInformacion.add(this.textoInformacion);
+
+        estilo.fill = COLOR_PUNTOS;
+        this.textoNivel = this.add.text(this.cameras.main.centerX, this.textoInformacion.y + this.textoInformacion.height, "", estilo);        
+        this.textoNivel.setInteractive();
+        this.textoNivel.on('pointerup', this.ocultarInformacion, this);
+        this.textoNivel.setOrigin(0.5);
+        this.textoNivel.setDepth(2);
+        this.textoNivel.setStroke(COLOR_STROKE, 2);
+        this.grupoInformacion.add(this.textoNivel);
+
+        estilo.fill = COLOR_ORO;
+        this.textoOro = this.add.text(this.cameras.main.centerX, this.textoNivel.y + this.textoNivel.height, "", estilo);        
+        this.textoOro.setInteractive();
+        this.textoOro.on('pointerup', this.ocultarInformacion, this);
+        this.textoOro.setOrigin(0.5);
+        this.textoOro.setDepth(2);
+        this.textoOro.setStroke(COLOR_STROKE, 2);
+        this.grupoInformacion.add(this.textoOro);
+
+        estilo.fill = COLOR_MADERA;
+        this.textoMadera = this.add.text(this.cameras.main.centerX,this.textoOro.y + this.textoOro.height, "", estilo);        
+        this.textoMadera.setInteractive();
+        this.textoMadera.on('pointerup', this.ocultarInformacion, this);
+        this.textoMadera.setOrigin(0.5);
+        this.textoMadera.setDepth(2);
+        this.textoMadera.setStroke(COLOR_STROKE, 2);
+        this.grupoInformacion.add(this.textoMadera);
+
+        estilo.fill = COLOR_PIEDRA;
+        this.textoPiedra = this.add.text(this.cameras.main.centerX,this.textoMadera.y + this.textoMadera.height, "", estilo);        
+        this.textoPiedra.setInteractive();
+        this.textoPiedra.on('pointerup', this.ocultarInformacion, this);
+        this.textoPiedra.setOrigin(0.5);
+        this.textoPiedra.setDepth(2);
+        this.textoPiedra.setStroke(COLOR_STROKE, 2);
+        this.grupoInformacion.add(this.textoPiedra);
+
+        estilo.fill = COLOR_TEXTO;
+        this.textoDescripcion = this.add.text(this.cameras.main.centerX,this.textoPiedra.y + this.textoPiedra.height, "", estilo);        
+        this.textoDescripcion.setInteractive();
+        this.textoDescripcion.on('pointerup', this.ocultarInformacion, this);
+        this.textoDescripcion.setOrigin(0.5);
+        this.textoDescripcion.setDepth(2);
+        this.textoDescripcion.setStroke(COLOR_STROKE, 2);
+        this.grupoInformacion.add(this.textoDescripcion);
+    }
+
+    construirEdificio(edificioSprite: EdificioSprite) {
         edificioSprite.edificio.posicion = this.posicionSeleccionada;
         this.posicionar(edificioSprite, edificioSprite.edificio.posicion, edificioSprite.edificio.numeroFrame);        
         edificioSprite.setDepth(1);
-        edificioSprite.removeAllListeners();
+        //edificioSprite.removeAllListeners();
         edificioSprite.pintarTropas();
         this.zonasDeConstruccion.setVisible(false);
 
@@ -190,6 +269,7 @@ export class PuebloSceneService extends Phaser.Scene {
         jugador.setPiedra(edificioSprite.edificio.piedra * -1);
         jugador.setPuntos(edificioSprite.edificio.puntos);
         this.jugador.refrescarDatos();
+        this.posicionSeleccionada = -1;
     }
 
     posicionar(objeto: any, posicion: number, frame:number) {

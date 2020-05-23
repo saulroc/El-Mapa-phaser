@@ -23,6 +23,8 @@ export class EdificioSprite extends Phaser.GameObjects.Sprite {
         this.setScale(scale);
 
         this.setInteractive();
+        this.on('pointerup', this.seleccionarEdificio);
+
     }   
     
     pintarTropas() {
@@ -48,6 +50,14 @@ export class EdificioSprite extends Phaser.GameObjects.Sprite {
             x += 5;
             y += 5;
         }
+    }
+
+    seleccionarEdificio() {
+        var escenaPueblo = <PuebloSceneService><unknown>this.scene;
+        if(escenaPueblo.posicionSeleccionada >= 0 && this.edificio.posicion == -1)
+            escenaPueblo.construirEdificio(this);
+        else
+            escenaPueblo.mostrarInformacion(this);
     }
 
     

@@ -18,11 +18,14 @@ export class Pueblo  {
     opcionesComercio: {oro:number, madera: number, piedra:number}[][];
 
     constructor(color: string) {
+        this.comercio = 1;
         this.color = color;
         this.edificios = [];
         INI_EDIFICIOS.forEach(ini_edificio => {
+            
             var edificio = new Edificio(ini_edificio.nombre,
                 ini_edificio.posicion,
+                ini_edificio.descripcion,
                 ini_edificio.nivel,
                 ini_edificio.numeroFrame,
                 ini_edificio.oro,
@@ -30,8 +33,16 @@ export class Pueblo  {
                 ini_edificio.piedra,
                 ini_edificio.puntos,
                 ini_edificio.generaOro,
-                ini_edificio.tropa,
-                ini_edificio.incrementoTropa
+                ini_edificio.tropa ? new Tropa(ini_edificio.tropa.tipo, 
+                    ini_edificio.tropa.cantidad,
+                    ini_edificio.tropa.ataque,
+                    ini_edificio.tropa.vida,
+                    ini_edificio.tropa.movimiento,
+                    ini_edificio.tropa.movido,
+                    ini_edificio.tropa.velocidad,
+                    ini_edificio.tropa.distancia) : null,
+                ini_edificio.incrementoTropa,
+                ini_edificio.incrementaComercio
                 );
             this.edificios.push(edificio);
         })
