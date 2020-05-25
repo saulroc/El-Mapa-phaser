@@ -349,7 +349,8 @@ export class MapSceneService extends Phaser.Scene {
       if (fichaOrigen.x != xBuscado || fichaOrigen.y != yBuscado) {
         var fichas = <FichaSprite[]>this.mapaFichas.getChildren();
         var fichaDestino = fichas.find( ficha => ficha.x == xBuscado && ficha.y == yBuscado);
-        if (fichaDestino) {
+        if (fichaDestino && fichaDestino.ficha.sePuedeMover(fichaOrigen.ficha.xTile, fichaOrigen.ficha.yTile)
+          &&  fichaOrigen.ficha.sePuedeMover(fichaDestino.ficha.xTile, fichaDestino.ficha.yTile)) {
                                                   
           this.pelotonSeleccionado.peloton.mover();                    
           fichaDestino.ficha.addTropas(this.pelotonSeleccionado.peloton.jugador, this.pelotonSeleccionado.peloton.tropas);

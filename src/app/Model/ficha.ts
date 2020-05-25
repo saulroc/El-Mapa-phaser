@@ -19,11 +19,15 @@ export class Ficha {
     tesoros: number;
     xTile: number;
     yTile: number;
+    bloqueoNorte?: boolean;
+    bloqueoSur?: boolean;
+    bloqueoEste?: boolean;
+    bloqueoOeste?: boolean;
 
     /**
      *
      */
-    constructor(frame: number, nombre: string, nivel: number, colocada: boolean, oculta: boolean, pueblo: Pueblo = null, minaMadera: boolean = false, minaPiedra: boolean = false, minaOro: boolean = false, minaTecnologia: number = 0, tesoros: number = 0) {
+    constructor(frame: number, nombre: string, nivel: number, colocada: boolean, oculta: boolean, pueblo: Pueblo = null, minaMadera: boolean = false, minaPiedra: boolean = false, minaOro: boolean = false, minaTecnologia: number = 0, tesoros: number = 0, bloqueoNorte: boolean = false, bloqueoSur: boolean = false, bloqueoEste: boolean = false, bloqueoOeste: boolean = false) {
         this.nombre = nombre;
         this.nivel = nivel;
         this.colocada = colocada;
@@ -36,6 +40,11 @@ export class Ficha {
         this.tesoros = tesoros;
         this.pueblo = pueblo;
         this.pelotones = [];
+
+        this.bloqueoNorte = bloqueoNorte;
+        this.bloqueoSur = bloqueoSur;
+        this.bloqueoEste = bloqueoEste;
+        this.bloqueoOeste = bloqueoOeste;
         
     }
 
@@ -147,5 +156,22 @@ export class Ficha {
             }
         }
         this.tesoros = 0;
+    }
+
+    sePuedeMover(xTilePrueba:number, yTilePrueba:number) {
+        
+        if( this.bloqueoEste && this.xTile < xTilePrueba)
+            return false;
+
+        if(this.bloqueoOeste && this.xTile > xTilePrueba)
+            return false;
+
+        if(this.bloqueoNorte && this.yTile > yTilePrueba)
+            return false;
+
+        if(this.bloqueoSur && this.yTile < yTilePrueba)
+            return false;
+
+        return true;
     }
 }

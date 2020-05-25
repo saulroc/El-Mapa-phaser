@@ -133,7 +133,12 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
                 datosficha.minaPiedra,
                 datosficha.minaOro,
                 datosficha.minaTecnologia,
-                datosficha.tesoro
+                datosficha.tesoro,
+                datosficha.bloqueoNorte,
+                datosficha.bloqueoSur,
+                datosficha.bloqueoEste,
+                datosficha.bloqueoOeste
+
             );
             var fichaTerreno = new FichaSprite(
                 this.scene, 
