@@ -205,6 +205,7 @@ export class FichaSprite extends Phaser.Physics.Arcade.Sprite {
         if (this.ficha.sePuedeReclamarTesoros(jugador.jugador)) {
             this.ficha.reclamarTesoros(jugador.jugador);
             this.cargarMarcadoresTesoros();
+            jugador.refrescarDatos();
         }
     }
 
