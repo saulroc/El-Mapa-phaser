@@ -268,6 +268,7 @@ export class PuebloSceneService extends Phaser.Scene {
         jugador.setMadera(edificioSprite.edificio.madera * -1);
         jugador.setPiedra(edificioSprite.edificio.piedra * -1);
         jugador.setPuntos(edificioSprite.edificio.puntos);
+        jugador.refrescarMaximoPelotonesMoviendo();
         this.jugador.refrescarDatos();
         this.posicionSeleccionada = -1;
     }
@@ -341,9 +342,24 @@ export class PuebloSceneService extends Phaser.Scene {
             else
                 tropaSprite.clearTint();
         } else {
+            escenaPueblo.mostrarInformacionTropa(tropa);
             if (escenaPueblo.jugador.jugador.puedeComprar(tropa.coste.oro, tropa.coste.madera, tropa.coste.piedra))
                 tropaSprite.tint = COLOR_TROPA_SELECCIONADA;
         }
+    }
+
+    mostrarInformacionTropa(tropa: Tropa) {
+        this.textoInformacion.text = tropa.tipo.charAt(0).toUpperCase() + tropa.tipo.slice(1) + " - cantidad: " + tropa.cantidad + ", coste: ";
+        this.textoNivel.text = "nivel " + tropa.nivel;
+        this.textoOro.text = tropa.coste.oro + " Oro";
+        this.textoMadera.text = tropa.coste.madera + " Madera";
+        this.textoPiedra.text = tropa.coste.piedra + " Piedra";
+        this.textoDescripcion.text = "Vida " + tropa.vida 
+            + ", Daño " + tropa.ataque 
+            + ", Distancia de ataque " + tropa.distanciaDeAtaque
+            + ", Velocidad " + tropa.velocidad
+            + ", Movimiento " + tropa.movimiento;
+        this.grupoInformacion.setVisible(true);
     }
 
     comprarTropa(tropaSprite: Phaser.GameObjects.Sprite) {
