@@ -91,6 +91,15 @@ export class Pueblo  {
         return puntos;
     }
 
+    getNumeroPelotonesMovibles() {
+        var numero = 1;
+        var edificio = this.edificios.find(value => value.nombre == 'almacen');
+        if (edificio && edificio.estaConstruido())
+            numero++;
+        
+        return numero;
+    }
+
     hayEdificioEnLaPosicion(posicion) {
         for(var i =0; i < this.edificios.length; i++) {
             if (this.edificios[i].posicion == posicion)

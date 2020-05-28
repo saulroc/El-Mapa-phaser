@@ -83,7 +83,7 @@ export class Jugador {
 
     agregarPueblo(pueblo: Pueblo) {
         if(this.pueblos.indexOf(pueblo) < 0) {
-            this.maximoPelotonesMoviendo++;
+            this.maximoPelotonesMoviendo += pueblo.getNumeroPelotonesMovibles();
             this.pueblos.push(pueblo);
             this.puntos += pueblo.getPuntos();
         }            
@@ -94,7 +94,7 @@ export class Jugador {
         if(indice >= 0) {
             this.pueblos.splice(indice, 1);
             this.puntos -= pueblo.getPuntos();
-            this.maximoPelotonesMoviendo--;
+            this.maximoPelotonesMoviendo-= pueblo.getNumeroPelotonesMovibles();
         }
     }
 
@@ -127,5 +127,15 @@ export class Jugador {
 
     puedeMoverNuevoPeloton() {
         return this.pelotonesMoviendo < this.maximoPelotonesMoviendo;
+    }
+
+    refrescarMaximoPelotonesMoviendo() {
+        var cantidad = 0;
+        this.pueblos.forEach(pueblo => {
+            cantidad += pueblo.getNumeroPelotonesMovibles();
+        });
+        if (cantidad != this.maximoPelotonesMoviendo && cantidad > 0) {
+            this.maximoPelotonesMoviendo = cantidad;
+        }
     }
 }
