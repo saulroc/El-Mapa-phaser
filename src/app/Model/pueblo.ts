@@ -40,7 +40,7 @@ export class Pueblo  {
                     ini_edificio.tropa.movimiento,
                     ini_edificio.tropa.movido,
                     ini_edificio.tropa.velocidad,
-                    ini_edificio.tropa.distancia) : null,
+                    ini_edificio.tropa.distanciaDeAtaque) : null,
                 ini_edificio.incrementoTropa,
                 ini_edificio.incrementaComercio
                 );
