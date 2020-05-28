@@ -117,9 +117,8 @@ export class Peloton {
             return 1;
         });
 
-        var i = 0;
         while (heridas > 0 && this.tropas.length > 0) {
-            var tropaAHerir = tropasOrdenadas[i];
+            var tropaAHerir = tropasOrdenadas[0];
             var cantidadMuertos = Math.floor(heridas / tropaAHerir.vida);
             if (cantidadMuertos > tropaAHerir.cantidad) {
                 cantidadMuertos = tropaAHerir.cantidad;
@@ -143,9 +142,7 @@ export class Peloton {
 
             } else {
                 heridas = 0;
-            }
-            
-            i++;
+            }            
         }
         
         return puntosTropasMuertas;
