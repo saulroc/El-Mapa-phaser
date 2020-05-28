@@ -636,8 +636,7 @@ export const INI_FICHAS = [{
     minaTecnologia: 0,
     tesoro: 0,
     tropa: [],
-    bloqueoSur: true,
-    bloqueoOeste: true
+    bloqueoSur: true
 },
 {
     frame: 30,
