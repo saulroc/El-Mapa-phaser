@@ -893,7 +893,7 @@ export const INI_EDIFICIOS = [{
     numeroFrame: 4,
     tropa: null,
     incrementoTropa: 0,
-    descripcion: 'Genera una carta de tecnología de nivel 1 por turno.'
+    descripcion: 'NO IMPLEMENTADO - Genera una carta de tecnología de nivel 1 por turno.'
 },
 {
     nombre: 'mercado',
@@ -947,7 +947,7 @@ export const INI_EDIFICIOS = [{
     numeroFrame: 7,
     tropa: null,
     incrementoTropa: 0,
-    descripcion: 'Permite voltear una ficha del mapa por turno.'
+    descripcion: 'NO IMPLEMENTADO - Permite voltear una ficha del mapa por turno.'
 },
 {
     nombre: 'banco',
@@ -975,7 +975,7 @@ export const INI_EDIFICIOS = [{
     numeroFrame: 9,
     tropa: null,
     incrementoTropa: 0,
-    descripcion: 'Genera una carta de tecnología de nivel 2 por turno.'
+    descripcion: 'NO IMPLEMENTADO - Genera una carta de tecnología de nivel 2 por turno.'
 },
 {
     nombre: 'tesoreria',
@@ -1042,7 +1042,7 @@ export const INI_EDIFICIOS = [{
     numeroFrame: 13,
     tropa: null,
     incrementoTropa: 0,
-    descripcion: 'Genera una carta de tecnología de nivel 3 por turno.'
+    descripcion: 'NO IMPLEMENTADO - Genera una carta de tecnología de nivel 3 por turno.'
 },
 {
     nombre: 'teatro',
@@ -1070,5 +1070,5 @@ export const INI_EDIFICIOS = [{
     numeroFrame: 15,
     tropa: null,
     incrementoTropa: 0,
-    descripcion: 'Dobla las tropas disponibles para reclutar.'
+    descripcion: 'NO IMPLEMENTADO - Dobla las tropas disponibles para reclutar.'
 }];
