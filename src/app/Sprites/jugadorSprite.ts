@@ -102,7 +102,7 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
         });
         //this.tweenActivo.stop();
         this.setInteractive();
-        this.on('pointerup', this.mostrarDatos);
+        this.on('pointerup', this.mostrarOcultarDatos);
     }
 
     posicionarDelante() {
@@ -113,6 +113,8 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
         this.puntosText.setDepth(4) ;    
 
     }
+
+    //#region fichas
 
     inicializarFichas() {
         this.fichasTerreno = this.scene.physics.add.group();
@@ -242,19 +244,21 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
         return zona;
     }
 
-    iniciarTurno() {
-        
-        this.jugador.iniciarTurno();
-        this.refrescarDatos();
-        
-    }
-
     agregarMina(mina: FichaSprite) {
         this.jugador.agregarMina(mina.ficha);
     }
 
     quitarMina(mina: FichaSprite) {
         this.jugador.quitarMina(mina.ficha);
+    }
+
+    //#endregion fichas
+
+    iniciarTurno() {
+        
+        this.jugador.iniciarTurno();
+        this.refrescarDatos();
+        
     }
 
     activar() {
@@ -287,15 +291,6 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
         //this.setActive(false);
         this.tweenActivo.pause();
         this.setAlpha(1);
-    }
-
-    public incrementarPuntos(incremento: number) {
-        this.jugador.puntos += incremento;
-        this.puntosText.text = "Puntos: " + this.jugador.puntos;
-        if (incremento > 0)
-            this.mensajesInformacion.push ({color: COLOR_PUNTOS, mensaje: this.jugador.nombre + ": +" + incremento + " Puntos"});
-        if (incremento < 0)
-            this.mensajesInformacion.push ({color: COLOR_PUNTOS, mensaje: this.jugador.nombre + ": " + incremento + " Puntos"});
     }
 
     refrescarDatos() {
@@ -342,18 +337,12 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    mostrarDatos(pointer, localX, localY, event) {
-        this.textos.setAlpha(1);
+    mostrarOcultarDatos(pointer, localX, localY, event) {
         
-    }
-
-    update() {
-
-        if (this.oroText.alpha > 0 && !this.jugador.activo) {
-            this.textos.propertyValueInc('alpha', -0.01);
-            //this.oroText.alpha -= 0.01;
-        }
+        this.textos.toggleVisible();
+        if (event) 
+            event.stopPropagation();
         
-    }
+    }    
 
 }
