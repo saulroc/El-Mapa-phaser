@@ -35,6 +35,7 @@ export class Jugador {
         this.minas = [];
 
         this.activo = false;
+        this.pelotonesMoviendo = 0;
         this.maximoPelotonesMoviendo = 0;
 
 
