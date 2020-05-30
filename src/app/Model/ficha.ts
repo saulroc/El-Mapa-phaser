@@ -58,12 +58,8 @@ export class Ficha {
         var nuevaTropa = new Tropa(
             tropa.tipo, 
             tropa.cantidad,
-            tropa.ataque,
-            tropa.vida,
-            tropa.movimiento,
             tropa.movido,
-            tropa.velocidad,
-            tropa.distanciaDeAtaque);
+            );
         var tropas: Tropa[] = [];
         tropas.push(nuevaTropa);
         this.addPeloton(jugador, tropas);

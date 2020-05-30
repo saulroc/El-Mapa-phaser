@@ -26,12 +26,7 @@ export class Peloton {
         var nuevaTropa = new Tropa(
             tropa.tipo, 
             tropa.cantidad,
-            tropa.ataque,
-            tropa.vida,
-            tropa.movimiento,
-            tropa.movido,
-            tropa.velocidad,
-            tropa.distanciaDeAtaque);
+            tropa.movido);
         this.tropas.push(nuevaTropa);
     }
 
@@ -130,12 +125,7 @@ export class Peloton {
                 tropaMuerta = new Tropa(
                     tropaAHerir.tipo,
                     cantidadMuertos,
-                    tropaAHerir.ataque,
-                    tropaAHerir.vida,
-                    tropaAHerir.movimiento,
-                    tropaAHerir.movimiento,
-                    tropaAHerir.velocidad,
-                    tropaAHerir.distanciaDeAtaque
+                    tropaAHerir.movimiento
                 );
 
                 this.quitarTropa(tropaMuerta);

@@ -2,7 +2,7 @@ import * as Phaser from 'phaser';
 import {EdificioSprite} from '../Sprites/edificioSprite';
 import { INI_EDIFICIOS } from './datosIniciales';
 import { Edificio } from './edificio';
-import { Tropa } from './tropa';
+import { Tropa, LEVA } from './tropa';
 
 
 
@@ -35,19 +35,14 @@ export class Pueblo  {
                 ini_edificio.generaOro,
                 ini_edificio.tropa ? new Tropa(ini_edificio.tropa.tipo, 
                     ini_edificio.tropa.cantidad,
-                    ini_edificio.tropa.ataque,
-                    ini_edificio.tropa.vida,
-                    ini_edificio.tropa.movimiento,
-                    ini_edificio.tropa.movido,
-                    ini_edificio.tropa.velocidad,
-                    ini_edificio.tropa.distanciaDeAtaque) : null,
+                    ini_edificio.tropa.movido) : null,
                 ini_edificio.incrementoTropa,
                 ini_edificio.incrementaComercio
                 );
             this.edificios.push(edificio);
         })
         //this.edificios = JSON.parse(JSON.stringify(INI_EDIFICIOS));
-        this.leva = new Tropa('leva', 1, 1, 1, 2, 0, 1, 0);
+        this.leva = new Tropa(LEVA, 1, 0);
         this.opcionesComercio =  [[{oro: 0, madera: 1, piedra: 0}, {oro: 1, madera: 0, piedra: 0}],
             [{oro: 0, madera: 0, piedra: 1}, {oro: 2, madera: 0, piedra: 0}],
             [{oro: 2, madera: 0, piedra: 0}, {oro: 0, madera: 1, piedra: 0}],
