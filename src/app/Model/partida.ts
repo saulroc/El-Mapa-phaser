@@ -14,6 +14,7 @@ export class Partida {
     pelotonSeleccionado: Peloton;
     ultimoTurno: boolean = false;
     partidaAcabada: boolean = false;
+    maravillasConstruidas: number;
 
     /**
      *
@@ -22,6 +23,7 @@ export class Partida {
         this.mapa = [];
         this.numeroJugadores = ini_jugadores.length;
         this.partidaAcabada = false;
+        this.maravillasConstruidas = 0;
     }
 
     iniciarJugadores() {
@@ -120,7 +122,8 @@ export class Partida {
   
           }
         }
-  
+        
+        pelotones[0].tropas.forEach(tropa => tropa.heridas = 0);
   
     }
 

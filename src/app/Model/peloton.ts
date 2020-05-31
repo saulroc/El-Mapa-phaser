@@ -114,6 +114,8 @@ export class Peloton {
 
         while (heridas > 0 && this.tropas.length > 0) {
             var tropaAHerir = tropasOrdenadas[0];
+            heridas += tropaAHerir.heridas;
+            
             var cantidadMuertos = Math.floor(heridas / tropaAHerir.vida);
             if (cantidadMuertos > tropaAHerir.cantidad) {
                 cantidadMuertos = tropaAHerir.cantidad;
@@ -131,6 +133,7 @@ export class Peloton {
                 this.quitarTropa(tropaMuerta);
 
             } else {
+                tropaAHerir.heridas = heridas;
                 heridas = 0;
             }            
         }

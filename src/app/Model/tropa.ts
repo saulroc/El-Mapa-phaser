@@ -13,6 +13,7 @@ export class Tropa {
     movido: number;
     distanciaDeAtaque: number;
     nivel: number = 1;
+    heridas: number;
     coste?: {oro: number, madera:number, piedra:number }
 
     /**
@@ -22,7 +23,8 @@ export class Tropa {
         this.tipo = tipo;
         this.cantidad = cantidad;
         this.movido = movido;
-
+        this.heridas = 0;
+        
         switch (this.tipo) {
             case LEVA:
                 this.nivel = 1
