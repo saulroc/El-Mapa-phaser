@@ -168,7 +168,7 @@ export class PuebloSceneService extends Phaser.Scene {
             var edificioSprite = new EdificioSprite(this, edificios[i] );            
             this.posicionar(edificioSprite, edificioSprite.edificio.posicion, edificioSprite.edificio.numeroFrame);
 
-            if(edificioSprite.edificio.estaConstruido())
+            if(edificioSprite.edificio.estaConstruido() && this.jugador.jugador.esPropietario(this.pueblo))
                 edificioSprite.pintarTropas();
             
             this.edificios.add(edificioSprite);
@@ -318,17 +318,16 @@ export class PuebloSceneService extends Phaser.Scene {
     //#region Tropas
 
     pintarLevas() {
-        var x = 0.5 * this.fichaPueblo.width * this.fichaPueblo.scaleX;;
-        var y = (this.fichaPueblo.height * this.fichaPueblo.scaleY) / 2;
+        
         var escala = this.fichaPueblo.getEscala();
         for(var i = 0; i < this.pueblo.leva.cantidad; i++) {
+            var x = (0.75 - Math.random() * 0.5) * this.fichaPueblo.width * this.fichaPueblo.scaleX;
+            var y = (0.75 - Math.random() * 0.5) * (this.fichaPueblo.height * this.fichaPueblo.scaleY);
             var leva = this.add.sprite(x, y, 'marcadores', 2);
             leva.setData('tropa', this.pueblo.leva);
             leva.setScale(escala / 2);
             leva.setInteractive();
-            leva.on('pointerup', this.seleccionarTropaParaComprar);            
-            x += 5;
-            y += 5;
+            leva.on('pointerup', this.seleccionarTropaParaComprar);                        
         }
     }
 

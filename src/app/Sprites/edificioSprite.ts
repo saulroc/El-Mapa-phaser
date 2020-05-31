@@ -28,8 +28,7 @@ export class EdificioSprite extends Phaser.GameObjects.Sprite {
     }   
     
     pintarTropas() {
-        var x = this.x - 0.5 * this.width * this.scaleX;
-        var y = this.y - 0.5 * this.height * this.scaleY;
+        
         var escala = this.scaleX;
         var cantidad = 0;
         var frameTropa = 1;
@@ -41,14 +40,14 @@ export class EdificioSprite extends Phaser.GameObjects.Sprite {
         }
 
         for(var i = 0; i < cantidad; i++) {
+            var x = this.x + (0.25 - Math.random() * 0.5) * this.width * this.scaleX;
+            var y = this.y + (0.25 - Math.random() * 0.5) * this.height * this.scaleY;
             var tropaSprite = this.scene.add.sprite(x, y, 'marcadores', frameTropa);
             tropaSprite.setData('tropa', this.edificio.tropa);
             tropaSprite.setScale(escala / 2);
             tropaSprite.setDepth(2);
             tropaSprite.setInteractive();
-            tropaSprite.on('pointerup', escenaPueblo.seleccionarTropaParaComprar);            
-            x += 5;
-            y += 5;
+            tropaSprite.on('pointerup', escenaPueblo.seleccionarTropaParaComprar);                        
         }
     }
 
