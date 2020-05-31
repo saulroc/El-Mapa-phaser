@@ -19,6 +19,7 @@ export class Ficha {
     tesoros: number;
     xTile: number;
     yTile: number;
+    rotacion: number;
     bloqueoNorte?: boolean;
     bloqueoSur?: boolean;
     bloqueoEste?: boolean;
@@ -169,5 +170,41 @@ export class Ficha {
             return false;
 
         return true;
+    }
+
+    rotarFicha() {
+        var rotacion = Math.floor(Math.random() * 4) * 90;
+        this.rotacion = rotacion;
+        var anteriorBloqueoNorte = this.bloqueoNorte ? true : false;
+        var anteriorBloqueoSur = this.bloqueoSur ? true : false;
+        var anteriorBloqueoEste = this.bloqueoEste ? true : false;
+        var anteriorBloqueoOeste = this.bloqueoOeste ? true : false;
+
+        //Sentido a las agujas del reloj
+        switch (rotacion) {
+            case 90:
+                this.bloqueoOeste = anteriorBloqueoSur;
+                this.bloqueoSur = anteriorBloqueoEste;
+                this.bloqueoEste = anteriorBloqueoNorte;
+                this.bloqueoNorte = anteriorBloqueoOeste;
+                break;
+            case 180:
+                this.bloqueoOeste = anteriorBloqueoEste;
+                this.bloqueoSur = anteriorBloqueoNorte;
+                this.bloqueoEste = anteriorBloqueoOeste;
+                this.bloqueoNorte = anteriorBloqueoSur;
+                break;
+            case 270:
+                this.bloqueoOeste = anteriorBloqueoNorte;
+                this.bloqueoSur = anteriorBloqueoOeste;
+                this.bloqueoEste = anteriorBloqueoSur;
+                this.bloqueoNorte = anteriorBloqueoEste;
+                
+                break;
+            
+            default:
+                break;
+        }
+
     }
 }

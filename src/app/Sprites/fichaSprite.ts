@@ -91,6 +91,9 @@ export class FichaSprite extends Phaser.Physics.Arcade.Sprite {
             this.clearTint();
             this.setFrame(this.ficha.frameNumero);
 
+            this.ficha.rotarFicha();
+            this.setRotation(Phaser.Math.DegToRad(this.ficha.rotacion));
+
             if (this.ficha.pueblo) {
                 var color = Phaser.Display.Color.HexStringToColor(this.ficha.pueblo.color);
                 this.setMarcador(color);
