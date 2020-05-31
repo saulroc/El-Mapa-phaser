@@ -10,11 +10,9 @@
 - Juego
     - IA de CPU
     - Edificios especiales
-    - comercio
-        comercio entre jugadores
+    - Maravillas
+    - comercio entre jugadores
     - cartas de tecnologia
-    - mover varios pelotones
-    - bordes de las fichas
     - rotar las fichas al voltearlas
     - los arqueros en el combate
     - meter instrucciones en el juego

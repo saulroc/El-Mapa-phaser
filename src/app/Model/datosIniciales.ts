@@ -413,7 +413,8 @@ export const INI_FICHAS = [{
     minaOro: false,
     minaTecnologia: 0,
     tesoro: 0,
-    tropa: [{ jugador: null, 
+    tropa: [{ 
+        jugador: null, 
         tropas: [{ tipo: "leva",
             cantidad: 2,
             vida: 1,
@@ -423,7 +424,8 @@ export const INI_FICHAS = [{
             velocidad: 1,
             nivel: 1,
             distanciaDeAtaque: 0
-    }] }]
+        }] 
+    }]
 },
 {
     frame: 28,
@@ -467,7 +469,8 @@ export const INI_FICHAS = [{
     minaOro: false,
     minaTecnologia: 3,
     tesoro: 0,
-    tropa: [{ jugador: null, 
+    tropa: [{ 
+        jugador: null, 
         tropas: [{ tipo: "caballero",
             cantidad: 1,
             vida: 3,
@@ -477,7 +480,8 @@ export const INI_FICHAS = [{
             velocidad: 2,
             nivel: 4,
             distanciaDeAtaque: 0
-    }] }]
+    }] 
+}]
 },
 {
     frame: 13,
@@ -491,7 +495,8 @@ export const INI_FICHAS = [{
     minaOro: false,
     minaTecnologia: 0,
     tesoro: 2,
-    tropa: [{ jugador: null, 
+    tropa: [{ 
+        jugador: null, 
         tropas: [{ 
             tipo: "caballero",
             cantidad: 1,
@@ -513,7 +518,8 @@ export const INI_FICHAS = [{
             velocidad: 1,
             nivel: 2,
             distanciaDeAtaque: 0
-        }] }]
+        }] 
+    }]
 },
 {
     frame: 21,
@@ -542,7 +548,8 @@ export const INI_FICHAS = [{
     minaOro: false,
     minaTecnologia: 0,
     tesoro: 0,
-    tropa: [{ jugador: null, 
+    tropa: [{ 
+        jugador: null, 
         tropas: [{ 
             tipo: "leva",
             cantidad: 2,
@@ -553,7 +560,8 @@ export const INI_FICHAS = [{
             velocidad: 1,
             nivel: 1,
             distanciaDeAtaque: 0
-        }] }],
+        }] 
+    }],
     bloqueoOeste: true
 },
 {
@@ -584,7 +592,8 @@ export const INI_FICHAS = [{
     minaOro: false,
     minaTecnologia: 0,
     tesoro: 2,
-    tropa: [{ jugador: null, 
+    tropa: [{ 
+        jugador: null, 
         tropas: [{ 
             tipo: "arquero",
             cantidad: 1,
@@ -606,7 +615,8 @@ export const INI_FICHAS = [{
             velocidad: 1,
             nivel: 2,
             distanciaDeAtaque: 0
-        }] }]
+        }] 
+    }]
 },
 {
     frame: 14,
@@ -664,7 +674,8 @@ export const INI_FICHAS = [{
     minaOro: false,
     minaTecnologia: 2,
     tesoro: 0,
-    tropa: [{ jugador: null, 
+    tropa: [{ 
+        jugador: null, 
         tropas: [{ 
             tipo: "soldado",
             cantidad: 1,
@@ -675,7 +686,8 @@ export const INI_FICHAS = [{
             velocidad: 1,
             nivel: 2,
             distanciaDeAtaque: 0
-        }] }]
+        }] 
+    }]
 },
 {
     frame: 7,
@@ -704,7 +716,8 @@ export const INI_FICHAS = [{
     minaOro: true,
     minaTecnologia: 0,
     tesoro: 0,
-    tropa: [{ jugador: null, 
+    tropa: [{ 
+        jugador: null, 
         tropas: [{ 
             tipo: "soldado",
             cantidad: 1,
@@ -715,7 +728,8 @@ export const INI_FICHAS = [{
             velocidad: 1,
             nivel: 2,
             distanciaDeAtaque: 0
-        }] }],
+        }] 
+    }],
     bloqueoNorte: true
 },
 {
@@ -730,7 +744,8 @@ export const INI_FICHAS = [{
     minaOro: true,
     minaTecnologia: 0,
     tesoro: 1,
-    tropa: [{ jugador: null, 
+    tropa: [{ 
+        jugador: null, 
         tropas: [{ 
             tipo: "soldado",
             cantidad: 1,
@@ -752,7 +767,8 @@ export const INI_FICHAS = [{
             velocidad: 1,
             nivel: 3,
             distanciaDeAtaque: 1
-        }] }],
+        }] 
+    }],
     bloqueoNorte: true,
     bloqueoEste: true
 },
@@ -768,7 +784,8 @@ export const INI_FICHAS = [{
     minaOro: false,
     minaTecnologia: 0,
     tesoro: 0,
-    tropa: [{ jugador: null, 
+    tropa: [{ 
+        jugador: null, 
         tropas: [{ 
             tipo: "leva",
             cantidad: 1,
@@ -790,7 +807,8 @@ export const INI_FICHAS = [{
             velocidad: 1,
             nivel: 3,
             distanciaDeAtaque: 1
-        }] }],
+        }] 
+    }],
     bloqueoNorte: true,
     bloqueoEste: true
 },
