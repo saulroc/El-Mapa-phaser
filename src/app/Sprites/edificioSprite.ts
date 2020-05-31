@@ -53,7 +53,9 @@ export class EdificioSprite extends Phaser.GameObjects.Sprite {
 
     seleccionarEdificio() {
         var escenaPueblo = <PuebloSceneService><unknown>this.scene;
-        if(escenaPueblo.posicionSeleccionada >= 0 && this.edificio.posicion == -1)
+        if(escenaPueblo.posicionSeleccionada >= 0 
+            && this.edificio.posicion == -1
+           )
             escenaPueblo.construirEdificio(this);
         else
             escenaPueblo.mostrarInformacion(this);
