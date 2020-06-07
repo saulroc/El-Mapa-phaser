@@ -132,7 +132,8 @@ export class Partida {
           }
         }
         
-        pelotones[0].tropas.forEach(tropa => tropa.heridas = 0);
+        if (pelotones.length == 1)
+          pelotones[0].tropas.forEach(tropa => tropa.heridas = 0);
   
     }
 
