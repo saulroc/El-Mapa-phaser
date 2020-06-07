@@ -7,6 +7,7 @@ import { MapSceneService } from './map-scene.service';
 import { Tropa } from '../Model/tropa';
 import { EdificioSprite } from '../Sprites/edificioSprite';
 import { Edificio } from '../Model/edificio';
+import { Partida } from '../Model/partida';
 
 const COLOR_ZONA_CONSTRUCCION = 0x00ff00;
 const COLOR_ZONA_CONSTRUCCION_SELECCIONADA = 0x0000ff;
@@ -20,6 +21,7 @@ export class PuebloSceneService extends Phaser.Scene {
     
     background: Phaser.GameObjects.Image;
     pueblo: Pueblo;
+    partida: Partida;
     fichaPueblo: FichaSprite;
     edificios: Phaser.GameObjects.Group;
     posicionSeleccionada: number = -1;
@@ -62,7 +64,7 @@ export class PuebloSceneService extends Phaser.Scene {
 
         var scale = this.fichaPueblo.getEscala();
         var mapa =<MapSceneService>this.game.scene.getScene('Map');
-
+        this.partida = mapa.partida;
         this.jugador =mapa.jugadorActivo;
 
         //var escalaX = this.cameras.main.width / this.background.width;
@@ -116,7 +118,8 @@ export class PuebloSceneService extends Phaser.Scene {
             font: 'bold 16pt Arial',
             fill: COLOR_TEXTO,
             align: 'center',
-            wordWrap: true
+            wordWrap: true,
+            wordWrapWidth: this.cameras.main.width / 4
            }
 
         this.textoInformacion = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, "", estilo);
@@ -262,12 +265,10 @@ export class PuebloSceneService extends Phaser.Scene {
         edificioSprite.edificio.posicion = this.posicionSeleccionada;
         this.posicionar(edificioSprite, edificioSprite.edificio.posicion, edificioSprite.edificio.numeroFrame);        
         edificioSprite.setDepth(1);
-        //edificioSprite.removeAllListeners();
         edificioSprite.pintarTropas();
         this.zonasDeConstruccion.setVisible(false);
 
-        this.edificios.getChildren().forEach((edificio: EdificioSprite) => edificio.clearTint() );
-
+        this.edificios.getChildren().forEach((edificio: EdificioSprite) => edificio.clearTint() );            
         this.pueblo.construirEdificio(this.posicionSeleccionada, edificioSprite.edificio.nombre);
         var jugador = this.jugador.jugador;
         jugador.setOro(edificioSprite.edificio.oro * -1);
@@ -277,6 +278,9 @@ export class PuebloSceneService extends Phaser.Scene {
         jugador.refrescarMaximoPelotonesMoviendo();
         this.jugador.refrescarDatos();
         this.posicionSeleccionada = -1;
+        if (edificioSprite.edificio.nivel == 4)
+            this.partida.maravillaConstruida(edificioSprite.edificio);
+        
     }
 
     posicionar(objeto: any, posicion: number, frame:number) {

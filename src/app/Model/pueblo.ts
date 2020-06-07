@@ -68,11 +68,25 @@ export class Pueblo  {
         }
     }
 
+    eliminarMaravilla(maravilla: Edificio) {
+        var edificio = this.edificios.find(edificio => edificio.nombre == maravilla.nombre);
+        if (!edificio.estaConstruido()) {
+            var index = this.edificios.indexOf(edificio);
+            this.edificios.splice(index,1);
+        }
+    }
+
     incrementarTropas() {
-        this.leva.cantidad++;    
+        var edificio = this.edificios.find(edificio => edificio.nombre == 'armeria');
+        var aplicarArmeria = edificio ? edificio.estaConstruido() : false;
+
+        this.leva.cantidad++;  
+        if (aplicarArmeria)  
+            this.leva.cantidad++;
+
         this.edificios.forEach(edificio => {
             if(edificio.estaConstruido())
-                edificio.incrementarTropa();
+                edificio.incrementarTropa(aplicarArmeria);
         })    
     }
 

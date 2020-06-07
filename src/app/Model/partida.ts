@@ -2,6 +2,7 @@ import { Jugador } from "./jugador";
 import { Ficha } from "./ficha";
 import { Peloton } from "./peloton";
 import { ini_jugadores } from "./datosIniciales";
+import { Edificio } from "./edificio";
 
 export class Partida {
 
@@ -71,6 +72,13 @@ export class Partida {
   
         this.jugadorActivo = jugador;        
   
+    }
+
+    maravillaConstruida(maravilla: Edificio) {
+      this.mapa.forEach((ficha: Ficha) => {
+        if(ficha.pueblo)
+          ficha.pueblo.eliminarMaravilla(maravilla);
+      })
     }
 
     reclamarFicha(ficha: Ficha) {
