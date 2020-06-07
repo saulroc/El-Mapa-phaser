@@ -7,13 +7,13 @@
 - ventana de partida nueva 
     - numero de jugadores
     - hotseat vs online
+- ventana de cargar partidas
 - Juego
-    - IA de CPU
     - Edificios especiales
     - Maravillas
+    - IA de CPU
     - comercio entre jugadores
     - cartas de tecnologia
-    - rotar las fichas al voltearlas
     - los arqueros en el combate
     - meter instrucciones en el juego
 
