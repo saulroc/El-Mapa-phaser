@@ -6,14 +6,17 @@
     - efectos de sonido
 - ventana de partida nueva 
     - numero de jugadores
+    - CPU's
     - hotseat vs online
 - ventana de cargar partidas
 - Juego
-    - Edificios especiales
     - Maravillas
+    - Quitar el icono de tesoro y sustuirlo por una flecha en el comercio
+    - Posicionar los edificios no construidos según el nivel
+    - Tener que realizar doble click en terminar turno para pasar de turno
+    - cartas de tecnologia
     - IA de CPU
     - comercio entre jugadores
-    - cartas de tecnologia
     - los arqueros en el combate
     - meter instrucciones en el juego
 
