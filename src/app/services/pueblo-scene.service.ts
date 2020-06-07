@@ -358,7 +358,7 @@ export class PuebloSceneService extends Phaser.Scene {
     }
 
     mostrarInformacionTropa(tropa: Tropa) {
-        this.textoInformacion.text = tropa.tipo.charAt(0).toUpperCase() + tropa.tipo.slice(1) + " - cantidad: " + tropa.cantidad + ", coste: ";
+        this.textoInformacion.text = tropa.tipo.charAt(0).toUpperCase() + tropa.tipo.slice(1) + " - cantidad: " + Math.floor(tropa.cantidad) + ", coste: ";
         this.textoNivel.text = "nivel " + tropa.nivel;
         this.textoOro.text = tropa.coste.oro + " Oro";
         this.textoMadera.text = tropa.coste.madera + " Madera";
