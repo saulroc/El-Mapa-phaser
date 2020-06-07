@@ -112,7 +112,6 @@ export class MapSceneService extends Phaser.Scene {
       
       this.iniciarJugadores();
 
-      this.partida.colocandoFichas = true;
       //this.zonaColocacion = this.physics.add.group();
       //this.zonaColocacion.create(this.cameras.main.centerX, this.cameras.main.centerY);
         
