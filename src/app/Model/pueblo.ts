@@ -53,7 +53,14 @@ export class Pueblo  {
     iniciarTurno() {
         this.construido = false;
         this.comerciado = 0;
-        this.incrementarTropas();
+        var edificio = this.edificios.find(edificio => edificio.nombre == 'armeria');
+        var aplicarArmeria = edificio ? edificio.estaConstruido() : false;
+        this.incrementarTropas(aplicarArmeria);
+        
+        this.edificios.forEach(edificio => {
+            if(edificio.estaConstruido())
+                edificio.iniciarTurno(aplicarArmeria);
+        })    
     }
 
     construirEdificio(posicion: number, nombreEdifico: string) {
@@ -76,18 +83,10 @@ export class Pueblo  {
         }
     }
 
-    incrementarTropas() {
-        var edificio = this.edificios.find(edificio => edificio.nombre == 'armeria');
-        var aplicarArmeria = edificio ? edificio.estaConstruido() : false;
-
+    incrementarTropas(aplicarArmeria: boolean) {
         this.leva.cantidad++;  
         if (aplicarArmeria)  
-            this.leva.cantidad++;
-
-        this.edificios.forEach(edificio => {
-            if(edificio.estaConstruido())
-                edificio.incrementarTropa(aplicarArmeria);
-        })    
+            this.leva.cantidad++;        
     }
 
     getPuntos() {

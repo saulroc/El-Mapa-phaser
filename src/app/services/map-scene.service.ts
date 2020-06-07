@@ -9,6 +9,7 @@ import { Peloton } from '../Model/peloton';
 import { ini_jugadores } from '../Model/datosIniciales';
 import { Jugador } from '../Model/jugador';
 import { Partida } from '../Model/partida';
+import { Edificio } from '../Model/edificio';
 
 const FRAME_FICHA_FONDO = 44;
 const COLOR_LETRA_BLANCO = '#FFFFFF';
@@ -16,6 +17,8 @@ const COLOR_STROKE_LETRA = '#000000';
 const COLOR_FICHA_ACTIVA = 0xf4d03f;
 const COLOR_FICHA_NO_ACTIVA = 0xffffff;
 const colores = ["0xff0000", "0x0000ff", "0x008000", "0xffff00", "0xD2B48C", "0xff4500", "0x800080", "0x00ffff"]; 
+const TEXTO_TERMINAR_TURNO = "Terminar Turno";
+const TEXTO_CANCELAR_ATALAYA = "Cancelar Atalaya";
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +30,7 @@ export class MapSceneService extends Phaser.Scene {
     //zonaColocacion: Phaser.Physics.Arcade.Group;
     
     fichaColocando: FichaSprite;
+    atalayaEnUso: Edificio;
     controls;
     textoInformacion: Phaser.GameObjects.Text;
     mensajesInformacion: {color: string, mensaje: string}[];    
@@ -209,6 +213,12 @@ export class MapSceneService extends Phaser.Scene {
       }
     }
 
+    remarcarTerminarTurno(pointer, localX, localY, event) {
+      
+      if (event)
+        event.stopPropagation();
+    }
+
     terminarTurno(pointer, localX, localY, event) {
       
       this.partida.terminarTurno(); 
@@ -263,7 +273,7 @@ export class MapSceneService extends Phaser.Scene {
           this.textoTerminarTurno = this.add.text(
             this.game.scale.width / 2, 
             this.jugadorActivo.y + (this.jugadorActivo.height * this.jugadorActivo.scaleY),
-             "Terminar turno", 
+            TEXTO_TERMINAR_TURNO, 
              { fill: COLOR_LETRA_BLANCO, font: 'bold 16pt arial'});
           this.textoTerminarTurno.setInteractive();
           this.textoTerminarTurno.setStroke(COLOR_STROKE_LETRA, 2);
@@ -329,8 +339,42 @@ export class MapSceneService extends Phaser.Scene {
 
         if (this.pelotonSeleccionado)
           this.moverPeloton();
+
+        if (this.atalayaEnUso)
+          this.usarAtalaya();
         
       }
+    }
+
+    activarAtalaya(atalaya: Edificio) {
+      this.atalayaEnUso = atalaya;
+      this.textoTerminarTurno.text = TEXTO_CANCELAR_ATALAYA;  
+      this.textoTerminarTurno.removeAllListeners();
+      this.textoTerminarTurno.on('pointerup', this.cancelarAtalaya, this);
+    }
+
+    usarAtalaya() {
+      var xBuscado = this.map.tileToWorldX(this.tileSeleccionado.x);
+      var yBuscado = this.map.tileToWorldY(this.tileSeleccionado.y);           
+      var fichas = <FichaSprite[]>this.mapaFichas.getChildren();      
+      var fichaDestino = fichas.find( ficha => (ficha.x - ficha.width / 2 * ficha.scaleX) == xBuscado && (ficha.y - ficha.height / 2 * ficha.scaleY)== yBuscado);
+      if (fichaDestino && fichaDestino.ficha.oculta) {        
+        this.atalayaEnUso.utilizado = true;        
+        this.voltearFicha(this.tileSeleccionado.x, this.tileSeleccionado.y);
+        this.comprobarUltimoTurno();
+        this.cancelarAtalaya(null, null, null, null);
+      }
+
+    }
+
+    cancelarAtalaya(pointer, localX, localY, event) {
+      this.textoTerminarTurno.text = TEXTO_TERMINAR_TURNO;  
+      this.textoTerminarTurno.removeAllListeners();
+      this.textoTerminarTurno.on('pointerup', this.terminarTurno, this);
+      this.atalayaEnUso = null;
+
+      if (event)
+        event.stopPropagation();
     }
 
     moverPeloton() {

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ɵɵclassMapInterpolate1 } from '@angular/core';
 import * as Phaser from 'phaser';
 import { JugadorSprite, COLOR_TEXTO, COLOR_STROKE, COLOR_ORO, COLOR_PIEDRA, COLOR_MADERA, COLOR_PUNTOS } from '../Sprites/jugadorSprite';
 import { Pueblo } from '../Model/pueblo';
@@ -39,6 +39,7 @@ export class PuebloSceneService extends Phaser.Scene {
     textoNivel: Phaser.GameObjects.Text;
     textoInformacion: Phaser.GameObjects.Text;
     textoDescripcion: Phaser.GameObjects.Text;
+    textoUsarAtalaya: Phaser.GameObjects.Text;
 
     public constructor() {
         super({ key: 'Pueblo' });
@@ -175,6 +176,16 @@ export class PuebloSceneService extends Phaser.Scene {
         this.textoDescripcion.width = this.cameras.main.width;
         this.textoDescripcion.setStroke(COLOR_STROKE, 2);
         this.grupoInformacion.add(this.textoDescripcion);
+
+        this.textoUsarAtalaya = this.add.text(this.cameras.main.centerX, this.textoDescripcion.y + this.textoDescripcion.height, "Usar Atalaya", estilo);
+        this.textoUsarAtalaya.setInteractive();
+        this.textoUsarAtalaya.on('pointerup', this.usarAtalaya, this);
+        this.textoUsarAtalaya.setOrigin(0.5);
+        this.textoUsarAtalaya.setDepth(2);
+        this.textoUsarAtalaya.width = this.cameras.main.width;
+        this.textoUsarAtalaya.setStroke(COLOR_STROKE, 2);
+        this.grupoInformacion.add(this.textoUsarAtalaya);
+
     }
 
     //#region Edificios
@@ -254,6 +265,8 @@ export class PuebloSceneService extends Phaser.Scene {
         this.textoPiedra.text = edificio.piedra + " Piedra";
         this.textoDescripcion.text = edificio.descripcion;
         this.grupoInformacion.setVisible(true);
+        if (edificio.nombre != 'atalaya' || !edificio.estaConstruido())
+            this.textoUsarAtalaya.setVisible(false);
     }
 
     construirEdificio(edificioSprite: EdificioSprite) {
@@ -321,6 +334,16 @@ export class PuebloSceneService extends Phaser.Scene {
         }
 
         objeto.setPosition(x, y);
+    }
+
+    usarAtalaya(pointer, localX, localY, event) {
+        var mapa =<MapSceneService>this.game.scene.getScene('Map');
+        var atalaya = this.pueblo.edificios.find((edificio: Edificio) => edificio.nombre == 'atalaya');
+        if (atalaya && atalaya.estaConstruido()) {
+            this.ocultarInformacion();
+            mapa.activarAtalaya(atalaya);
+            this.cerrar(pointer, localX, localY, event);
+        }        
     }
 
     //#endregion Edificios

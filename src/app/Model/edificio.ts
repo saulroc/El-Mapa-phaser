@@ -14,6 +14,7 @@ export class Edificio {
     incrementoTropa: number = 0;
     incrementaComercio?: number = 0;
     descripcion: string;
+    utilizado: boolean;
 
     /**
      *
@@ -32,6 +33,7 @@ export class Edificio {
         this.incrementoTropa = incrementoTropa;
         this.incrementaComercio = incrementaComercio;
         this.descripcion = descripcion;
+        this.utilizado = false;
     }
 
     sePuedeConstruir(oro:number, madera: number, piedra: number, posicion: number) {
@@ -46,6 +48,11 @@ export class Edificio {
 
     estaConstruido() {
         return this.posicion >= 0;
+    }
+
+    iniciarTurno(aplicarArmeria: boolean) {
+        this.utilizado = false;
+        this.incrementarTropa(aplicarArmeria);
     }
 
     incrementarTropa(aplicarArmeria: boolean) {
