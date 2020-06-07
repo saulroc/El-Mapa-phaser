@@ -48,13 +48,22 @@ export class Edificio {
         return this.posicion >= 0;
     }
 
-    incrementarTropa() {
-        if(this.tropa)
-            this.tropa.cantidad+= this.incrementoTropa;
+    incrementarTropa(aplicarArmeria: boolean) {
+        if(this.tropa) {
+            this.tropa.cantidad+= this.incrementoTropa;            
+            if(aplicarArmeria) {
+                var decimal = this.tropa.cantidad - Math.floor(this.tropa.cantidad + 0.001);
+                if(decimal <= 0)
+                    this.tropa.cantidad++
+            }
+        }
     }
 
     decrementarTropa() {
-        if(this.tropa && this.tropa.cantidad > 0)
+        if(this.tropa && this.tropa.cantidad > 0) {
             this.tropa.cantidad--;
+            if (this.tropa.cantidad < 0)
+                this.tropa.cantidad = 0;
+        }
     }
 }
