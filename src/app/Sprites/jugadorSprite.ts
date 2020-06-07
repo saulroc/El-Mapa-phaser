@@ -50,8 +50,24 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
         this.setScale(this.scene.game.scale.width / this.width / 8 , this.scene.game.scale.height / this.height / 8);
 
         this.setTint(this.color.color);
-        this.setX(this.getBounds().width * (this.jugador.numero + 0.5));
-        
+        this.setX(this.getBounds().width * (this.jugador.numero + 0.5));            
+        this.setY(this.getBounds().height / 2);
+
+        this.crearTextosInformacion();
+
+        this.tweenActivo = this.scene.tweens.add({ 
+            targets: this,
+            alpha: { start: 1, to:0, duration: 1000, ease: 'Power1' },
+            paused: true,
+            yoyo: true,
+            loop: -1
+        });
+        //this.tweenActivo.stop();
+        this.setInteractive();
+        this.on('pointerup', this.mostrarOcultarDatos);
+    }
+
+    crearTextosInformacion () {
         var estilo = { 
             font: 'bold 10pt Arial',
             fill: COLOR_TEXTO,
@@ -60,7 +76,7 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
 
         this.textos = this.scene.add.group();
 
-        this.nombreText = this.scene.add.text(this.x, this.y, this.jugador.nombre, estilo);
+        this.nombreText = this.scene.add.text(this.x, this.y - this.getBounds().height / 2, this.jugador.nombre, estilo);
         this.nombreText.setOrigin(0.5, 0);
         this.nombreText.setScrollFactor(0);
         this.nombreText.setStroke(COLOR_STROKE, 1);
@@ -92,17 +108,6 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
         this.puntosText.setScrollFactor(0);
         this.puntosText.setStroke(COLOR_STROKE, 1);
         this.textos.add(this.puntosText);
-
-        this.tweenActivo = this.scene.tweens.add({ 
-            targets: this,
-            alpha: { start: 1, to:0, duration: 1000, ease: 'Power1' },
-            paused: true,
-            yoyo: true,
-            loop: -1
-        });
-        //this.tweenActivo.stop();
-        this.setInteractive();
-        this.on('pointerup', this.mostrarOcultarDatos);
     }
 
     posicionarDelante() {

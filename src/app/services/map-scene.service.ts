@@ -112,12 +112,9 @@ export class MapSceneService extends Phaser.Scene {
       this.textoInformacion.setDepth(3);
       this.textoInformacion.setStroke(COLOR_STROKE_LETRA, 2);
       this.textoInformacion.setShadow(2, 2, COLOR_STROKE_LETRA, 2, true, true);
-      this.textoInformacion.text = "Cargando partida";
-      
-      this.iniciarJugadores();
+      this.textoInformacion.text = "Cargando partida";      
 
-      //this.zonaColocacion = this.physics.add.group();
-      //this.zonaColocacion.create(this.cameras.main.centerX, this.cameras.main.centerY);
+      this.iniciarJugadores();
         
       this.marker = this.add.graphics();
       this.marker.lineStyle(4, 0xFFFFFF, 1);
@@ -139,6 +136,16 @@ export class MapSceneService extends Phaser.Scene {
       if (this.game.input.pointers.length < 2)
         this.input.addPointer(1);
       this.activarJugador(0);
+
+      this.textoTerminarTurno = this.add.text(
+        this.game.scale.width / 2, 
+        this.jugadorActivo.y + (this.jugadorActivo.height * this.jugadorActivo.scaleY),
+        TEXTO_TERMINAR_TURNO, 
+         { fill: COLOR_LETRA_BLANCO, font: 'bold 16pt arial'});
+      this.textoTerminarTurno.setStroke(COLOR_STROKE_LETRA, 2);
+      this.textoTerminarTurno.setScrollFactor(0);
+      this.textoTerminarTurno.setDepth(3);
+      this.textoTerminarTurno.setVisible(false);
       //var pinch = this.rexGestures.add.pinch();
 
       // var camera = this.cameras.main;
@@ -259,7 +266,7 @@ export class MapSceneService extends Phaser.Scene {
       if (this.fichaColocando) {
         
         this.mensajesInformacion.push( {color: COLOR_LETRA_BLANCO, mensaje: "Colocando ficha " + this.jugadorActivo.jugador.nombre})
-        this.fichaColocando.setPosition(this.jugadorActivo.x,this.jugadorActivo.y + this.jugadorActivo.height*this.jugadorActivo.scaleY);
+        this.fichaColocando.setPosition(this.jugadorActivo.x,this.jugadorActivo.y + this.jugadorActivo.height * this.jugadorActivo.scaleY);
         this.fichaColocando.setVisible(true);
         if (this.fichaColocando.ficha.oculta)
           this.fichaColocando.tint = this.jugadorActivo.color.color;
@@ -270,16 +277,9 @@ export class MapSceneService extends Phaser.Scene {
                 
       } else {
         if(this.partida.colocandoFichas) {
-          this.textoTerminarTurno = this.add.text(
-            this.game.scale.width / 2, 
-            this.jugadorActivo.y + (this.jugadorActivo.height * this.jugadorActivo.scaleY),
-            TEXTO_TERMINAR_TURNO, 
-             { fill: COLOR_LETRA_BLANCO, font: 'bold 16pt arial'});
           this.textoTerminarTurno.setInteractive();
-          this.textoTerminarTurno.setStroke(COLOR_STROKE_LETRA, 2);
-          this.textoTerminarTurno.setScrollFactor(0);
-          this.textoTerminarTurno.setDepth(3);
           this.textoTerminarTurno.on('pointerup', this.terminarTurno, this);
+          this.textoTerminarTurno.setVisible(true);
         }
         this.partida.colocandoFichas = false;
         this.mensajesInformacion.push( {color: COLOR_LETRA_BLANCO, mensaje: "Turno " + this.partida.turno + " del jugador " + this.jugadorActivo.jugador.nombre})

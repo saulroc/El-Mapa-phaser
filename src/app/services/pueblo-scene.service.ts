@@ -60,6 +60,9 @@ export class PuebloSceneService extends Phaser.Scene {
     }
 
     public create() {
+        var bgImage = this.add.rectangle(0, 0, this.cameras.main.width, this.cameras.main.height, 0x000000, 0.5);;
+        bgImage.setOrigin(0, 0);
+
         this.background = this.add.image(0, 0, 'fondo');
         this.background.setOrigin(0, 0);
 
@@ -186,6 +189,8 @@ export class PuebloSceneService extends Phaser.Scene {
         this.textoUsarAtalaya.setStroke(COLOR_STROKE, 2);
         this.grupoInformacion.add(this.textoUsarAtalaya);
 
+        this.ocultarInformacion();
+
     }
 
     //#region Edificios
@@ -265,8 +270,14 @@ export class PuebloSceneService extends Phaser.Scene {
         this.textoPiedra.text = edificio.piedra + " Piedra";
         this.textoDescripcion.text = edificio.descripcion;
         this.grupoInformacion.setVisible(true);
-        if (edificio.nombre != 'atalaya' || !edificio.estaConstruido())
+        if (edificio.nombre != 'atalaya' || !edificio.estaConstruido()) {
             this.textoUsarAtalaya.setVisible(false);
+        } else {
+            if(edificio.utilizado)
+                this.textoUsarAtalaya.setFill(COLOR_STROKE)
+            else
+                this.textoUsarAtalaya.setFill(COLOR_TEXTO)
+        }
     }
 
     construirEdificio(edificioSprite: EdificioSprite) {
@@ -339,7 +350,7 @@ export class PuebloSceneService extends Phaser.Scene {
     usarAtalaya(pointer, localX, localY, event) {
         var mapa =<MapSceneService>this.game.scene.getScene('Map');
         var atalaya = this.pueblo.edificios.find((edificio: Edificio) => edificio.nombre == 'atalaya');
-        if (atalaya && atalaya.estaConstruido()) {
+        if (atalaya && atalaya.estaConstruido() && !atalaya.utilizado) {
             this.ocultarInformacion();
             mapa.activarAtalaya(atalaya);
             this.cerrar(pointer, localX, localY, event);
@@ -392,6 +403,7 @@ export class PuebloSceneService extends Phaser.Scene {
             + ", Velocidad " + tropa.velocidad
             + ", Movimiento " + tropa.movimiento;
         this.grupoInformacion.setVisible(true);
+        this.textoUsarAtalaya.setVisible(false);
     }
 
     comprarTropa(tropaSprite: Phaser.GameObjects.Sprite) {
