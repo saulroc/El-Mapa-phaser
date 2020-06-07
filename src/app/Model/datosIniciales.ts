@@ -964,7 +964,7 @@ export const INI_EDIFICIOS = [{
     numeroFrame: 7,
     tropa: null,
     incrementoTropa: 0,
-    descripcion: 'NO IMPLEMENTADO - Permite voltear una ficha del mapa por turno.'
+    descripcion: 'Permite voltear una ficha del mapa por turno.'
 },
 {
     nombre: 'banco',
