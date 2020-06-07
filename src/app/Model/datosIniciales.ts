@@ -809,7 +809,6 @@ export const INI_FICHAS = [{
             distanciaDeAtaque: 1
         }] 
     }],
-    bloqueoNorte: true,
     bloqueoEste: true
 },
 {
@@ -1088,5 +1087,19 @@ export const INI_EDIFICIOS = [{
     numeroFrame: 15,
     tropa: null,
     incrementoTropa: 0,
-    descripcion: 'NO IMPLEMENTADO - Dobla las tropas disponibles para reclutar.'
+    descripcion: 'Dobla las tropas que se suman para reclutar.'
+},
+{
+    nombre: 'piramides',
+    posicion: -1,
+    nivel: 4,
+    oro: 6,
+    madera: 0,
+    piedra: 4,
+    puntos: 10,
+    generaOro: 0,
+    numeroFrame: 16,
+    tropa: null,
+    incrementoTropa: 0,
+    descripcion: 'NO IMPLEMENTADO - Suma 6 puntos de victoria más y genera 2 más por cada pidra al final de la partida.'
 }];
