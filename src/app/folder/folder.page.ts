@@ -36,7 +36,7 @@ export class FolderPage implements OnInit {
     physics: {
       default: 'arcade',
       arcade: {
-          debug: true
+          debug: false
       }
     },
     scene: [MapSceneService, PuebloSceneService, GameOverSceneService],
