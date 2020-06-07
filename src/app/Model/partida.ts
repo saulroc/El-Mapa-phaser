@@ -24,6 +24,7 @@ export class Partida {
         this.numeroJugadores = ini_jugadores.length;
         this.partidaAcabada = false;
         this.maravillasConstruidas = 0;
+        this.colocandoFichas = true;
     }
 
     iniciarJugadores() {
