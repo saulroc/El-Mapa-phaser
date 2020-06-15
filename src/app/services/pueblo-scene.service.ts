@@ -477,7 +477,7 @@ export class PuebloSceneService extends Phaser.Scene {
             if (dar.piedra > 0) {
                 this.pintarIconos(grupoOpcion, 9, dar.piedra);
             }
-            this.pintarIconos(grupoOpcion, 6, 1);
+            this.pintarIconos(grupoOpcion, 10, 1);
             if (recibir.oro > 0) {
                 this.pintarIconos(grupoOpcion, 7, recibir.oro);
             } 
