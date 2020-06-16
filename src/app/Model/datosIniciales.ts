@@ -5,7 +5,7 @@ export const ini_jugadores = [{
   },
   {
     nombre: 'Jugador 2',
-    cpu: false,
+    cpu: true,
     color: "0x0000ff"
   }/*,
   {

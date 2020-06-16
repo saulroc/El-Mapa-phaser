@@ -139,4 +139,27 @@ export class Jugador {
             this.maximoPelotonesMoviendo = cantidad;
         }
     }
+
+    obtenerZonaDeColocacion() {
+        var puntos : {x: number, y: number}[] = [];
+
+        this.fichas.forEach((ficha: Ficha) => {
+            if (ficha.colocada) {
+                puntos.push({x: ficha.xTile + 1, y: ficha.yTile});
+                puntos.push({x: ficha.xTile, y: ficha.yTile + 1});
+                puntos.push({x: ficha.xTile - 1, y: ficha.yTile});
+                puntos.push({x: ficha.xTile, y: ficha.yTile - 1});                
+            }
+        });
+        var i = 0;
+        while (i < puntos.length) {
+            var fichaBuscada = this.fichas.find( ficha => ficha.colocada && ficha.xTile == puntos[i].x && ficha.yTile == puntos[i].y);
+            if (fichaBuscada)
+                puntos.splice(i, 1);
+            else
+                i++;
+        }
+        
+        return puntos;
+    }
 }

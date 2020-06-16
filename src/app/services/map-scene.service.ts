@@ -228,6 +228,9 @@ export class MapSceneService extends Phaser.Scene {
 
     terminarTurno(pointer, localX, localY, event) {
       
+      if (event)
+        event.stopPropagation();
+
       this.partida.terminarTurno(); 
            
       this.jugadores.getChildren().forEach((jugador: JugadorSprite)=>{
@@ -247,9 +250,7 @@ export class MapSceneService extends Phaser.Scene {
       } else {
         this.activarJugador(this.partida.jugadorActivo.numero);
       }
-
-      if (event)
-        event.stopPropagation();
+      
     }    
 
     activarJugador(indice: number) {
@@ -273,7 +274,7 @@ export class MapSceneService extends Phaser.Scene {
           
         this.fichaColocando.setScrollFactor(0);
         this.fichaColocando.setDepth(1);
-        this.generarZonaDeColocacion();                        
+        this.dibujarZonaDeColocacion(this.generarZonaDeColocacion());
                 
       } else {
         if(this.partida.colocandoFichas) {
@@ -285,6 +286,9 @@ export class MapSceneService extends Phaser.Scene {
         this.mensajesInformacion.push( {color: COLOR_LETRA_BLANCO, mensaje: "Turno " + this.partida.turno + " del jugador " + this.jugadorActivo.jugador.nombre})
         this.jugadorActivo.iniciarTurno();
       }
+
+      if(this.jugadorActivo.jugador.CPU)
+        this.jugarTurno();
 
     }
 
@@ -462,27 +466,32 @@ export class MapSceneService extends Phaser.Scene {
     }
 
     generarZonaDeColocacion() {
-        var puntos = this.jugadorActivo.getZonaColocacion();
+        var puntos = this.jugadorActivo.obtenerZonaColocacion();
 
         if (puntos.length == 0) {
           if (this.jugadorActivo.jugador.numero == 0) {
             var tile = this.map.getTileAt(Math.floor(this.map.width/2),Math.floor(this.map.height / 2));
-            var punto = new Phaser.Math.Vector2(this.map.tileToWorldX(tile.x), this.map.tileToWorldY(tile.y));
+            var punto = {x: tile.x, y: tile.y};
             puntos.push(punto);
           } else {
             var jugadores = <JugadorSprite[]>this.jugadores.getChildren();
-            puntos = jugadores[this.jugadorActivo.jugador.numero-1].getZonaColocacion();
+            puntos = jugadores[this.jugadorActivo.jugador.numero-1].obtenerZonaColocacion();
           }
         }        
         
-        puntos.forEach((punto: Phaser.Math.Vector2) => {
-          var tile = this.map.getTileAtWorldXY(punto.x, punto.y);
-          if (tile.index == FRAME_FICHA_FONDO && tile.tint != COLOR_FICHA_ACTIVA) {
-            tile.tint = COLOR_FICHA_ACTIVA;
-          }
-        });
-        
-    }    
+        return puntos;        
+    }
+    
+    dibujarZonaDeColocacion(puntos: {x:number, y:number}[]) {
+
+      puntos.forEach((punto: {x: number, y: number}) => {
+        var tile = this.map.getTileAt(punto.x, punto.y);
+        if (tile.index == FRAME_FICHA_FONDO && tile.tint != COLOR_FICHA_ACTIVA) {
+          tile.tint = COLOR_FICHA_ACTIVA;
+        }
+      });
+
+    }
 
     actualizarTextoInformacion() {
       
@@ -501,6 +510,22 @@ export class MapSceneService extends Phaser.Scene {
       
       
     
+    }
+
+    jugarTurno() {
+      if (this.partida.colocandoFichas) {
+        this.colocarFicha();
+      } else {
+
+      }
+    }
+
+    colocarFicha() {
+      var puntos = this.generarZonaDeColocacion();
+
+      var puntoElegido = Phaser.Math.Between(0, puntos.length-1);
+
+      
     }
     
 }

@@ -229,8 +229,8 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
         return null;
     }
 
-    getZonaColocacion() {
-        var zona = [];
+    obtenerZonaColocacion() {
+        /* var zona = [];
         this.fichasTerreno.getChildren().forEach((ficha: FichaSprite) => {
             if (ficha.ficha.colocada) {
                 var x = ficha.x;
@@ -244,9 +244,9 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
                 var abajo = new  Phaser.Math.Vector2(x, y  + ficha.height * ficha.scaleY);
                 zona.push(abajo);
             }           
-        });
+        }); */
 
-        return zona;
+        return this.jugador.obtenerZonaDeColocacion();
     }
 
     agregarMina(mina: FichaSprite) {
