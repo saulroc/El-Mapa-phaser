@@ -33,11 +33,12 @@ export class Jugador {
         this.madera = 0;
         this.puntos = 0;
         this.minas = [];
-
+        this.fichas = [];
+        
         this.activo = false;
         this.pelotonesMoviendo = 0;
         this.maximoPelotonesMoviendo = 0;
-
+        
 
     }
 

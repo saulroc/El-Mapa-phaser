@@ -292,7 +292,7 @@ export class MapSceneService extends Phaser.Scene {
 
     }
 
-    clickear(pointer, localX, localY, event) {
+    clickear(pointer: Phaser.Input.Pointer, localX, localY, event) {
       var xCamera = this.cameras.main.centerX - pointer.position.x;
       var yCamera = this.cameras.main.centerY - pointer.position.y;
       var worldPoint = <Phaser.Math.Vector2>pointer.positionToCamera(this.cameras.main);
@@ -477,7 +477,17 @@ export class MapSceneService extends Phaser.Scene {
             var jugadores = <JugadorSprite[]>this.jugadores.getChildren();
             puntos = jugadores[this.jugadorActivo.jugador.numero-1].obtenerZonaColocacion();
           }
-        }        
+        }
+        
+        var i = 0;
+        while (i < puntos.length) {
+          var tile = this.map.getTileAt(puntos[i].x, puntos[i].y);
+
+          if (tile.index != FRAME_FICHA_FONDO) {
+            puntos.splice(i,1);
+          } else 
+            i++;
+        }
         
         return puntos;        
     }
@@ -523,9 +533,32 @@ export class MapSceneService extends Phaser.Scene {
     colocarFicha() {
       var puntos = this.generarZonaDeColocacion();
 
-      var puntoElegido = Phaser.Math.Between(0, puntos.length-1);
-
+      var indexPuntoElegido = Phaser.Math.Between(0, puntos.length-1);
+      var puntoElegido = puntos[indexPuntoElegido];
+      //this.cameras.main.setPosition(punto.x, punto.y);
+      var punto = this.map.tileToWorldXY(puntoElegido.x, puntoElegido.y);
       
+      this.cameras.main.once('camerapancomplete', () => {
+        
+        var punto = this.map.tileToWorldXY(puntoElegido.x, puntoElegido.y);
+        
+        this.game.input.activePointer.x = punto.x - this.cameras.main.scrollX;
+        this.game.input.activePointer.y = punto.y - this.cameras.main.scrollY;
+        
+        this.clickear(this.game.input.activePointer, null, null, null);
+      });
+      this.cameras.main.pan(punto.x, punto.y);
+      /* this.cameras.main.pan(
+        punto.x, 
+        punto.y,
+        1000, 
+        Phaser.Math.Easing.Linear.Linear, 
+        false, 
+        (camera, progress, x, y) => {
+          if(progress == 1) {
+            this.clickear(this.game.input.activePointer, null, null, null);
+        }
+      }); */
     }
     
 }

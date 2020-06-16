@@ -147,6 +147,7 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
                 datosficha.bloqueoOeste
 
             );
+            this.jugador.fichas.push(ficha);
             var fichaTerreno = new FichaSprite(
                 this.scene, 
                 ficha
