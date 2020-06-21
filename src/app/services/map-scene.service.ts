@@ -263,7 +263,7 @@ export class MapSceneService extends Phaser.Scene {
       this.marker.lineStyle(4, this.jugadorActivo.color.color, 1);
       this.marker.strokeRect(0, 0, this.map.tileWidth * this.layer1.scaleX, this.map.tileHeight * this.layer1.scaleY);
 
-      this.fichaColocando = this.jugadorActivo.getSiguienteFicha();
+      this.fichaColocando = this.jugadorActivo.obtenerSiguienteFicha();
       if (this.fichaColocando) {
         
         this.mensajesInformacion.push( {color: COLOR_LETRA_BLANCO, mensaje: "Colocando ficha " + this.jugadorActivo.jugador.nombre})
@@ -532,7 +532,18 @@ export class MapSceneService extends Phaser.Scene {
 
     colocarFicha() {
       var puntos = this.generarZonaDeColocacion();
-
+      var ficha = this.jugadorActivo.obtenerUltimaFichaColocada();
+      if (!ficha.ficha.oculta) {
+        var distancia = 1;
+        var puntosFiltrados = [];
+        while (puntosFiltrados.length >= 0) {
+          puntosFiltrados = puntos.filter(punto => {
+            distancia >= (Math.abs(punto.x - ficha.ficha.xTile) + Math.abs(punto.y - ficha.ficha.yTile))
+          })
+          distancia++;
+        }
+        puntos = puntosFiltrados;
+      }
       var indexPuntoElegido = Phaser.Math.Between(0, puntos.length-1);
       var puntoElegido = puntos[indexPuntoElegido];
       //this.cameras.main.setPosition(punto.x, punto.y);
@@ -548,17 +559,7 @@ export class MapSceneService extends Phaser.Scene {
         this.clickear(this.game.input.activePointer, null, null, null);
       });
       this.cameras.main.pan(punto.x, punto.y);
-      /* this.cameras.main.pan(
-        punto.x, 
-        punto.y,
-        1000, 
-        Phaser.Math.Easing.Linear.Linear, 
-        false, 
-        (camera, progress, x, y) => {
-          if(progress == 1) {
-            this.clickear(this.game.input.activePointer, null, null, null);
-        }
-      }); */
+      
     }
     
 }

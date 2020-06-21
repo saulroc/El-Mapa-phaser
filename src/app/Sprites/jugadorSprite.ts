@@ -202,7 +202,7 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
 
     }
 
-    getSiguienteFicha() {
+    obtenerSiguienteFicha() {
         if (!this.fichasTerreno) return null;
         var fichasArray = this.fichasTerreno.getChildren();
 
@@ -216,7 +216,7 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
         return null;
     }
 
-    getUltimaFichaColocada() {
+    obtenerUltimaFichaColocada() {
         if (!this.fichasTerreno) return null;
         var fichasArray = this.fichasTerreno.getChildren();
 
@@ -276,7 +276,7 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
         //this.setActive(true);
         this.tweenActivo.restart();
         this.tweenActivo.resume();
-        var ficha = this.getUltimaFichaColocada();
+        var ficha = this.obtenerUltimaFichaColocada();
         if (ficha) {
             var x = ficha.x;  //- this.scene.cameras.main.width / 2;
             var y = ficha.y; // - this.scene.cameras.main.height / 2;
