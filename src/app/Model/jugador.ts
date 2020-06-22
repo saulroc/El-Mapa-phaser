@@ -1,6 +1,7 @@
 import { Pueblo } from "./pueblo";
 import { Peloton } from "./peloton";
 import { Ficha } from "./ficha";
+import { Edificio } from "./edificio";
 
 
 export class Jugador {
@@ -162,5 +163,53 @@ export class Jugador {
         }
         
         return puntos;
+    }
+
+    tieneAccionesPendientes(): boolean {
+        var resultado = (this.tieneRecursos() && 
+            (this.puedeConstruir() || this.puedeComerciar() || this.puedeComprarTropas()))
+            || this.puedeMoverPelotones()
+
+        return resultado;
+    }
+
+    tieneRecursos(): boolean {
+        return this.oro > 0 || this.madera > 0 || this.piedra > 0;
+    }
+
+    puedeMoverPelotones(): boolean {
+        if (this.pelotonesMoviendo < this.maximoPelotonesMoviendo) {
+            return true;
+        }
+
+        return false;
+    }
+
+    puedeComprarTropas(): boolean {
+        this.pueblos.forEach((pueblo: Pueblo) => {
+            if (pueblo.leva.cantidad > 0 && this.oro > 0) return true;
+        });
+        return false;
+    }
+
+    puedeComerciar(): boolean {
+        this.pueblos.forEach((pueblo: Pueblo) => {
+            if (pueblo.puedeComerciar()) return true;
+        });
+        return false;
+    }
+
+    puedeConstruir(): boolean {
+        this.pueblos.forEach((pueblo: Pueblo) => {
+            if (!pueblo.construido) {
+                pueblo.edificios.forEach((edificio: Edificio) => {
+                    if (!edificio.estaConstruido()) {
+                        var resultado = this.puedeComprar(edificio.oro, edificio.madera, edificio.piedra);
+                        if (resultado) return resultado;
+                    }
+                });                
+            }
+        });
+        return false;
     }
 }

@@ -526,19 +526,29 @@ export class MapSceneService extends Phaser.Scene {
       if (this.partida.colocandoFichas) {
         this.colocarFicha();
       } else {
+        var jugador = this.jugadorActivo.jugador;
 
+        while (jugador.tieneAccionesPendientes()) {
+          if (jugador.puedeConstruir() || jugador.puedeComprarTropas() || jugador.puedeComerciar()) {
+            this.abrirPueblo();
+          } else if (jugador.puedeMoverPelotones()) {
+            this.moverPelotonCPU()
+          }
+        }
+
+        this.terminarTurno(null, null, null, null);
       }
     }
 
     colocarFicha() {
       var puntos = this.generarZonaDeColocacion();
       var ficha = this.jugadorActivo.obtenerUltimaFichaColocada();
-      if (!ficha.ficha.oculta) {
+      if (ficha && !ficha.ficha.oculta) {
         var distancia = 1;
         var puntosFiltrados = [];
-        while (puntosFiltrados.length >= 0) {
+        while (puntosFiltrados.length == 0) {
           puntosFiltrados = puntos.filter(punto => {
-            distancia >= (Math.abs(punto.x - ficha.ficha.xTile) + Math.abs(punto.y - ficha.ficha.yTile))
+            return distancia >= (Math.abs(punto.x - ficha.ficha.xTile) + Math.abs(punto.y - ficha.ficha.yTile))
           })
           distancia++;
         }
@@ -562,4 +572,12 @@ export class MapSceneService extends Phaser.Scene {
       
     }
     
+    abrirPueblo() {
+      
+    }
+
+    moverPelotonCPU() {
+
+    }
+
 }
