@@ -531,6 +531,7 @@ export class MapSceneService extends Phaser.Scene {
         while (jugador.tieneAccionesPendientes()) {
           if (jugador.puedeConstruir() || jugador.puedeComprarTropas() || jugador.puedeComerciar()) {
             this.abrirPueblo();
+            return;
           } else if (jugador.puedeMoverPelotones()) {
             this.moverPelotonCPU()
           }
@@ -573,10 +574,35 @@ export class MapSceneService extends Phaser.Scene {
     }
     
     abrirPueblo() {
-      
+      var jugador = this.jugadorActivo.jugador;
+      var pueblo = jugador.puedeConstruir() ? jugador.puedeConstruir() 
+        : jugador.puedeComprarTropas() ? jugador.puedeComprarTropas() 
+        : jugador.puedeComerciar();
+      if (pueblo != null) {
+        var fichas = <FichaSprite[]>this.mapaFichas.getChildren();
+        var fichaBuscada = fichas.find(ficha => ficha.ficha.pueblo == pueblo);
+        if (fichaBuscada) {
+          fichaBuscada.clicked();
+        }
+      }      
     }
 
     moverPelotonCPU() {
+      var fichas = <FichaSprite[]>this.mapaFichas.getChildren();
+      fichas = fichas.filter(ficha => ficha.ficha.pelotones.length == 1 
+        && ficha.ficha.pelotones[0].jugador == this.jugadorActivo.jugador 
+        && ficha.ficha.pelotones[0].puedeMover()
+      );
+      var pelotonesJugador = fichas.map((ficha: FichaSprite) => {
+        return (<PelotonSprite[]>ficha.marcadoresTropas[0].getChildren())[0];
+      });
+
+      if (pelotonesJugador.length > 0) {
+        var index = Phaser.Math.Between(0, pelotonesJugador.length - 1);
+        pelotonesJugador[index].seleccionarMarcadorTropas();
+
+      }
+      
 
     }
 

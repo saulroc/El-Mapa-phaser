@@ -167,7 +167,7 @@ export class Jugador {
 
     tieneAccionesPendientes(): boolean {
         var resultado = (this.tieneRecursos() && 
-            (this.puedeConstruir() || this.puedeComerciar() || this.puedeComprarTropas()))
+            (this.puedeConstruir() != null || this.puedeComerciar() != null || this.puedeComprarTropas() != null))
             || this.puedeMoverPelotones()
 
         return resultado;
@@ -185,31 +185,29 @@ export class Jugador {
         return false;
     }
 
-    puedeComprarTropas(): boolean {
-        this.pueblos.forEach((pueblo: Pueblo) => {
-            if (pueblo.leva.cantidad > 0 && this.oro > 0) return true;
-        });
-        return false;
+    puedeComprarTropas(): Pueblo {
+        var filtrados = this.pueblos.filter((pueblo: Pueblo) => (pueblo.leva.cantidad > 0 && this.oro > 0));
+        return filtrados.length > 0 ? filtrados[0] : null;
     }
 
-    puedeComerciar(): boolean {
-        this.pueblos.forEach((pueblo: Pueblo) => {
-            if (pueblo.puedeComerciar()) return true;
-        });
-        return false;
+    puedeComerciar(): Pueblo {
+        var filtrados = this.pueblos.filter((pueblo: Pueblo) => pueblo.puedeComerciar());        
+        return filtrados.length > 0 ? filtrados[0] : null;
     }
 
-    puedeConstruir(): boolean {
+    puedeConstruir(): Pueblo {
+        var puebloEncontrado: Pueblo = null;
         this.pueblos.forEach((pueblo: Pueblo) => {
             if (!pueblo.construido) {
                 pueblo.edificios.forEach((edificio: Edificio) => {
                     if (!edificio.estaConstruido()) {
                         var resultado = this.puedeComprar(edificio.oro, edificio.madera, edificio.piedra);
-                        if (resultado) return resultado;
+                        if (resultado) 
+                            puebloEncontrado = pueblo;
                     }
-                });                
+                });                             
             }
         });
-        return false;
+        return puebloEncontrado;
     }
 }
