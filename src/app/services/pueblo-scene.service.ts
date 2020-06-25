@@ -570,48 +570,47 @@ export class PuebloSceneService extends Phaser.Scene {
             setTimeout(() => {  this.jugarCPU(); }, 2000);
     }
 
-    jugarCPU() {
+    async jugarCPU() {
         var CPU = this.jugador.jugador;
 
         while(CPU.tieneAccionesPuebloPendientes()) {
             if (this.pueblo === CPU.puedeConstruir()) {
-                this.construirCPU(CPU);
+                await this.construirCPU(CPU);;
             }
             if (CPU.tieneRecursos() && this.pueblo === CPU.puedeComerciar()) {
-                this.comerciarCPU();
+                await this.comerciarCPU();;
             }
             if (CPU.tieneRecursos() && this.pueblo === CPU.puedeComprarTropas()) {
-                this.comprarTropasCPU(CPU);
+                await this.comprarTropasCPU(CPU);;
             }
         } 
         this.cerrar(null, null, null, null);       
     }
 
-    construirCPU(cpu: Jugador) {
-        var zonasEdificables = (<Phaser.GameObjects.Rectangle[]>this.zonasDeConstruccion.getChildren())
-            .filter(zc => zc.isStroked);
-
-        var index = Phaser.Math.Between(0,zonasEdificables.length-1);
+    async construirCPU(cpu: Jugador) {
         setTimeout(() => {  
-            
+            var zonasEdificables = (<Phaser.GameObjects.Rectangle[]>this.zonasDeConstruccion.getChildren())
+                .filter(zc => zc.isStroked);
+
+            var index = Phaser.Math.Between(0,zonasEdificables.length-1);
+                        
             this.seleccionadoParaConstruir(zonasEdificables[index]); 
             var edificiosSeleccionables = (<EdificioSprite[]>this.edificios.getChildren())
                 .filter(es => !es.edificio.estaConstruido() 
                     && es.edificio.sePuedeConstruir(cpu.oro,cpu.madera,cpu.piedra, this.posicionSeleccionada)
                 );
             var indexEdificio = Phaser.Math.Between(0, edificiosSeleccionables.length-1);
-            setTimeout(() => {  
-                this.construirEdificio(edificiosSeleccionables[indexEdificio]); 
-            }, 2000);
-        }, 2000);                        
+            
+            this.construirEdificio(edificiosSeleccionables[indexEdificio]);                                  
+        }, 3000);
 
     }
 
-    comerciarCPU() {
+    async comerciarCPU() {
 
     }
 
-    comprarTropasCPU(cpu: Jugador) {        
+    async comprarTropasCPU(cpu: Jugador) {        
         var tropas = (<Phaser.GameObjects.Sprite[]>this.tropasSprite.getChildren())
             .map(s => <Tropa>s.getData('tropa'));
             
