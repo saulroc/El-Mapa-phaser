@@ -146,6 +146,8 @@ export class MapSceneService extends Phaser.Scene {
       this.textoTerminarTurno.setScrollFactor(0);
       this.textoTerminarTurno.setDepth(3);
       this.textoTerminarTurno.setVisible(false);
+
+      this.events.on('resume', this.comprobarCPUJugando, this);
       //var pinch = this.rexGestures.add.pinch();
 
       // var camera = this.cameras.main;
@@ -230,7 +232,8 @@ export class MapSceneService extends Phaser.Scene {
       
       if (event)
         event.stopPropagation();
-
+      
+      this.input.mouse.enabled = true;
       this.partida.terminarTurno(); 
            
       this.jugadores.getChildren().forEach((jugador: JugadorSprite)=>{
@@ -521,15 +524,20 @@ export class MapSceneService extends Phaser.Scene {
       
     
     }
+    comprobarCPUJugando() {
+      if (this.jugadorActivo.jugador.CPU)
+        this.jugarTurno();
+    }
 
     jugarTurno() {
       if (this.partida.colocandoFichas) {
+        this.input.mouse.enabled = false;        
         this.colocarFicha();
       } else {
         var jugador = this.jugadorActivo.jugador;
 
         while (jugador.tieneAccionesPendientes()) {
-          if (jugador.puedeConstruir() || jugador.puedeComprarTropas() || jugador.puedeComerciar()) {
+          if (jugador.tieneAccionesPuebloPendientes()) {
             this.abrirPueblo();
             return;
           } else if (jugador.puedeMoverPelotones()) {

@@ -27,7 +27,7 @@ export class EdificioSprite extends Phaser.GameObjects.Sprite {
 
     }   
     
-    pintarTropas() {
+    pintarTropas(grupo: Phaser.GameObjects.Group) {
         
         var escala = this.scaleX;
         var cantidad = 0;
@@ -47,7 +47,8 @@ export class EdificioSprite extends Phaser.GameObjects.Sprite {
             tropaSprite.setScale(escala / 2);
             tropaSprite.setDepth(2);
             tropaSprite.setInteractive();
-            tropaSprite.on('pointerup', escenaPueblo.seleccionarTropaParaComprar);                        
+            tropaSprite.on('pointerup', escenaPueblo.seleccionarTropaParaComprar);       
+            grupo.add(tropaSprite);
         }
     }
 

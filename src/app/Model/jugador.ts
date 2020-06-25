@@ -166,11 +166,15 @@ export class Jugador {
     }
 
     tieneAccionesPendientes(): boolean {
-        var resultado = (this.tieneRecursos() && 
-            (this.puedeConstruir() != null || this.puedeComerciar() != null || this.puedeComprarTropas() != null))
+        var resultado = this.tieneAccionesPuebloPendientes()
             || this.puedeMoverPelotones()
 
         return resultado;
+    }
+
+    tieneAccionesPuebloPendientes(): boolean {
+        return (this.tieneRecursos() && 
+        (this.puedeConstruir() != null || this.puedeComerciar() != null || this.puedeComprarTropas() != null))
     }
 
     tieneRecursos(): boolean {

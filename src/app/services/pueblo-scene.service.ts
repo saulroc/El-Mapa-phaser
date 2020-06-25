@@ -8,6 +8,8 @@ import { Tropa } from '../Model/tropa';
 import { EdificioSprite } from '../Sprites/edificioSprite';
 import { Edificio } from '../Model/edificio';
 import { Partida } from '../Model/partida';
+import { cpuUsage } from 'process';
+import { Jugador } from '../Model/jugador';
 
 const COLOR_ZONA_CONSTRUCCION = 0x00ff00;
 const COLOR_ZONA_CONSTRUCCION_SELECCIONADA = 0x0000ff;
@@ -32,6 +34,7 @@ export class PuebloSceneService extends Phaser.Scene {
     opcionesComercio : Phaser.GameObjects.Group[];
     textoComercio: Phaser.GameObjects.Text;
     
+    tropasSprite: Phaser.GameObjects.Group;
     grupoInformacion: Phaser.GameObjects.Group;
     textoOro: Phaser.GameObjects.Text;
     textoMadera: Phaser.GameObjects.Text;
@@ -78,6 +81,7 @@ export class PuebloSceneService extends Phaser.Scene {
         this.edificios = this.add.group();
         this.zonasDeConstruccion = this.add.group();;
         this.grupoInformacion = this.add.group();
+        this.tropasSprite = this.add.group();
 
         var estilo = { 
             font: 'bold 16pt Arial',
@@ -107,6 +111,8 @@ export class PuebloSceneService extends Phaser.Scene {
             this.pintarLevas();
             if (!this.pueblo.construido)
                 this.cargarZonasConstruccion();
+
+            this.events.once('create', this.comprobarCPU, this);            
             
         }
 
@@ -255,7 +261,7 @@ export class PuebloSceneService extends Phaser.Scene {
             this.posicionar(edificioSprite, edificioSprite.edificio.posicion, edificioSprite.edificio.numeroFrame);
 
             if(edificioSprite.edificio.estaConstruido() && this.jugador.jugador.esPropietario(this.pueblo))
-                edificioSprite.pintarTropas();
+                edificioSprite.pintarTropas(this.tropasSprite);
             
             this.edificios.add(edificioSprite);
         }
@@ -371,7 +377,8 @@ export class PuebloSceneService extends Phaser.Scene {
             leva.setData('tropa', this.pueblo.leva);
             leva.setScale(escala / 2);
             leva.setInteractive();
-            leva.on('pointerup', this.seleccionarTropaParaComprar);                        
+            leva.on('pointerup', this.seleccionarTropaParaComprar);              
+            this.tropasSprite.add(leva);
         }
     }
 
@@ -380,10 +387,10 @@ export class PuebloSceneService extends Phaser.Scene {
         var escenaPueblo = <PuebloSceneService><unknown>this.scene;
         var tropa = <Tropa>tropaSprite.getData('tropa');
         if (tropaSprite.isTinted) {
+            tropaSprite.clearTint();
             if (escenaPueblo.jugador.jugador.puedeComprar(tropa.coste.oro, tropa.coste.madera, tropa.coste.piedra))
-                escenaPueblo.comprarTropa(tropaSprite);
-            else
-                tropaSprite.clearTint();
+                escenaPueblo.comprarTropa(tropaSprite);            
+                
         } else {
             escenaPueblo.mostrarInformacionTropa(tropa);
             if (escenaPueblo.jugador.jugador.puedeComprar(tropa.coste.oro, tropa.coste.madera, tropa.coste.piedra))
@@ -556,6 +563,69 @@ export class PuebloSceneService extends Phaser.Scene {
         });
     }
     //#endregion Comercio
+
+    //#region JugarCPU
+    comprobarCPU() {
+        if(this.jugador.jugador.CPU)
+            setTimeout(() => {  this.jugarCPU(); }, 2000);
+    }
+
+    jugarCPU() {
+        var CPU = this.jugador.jugador;
+
+        while(CPU.tieneAccionesPuebloPendientes()) {
+            if (this.pueblo === CPU.puedeConstruir()) {
+                this.construirCPU(CPU);
+            }
+            if (CPU.tieneRecursos() && this.pueblo === CPU.puedeComerciar()) {
+                this.comerciarCPU();
+            }
+            if (CPU.tieneRecursos() && this.pueblo === CPU.puedeComprarTropas()) {
+                this.comprarTropasCPU(CPU);
+            }
+        } 
+        this.cerrar(null, null, null, null);       
+    }
+
+    construirCPU(cpu: Jugador) {
+        var zonasEdificables = (<Phaser.GameObjects.Rectangle[]>this.zonasDeConstruccion.getChildren())
+            .filter(zc => zc.isStroked);
+
+        var index = Phaser.Math.Between(0,zonasEdificables.length-1);
+        setTimeout(() => {  
+            
+            this.seleccionadoParaConstruir(zonasEdificables[index]); 
+            var edificiosSeleccionables = (<EdificioSprite[]>this.edificios.getChildren())
+                .filter(es => !es.edificio.estaConstruido() 
+                    && es.edificio.sePuedeConstruir(cpu.oro,cpu.madera,cpu.piedra, this.posicionSeleccionada)
+                );
+            var indexEdificio = Phaser.Math.Between(0, edificiosSeleccionables.length-1);
+            setTimeout(() => {  
+                this.construirEdificio(edificiosSeleccionables[indexEdificio]); 
+            }, 2000);
+        }, 2000);                        
+
+    }
+
+    comerciarCPU() {
+
+    }
+
+    comprarTropasCPU(cpu: Jugador) {        
+        var tropas = (<Phaser.GameObjects.Sprite[]>this.tropasSprite.getChildren())
+            .map(s => <Tropa>s.getData('tropa'));
+            
+        var tropasComprables = tropas.filter(t => cpu.puedeComprar(t.coste.oro, t.coste.madera, t.coste.piedra));
+        if (tropasComprables.length > 0) {
+            var index = Phaser.Math.Between(0, tropasComprables.length - 1);
+            var tropa = tropasComprables[index];
+
+            var indexTotal = tropas.indexOf(tropa);
+            var tropaSprite = (<Phaser.GameObjects.Sprite[]>this.tropasSprite.getChildren())[indexTotal];
+            this.comprarTropa(tropaSprite);
+        }        
+    }
+    //#endregion
 
     cerrar(pointer, localX, localY, event) {
         this.scene.resume('Map');
