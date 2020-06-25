@@ -570,6 +570,10 @@ export class PuebloSceneService extends Phaser.Scene {
             setTimeout(() => {  this.jugarCPU(); }, 2000);
     }
 
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     async jugarCPU() {
         var CPU = this.jugador.jugador;
 
@@ -588,22 +592,22 @@ export class PuebloSceneService extends Phaser.Scene {
     }
 
     async construirCPU(cpu: Jugador) {
-        setTimeout(() => {  
-            var zonasEdificables = (<Phaser.GameObjects.Rectangle[]>this.zonasDeConstruccion.getChildren())
-                .filter(zc => zc.isStroked);
+        
+        var zonasEdificables = (<Phaser.GameObjects.Rectangle[]>this.zonasDeConstruccion.getChildren())
+            .filter(zc => zc.isStroked);
 
-            var index = Phaser.Math.Between(0,zonasEdificables.length-1);
-                        
-            this.seleccionadoParaConstruir(zonasEdificables[index]); 
-            var edificiosSeleccionables = (<EdificioSprite[]>this.edificios.getChildren())
-                .filter(es => !es.edificio.estaConstruido() 
-                    && es.edificio.sePuedeConstruir(cpu.oro,cpu.madera,cpu.piedra, this.posicionSeleccionada)
-                );
-            var indexEdificio = Phaser.Math.Between(0, edificiosSeleccionables.length-1);
-            
-            this.construirEdificio(edificiosSeleccionables[indexEdificio]);                                  
-        }, 3000);
-
+        var index = Phaser.Math.Between(0,zonasEdificables.length-1);
+                    
+        this.seleccionadoParaConstruir(zonasEdificables[index]); 
+        await this.sleep(3000);
+        var edificiosSeleccionables = (<EdificioSprite[]>this.edificios.getChildren())
+            .filter(es => !es.edificio.estaConstruido() 
+                && es.edificio.sePuedeConstruir(cpu.oro,cpu.madera,cpu.piedra, this.posicionSeleccionada)
+            );
+        var indexEdificio = Phaser.Math.Between(0, edificiosSeleccionables.length-1);
+        
+        this.construirEdificio(edificiosSeleccionables[indexEdificio]);                                          
+        await this.sleep(3000);
     }
 
     async comerciarCPU() {
@@ -621,7 +625,10 @@ export class PuebloSceneService extends Phaser.Scene {
 
             var indexTotal = tropas.indexOf(tropa);
             var tropaSprite = (<Phaser.GameObjects.Sprite[]>this.tropasSprite.getChildren())[indexTotal];
+            tropaSprite.tint = COLOR_TROPA_SELECCIONADA;
+            await this.sleep(1000);
             this.comprarTropa(tropaSprite);
+            await this.sleep(3000);
         }        
     }
     //#endregion
