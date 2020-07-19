@@ -529,7 +529,7 @@ export class MapSceneService extends Phaser.Scene {
         this.jugarTurno();
     }
 
-    jugarTurno() {
+    async jugarTurno() {
       if (this.partida.colocandoFichas) {
         this.input.mouse.enabled = false;        
         this.colocarFicha();
@@ -537,11 +537,12 @@ export class MapSceneService extends Phaser.Scene {
         var jugador = this.jugadorActivo.jugador;
 
         while (jugador.tieneAccionesPendientes()) {
+          await this.sleep(1500);
           if (jugador.tieneAccionesPuebloPendientes()) {
             this.abrirPueblo();
             return;
           } else if (jugador.puedeMoverPelotones()) {
-            this.moverPelotonCPU()
+            await this.moverPelotonCPU()
           }
         }
 
@@ -595,7 +596,7 @@ export class MapSceneService extends Phaser.Scene {
       }      
     }
 
-    moverPelotonCPU() {
+    async moverPelotonCPU() {
       var fichas = <FichaSprite[]>this.mapaFichas.getChildren();
       fichas = fichas.filter(ficha => ficha.ficha.pelotones.length == 1 
         && ficha.ficha.pelotones[0].jugador == this.jugadorActivo.jugador 
@@ -607,11 +608,38 @@ export class MapSceneService extends Phaser.Scene {
 
       if (pelotonesJugador.length > 0) {
         var index = Phaser.Math.Between(0, pelotonesJugador.length - 1);
-        pelotonesJugador[index].seleccionarMarcadorTropas();
+        while (pelotonesJugador[index].peloton.puedeMover()) {
+          pelotonesJugador[index].seleccionarMarcadorTropas();
 
-      }
-      
+          await this.sleep(1500);
 
+          var fichaOrigen = pelotonesJugador[index].ficha;
+          var fichasDestino = <FichaSprite[]>this.mapaFichas.getChildren();
+          fichasDestino = fichasDestino.filter(fd => (Math.abs(fd.ficha.xTile - fichaOrigen.ficha.xTile) + Math.abs(fd.ficha.yTile - fichaOrigen.ficha.yTile)) == 1
+                                        && fd.ficha.sePuedeMover(fichaOrigen.ficha.xTile, fichaOrigen.ficha.yTile)
+                                        &&  fichaOrigen.ficha.sePuedeMover(fd.ficha.xTile, fd.ficha.yTile));
+          var indexFicha = Phaser.Math.Between(0, fichasDestino.length - 1);
+          
+          var punto = this.map.tileToWorldXY(fichasDestino[indexFicha].ficha.xTile, fichasDestino[indexFicha].ficha.yTile);
+        
+          this.game.input.activePointer.x = punto.x - this.cameras.main.scrollX;
+          this.game.input.activePointer.y = punto.y - this.cameras.main.scrollY;
+        
+          this.clickear(this.game.input.activePointer, null, null, null);
+
+          await this.sleep(1500);
+
+          var marcador = fichasDestino[indexFicha].marcadoresTropas.find(mt => (<PelotonSprite[]>mt.getChildren())[0].peloton.jugador == this.jugadorActivo.jugador);
+          pelotonesJugador[index] = (<PelotonSprite[]>marcador.getChildren())[0];
+
+        }
+
+      }      
+
+    }
+
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     }
 
 }

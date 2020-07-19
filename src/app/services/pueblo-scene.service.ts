@@ -295,7 +295,7 @@ export class PuebloSceneService extends Phaser.Scene {
         edificioSprite.edificio.posicion = this.posicionSeleccionada;
         this.posicionar(edificioSprite, edificioSprite.edificio.posicion, edificioSprite.edificio.numeroFrame);        
         edificioSprite.setDepth(1);
-        edificioSprite.pintarTropas();
+        edificioSprite.pintarTropas(this.tropasSprite);
         this.zonasDeConstruccion.setVisible(false);
 
         this.edificios.getChildren().forEach((edificio: EdificioSprite) => edificio.clearTint() );            
@@ -588,7 +588,8 @@ export class PuebloSceneService extends Phaser.Scene {
                 await this.comprarTropasCPU(CPU);;
             }
         } 
-        this.cerrar(null, null, null, null);       
+        this.cerrar(null, null, null, null);    
+        await this.sleep(1000);
     }
 
     async construirCPU(cpu: Jugador) {
@@ -599,7 +600,7 @@ export class PuebloSceneService extends Phaser.Scene {
         var index = Phaser.Math.Between(0,zonasEdificables.length-1);
                     
         this.seleccionadoParaConstruir(zonasEdificables[index]); 
-        await this.sleep(3000);
+        await this.sleep(1500);
         var edificiosSeleccionables = (<EdificioSprite[]>this.edificios.getChildren())
             .filter(es => !es.edificio.estaConstruido() 
                 && es.edificio.sePuedeConstruir(cpu.oro,cpu.madera,cpu.piedra, this.posicionSeleccionada)
@@ -607,7 +608,7 @@ export class PuebloSceneService extends Phaser.Scene {
         var indexEdificio = Phaser.Math.Between(0, edificiosSeleccionables.length-1);
         
         this.construirEdificio(edificiosSeleccionables[indexEdificio]);                                          
-        await this.sleep(3000);
+        await this.sleep(1500);
     }
 
     async comerciarCPU() {
