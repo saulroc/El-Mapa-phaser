@@ -582,7 +582,7 @@ export class PuebloSceneService extends Phaser.Scene {
                 await this.construirCPU(CPU);;
             }
             if (CPU.tieneRecursos() && this.pueblo === CPU.puedeComerciar()) {
-                await this.comerciarCPU();;
+                await this.comerciarCPU(CPU);;
             }
             if (CPU.tieneRecursos() && this.pueblo === CPU.puedeComprarTropas()) {
                 await this.comprarTropasCPU(CPU);;
@@ -611,8 +611,34 @@ export class PuebloSceneService extends Phaser.Scene {
         await this.sleep(1500);
     }
 
-    async comerciarCPU() {
+    async comerciarCPU(cpu: Jugador) {
+        var index = -1;
+        if (cpu.oro - cpu.madera > 4) {
+            index = 2;
+        } else if (cpu.oro - cpu.piedra > 5) {
+            index = 3;
+        } else if (cpu.oro < 3 && cpu.madera > 2) {
+            index = 0;
+        } else if (cpu.oro < 3 && cpu.piedra > 1) {
+            index = 1;
+        } else {
+            this.pueblo.comerciado++;
+        }
+        if (index > -1) {
+            this.mostrarOcultarComercio();
 
+            await this.sleep(1500);
+
+            this.opcionesComercio[index].setTint(COLOR_TROPA_SELECCIONADA);
+
+            await this.sleep(1000);
+
+            var sprite = <Phaser.GameObjects.Sprite>this.opcionesComercio[index].getChildren()[0];
+            this.comerciar(sprite);
+            
+            await this.sleep(1000);
+
+        }
     }
 
     async comprarTropasCPU(cpu: Jugador) {        
