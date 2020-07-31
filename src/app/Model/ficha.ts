@@ -70,6 +70,8 @@ export class Ficha {
     addPeloton(jugador: Jugador, tropas: Tropa[]) {
         var peloton = new Peloton(jugador, tropas);
         this.pelotones.push(peloton);
+        if (jugador !== null)
+            jugador.pelotones.push(peloton);
     }
 
     addTropas(jugador: Jugador, tropas: Tropa[]) {
@@ -92,6 +94,10 @@ export class Ficha {
 
                 if (peloton.tropas.length == 0) {
                     this.pelotones.splice(i, 1);
+                    if (jugador !== null) {
+                        var index = jugador.pelotones.findIndex(p => p === peloton);
+                        jugador.pelotones.splice(index, 1);
+                    }                    
                 }
 
                 return;

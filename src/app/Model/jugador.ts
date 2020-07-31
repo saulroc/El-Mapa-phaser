@@ -19,6 +19,7 @@ export class Jugador {
     minas: Ficha[];
     pelotonesMoviendo: number;
     maximoPelotonesMoviendo: number;
+    pelotones: Peloton[];
 
     /**
      *
@@ -39,7 +40,7 @@ export class Jugador {
         this.activo = false;
         this.pelotonesMoviendo = 0;
         this.maximoPelotonesMoviendo = 0;
-        
+        this.pelotones = [];
 
     }
 
@@ -182,7 +183,7 @@ export class Jugador {
     }
 
     puedeMoverPelotones(): boolean {
-        if (this.pelotonesMoviendo < this.maximoPelotonesMoviendo) {
+        if (this.pelotonesMoviendo < this.maximoPelotonesMoviendo && this.pelotones.find(p => p.puedeMover()) !== undefined) {
             return true;
         }
 
