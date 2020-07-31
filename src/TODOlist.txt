@@ -11,12 +11,16 @@
 - ventana de cargar partidas
 - Juego
     - Maravillas
-    - Quitar el icono de tesoro y sustuirlo por una flecha en el comercio
     - Posicionar los edificios no construidos según el nivel
     - Tener que realizar doble click en terminar turno para pasar de turno
     - cartas de tecnologia
-    - IA de CPU
     - comercio entre jugadores
     - los arqueros en el combate
     - meter instrucciones en el juego
+    - IA de CPU:
+        - Mover de forma "inteligente"
+        - Comprar tropas de forma "inteligente"
+        - Error al construir edificios
+        - Bucle infinito al tener dos pueblos y buscar edificios para construir.
+    
 
