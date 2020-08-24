@@ -25,7 +25,11 @@ export const INI_FICHAS = [{
     minaOro: false,
     minaTecnologia: 0,
     tesoro: 0,
-    tropa: []
+    tropa: [],
+    bloqueoNorte: false,
+    bloqueoSur: false,
+    bloqueoEste: false,
+    bloqueoOeste: false
 },
 {
     frame: 8,
@@ -1096,10 +1100,52 @@ export const INI_EDIFICIOS = [{
     oro: 6,
     madera: 0,
     piedra: 4,
-    puntos: 10,
+    puntos: 14,
     generaOro: 0,
     numeroFrame: 16,
     tropa: null,
     incrementoTropa: 0,
-    descripcion: 'NO IMPLEMENTADO - Suma 6 puntos de victoria más y genera 2 más por cada pidra al final de la partida.'
+    descripcion: 'NO IMPLEMENTADO - Suma 10 puntos de victoria más y genera 2 más por cada pidra al final de la partida.'
+},
+{
+    nombre: 'templo de Midas',
+    posicion: -1,
+    nivel: 4,
+    oro: 8,
+    madera: 2,
+    piedra: 1,
+    puntos: 12,
+    generaOro: 0,
+    numeroFrame: 17,
+    tropa: null,
+    incrementoTropa: 0,
+    descripcion: 'NO IMPLEMENTADO - Suma 8 puntos de victoria más y genera 2 más por cada oro al final de la partida.'
+},
+{
+    nombre: 'templo de Ares',
+    posicion: -1,
+    nivel: 4,
+    oro: 5,
+    madera: 3,
+    piedra: 2,
+    puntos: 13,
+    generaOro: 0,
+    numeroFrame: 18,
+    tropa: null,
+    incrementoTropa: 0,
+    descripcion: 'NO IMPLEMENTADO - Suma 9 puntos de victoria más y genera 2 más por cada tropa en activo al final de la partida.'
+},
+{
+    nombre: 'jardines Colgantes',
+    posicion: -1,
+    nivel: 4,
+    oro: 6,
+    madera: 7,
+    piedra: 0,
+    puntos: 12,
+    generaOro: 0,
+    numeroFrame: 19,
+    tropa: null,
+    incrementoTropa: 0,
+    descripcion: 'NO IMPLEMENTADO - Suma 8 puntos de victoria más y genera 2 más por cada madera al final de la partida.'
 }];
