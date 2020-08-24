@@ -1,7 +1,6 @@
 import { Jugador } from "./jugador";
 import { Ficha } from "./ficha";
 import { Peloton } from "./peloton";
-import { ini_jugadores } from "./datosIniciales";
 import { Edificio } from "./edificio";
 
 export class Partida {
@@ -22,19 +21,21 @@ export class Partida {
      */
     constructor() {
         this.mapa = [];
-        this.numeroJugadores = ini_jugadores.length;
+        this.numeroJugadores = 0;
         this.partidaAcabada = false;
         this.maravillasConstruidas = 0;
         this.colocandoFichas = true;
     }
 
-    iniciarJugadores() {
+    iniciarJugadores(ini_jugadores: { nombre:string, cpu: boolean, color: string }[]) {
         this.jugadores = [];
+        this.numeroJugadores = ini_jugadores.length;
         for (var i = 0; i < this.numeroJugadores; i++) {
             var datosJugador = new Jugador(ini_jugadores[i].nombre, ini_jugadores[i].color, i, ini_jugadores[i].cpu);
             this.jugadores.push(datosJugador);             
         }
-        this.jugadorActivo = this.jugadores[0];
+        if (this.numeroJugadores > 0)
+          this.jugadorActivo = this.jugadores[0];
     }
 
     terminarTurno() {

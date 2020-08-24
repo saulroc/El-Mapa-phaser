@@ -53,7 +53,7 @@ export class MapSceneService extends Phaser.Scene {
     public constructor() {
       super({ key: 'Map' });
       this.partida = new Partida();
-      this.partida.iniciarJugadores();
+      this.partida.iniciarJugadores(ini_jugadores);
       this.mensajesInformacion = [];
     }
 
