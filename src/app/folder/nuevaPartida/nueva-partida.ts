@@ -10,6 +10,7 @@ import { Jugador } from '../../Model/jugador';
 export class NuevaPartida {
     public jugadores: Jugador[];
     private colores = ["0xff0000", "0x0000ff", "0x008000", "0xffff00", "0xD2B48C", "0xff4500", "0x800080", "0x00ffff"]; 
+    image: HTMLElement;
 
     constructor() { 
         this.jugadores = [];
@@ -19,6 +20,10 @@ export class NuevaPartida {
 
     ngOnInit() {
 
+    }
+
+    imagenCargada(e) {
+        this.image = e.detail.result;
     }
 
     agregarJugador() {
