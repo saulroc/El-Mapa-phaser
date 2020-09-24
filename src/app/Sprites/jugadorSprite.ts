@@ -125,7 +125,6 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
         
         for( var i = 0; i < this.jugador.fichas.length; i++) {
             var ficha = this.jugador.fichas[i];
-            this.jugador.fichas.push(ficha);
             var fichaTerreno = new FichaSprite(
                 this.scene, 
                 ficha

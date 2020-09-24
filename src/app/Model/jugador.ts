@@ -277,7 +277,9 @@ export class Jugador {
             this.shuffleArray(fichasNiveles[i]);            
         }
         this.fichas = [];
-        this.fichas = fichas;
+        fichasNiveles.forEach(element => {
+            this.fichas = this.fichas.concat(element);
+        });        
 
     }
 

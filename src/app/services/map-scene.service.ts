@@ -135,6 +135,7 @@ export class MapSceneService extends Phaser.Scene {
       this.cameras.main.setScroll(this.physics.world.bounds.centerX - this.cameras.main.width / 2, this.physics.world.bounds.centerY  - this.cameras.main.height / 2)
       if (this.game.input.pointers.length < 2)
         this.input.addPointer(1);
+
       this.activarJugador(0);
 
       this.textoTerminarTurno = this.add.text(
