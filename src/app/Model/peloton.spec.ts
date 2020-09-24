@@ -380,7 +380,7 @@ describe('repartir heridas sufridas', () => {
         peloton.repartirHeridasSufridas(5);
 
         expect(peloton.tropas.length).toBe(1);
-        expect(peloton.tropas).toContain(caballero);
+        expect(peloton.tropas[0].tipo).toBe(caballero.tipo);
     });
     it('Si sufre 7 heridas deben morir todos, la leva, el arquero, el soldado y el caballero', () =>{        
         peloton.repartirHeridasSufridas(7);

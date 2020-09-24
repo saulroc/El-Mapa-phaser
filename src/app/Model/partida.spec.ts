@@ -4,15 +4,15 @@ const colores = ["0xff0000", "0x0000ff", "0x008000", "0xffff00", "0xD2B48C", "0x
 
 describe('iniciarJugadores', () => {
     let partida: Partida;
-    
+    let ini_jugadores: { nombre: string, cpu: boolean, color: string }[];
+
     beforeEach(() => {
         partida = new Partida();
 
     });
 
     it('iniciar jugadores con un conjunto vacio', () =>{
-        
-        var ini_jugadores: { nombre: string, cpu: boolean, color: string }[];
+                
         ini_jugadores = [];
 
         partida.iniciarJugadores(ini_jugadores);
@@ -24,7 +24,7 @@ describe('iniciarJugadores', () => {
 
     it('iniciar jugadores con un jugador', () =>{
         
-        var ini_jugadores: { nombre: string, cpu: boolean, color: string }[];
+        ini_jugadores = [];
         ini_jugadores.push({ nombre : "Paco", cpu: false, color:"red"});
 
         partida.iniciarJugadores(ini_jugadores);
