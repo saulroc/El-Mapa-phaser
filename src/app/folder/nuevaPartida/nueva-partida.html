@@ -17,14 +17,14 @@
     <div class="container text-center">              
         <ion-button *ngIf="jugadores.length>2" (click)="quitarJugador()" color="light">Quitar Jugador</ion-button>
         <ion-button (click)="crearPartida()" color="light">Crear partida</ion-button>
-        <ion-card *ngFor="let jugador of jugadores; let i = index"> 
+        <ion-card *ngFor="let jugador of jugadores; let i = index" class="col-2"> 
             <ion-card-title>
                 <ion-item>
                     <ion-label>Nombre</ion-label>
                     <ion-input type="text" [(ngModel)]="jugador.nombre"></ion-input>
                 </ion-item>                
             </ion-card-title>
-            <div (click)="cambiarCPU($event)">
+            <div (click)="cambiarCPU(jugador)">
                 <img *ngIf="!jugador.cpu"  src="../../../assets/Avatar Jugador.png" style="width: 12% ; -webkit-filter: opacity(.5) drop-shadow(0 0 0 green);
                 filter: opacity(.5) drop-shadow(0 0 0 green);" />
                 <img *ngIf="jugador.cpu" src="../../../assets/Avatar CPU.png" style="width: 12% ; -webkit-filter: opacity(.5) drop-shadow(0 0 0 green);

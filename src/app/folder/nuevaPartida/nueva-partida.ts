@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Jugador } from '../../Model/jugador';
+import { Partida } from '../../Model/partida'
 
 
 @Component({
@@ -36,5 +37,9 @@ export class NuevaPartida {
     }
     cambiarCPU(jugador: Jugador) {
         jugador.CPU = !jugador.CPU;
+    }
+
+    crearPartida() {
+        var partida = new Partida();
     }
 }
