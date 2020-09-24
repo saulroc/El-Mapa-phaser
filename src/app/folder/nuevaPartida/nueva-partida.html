@@ -15,11 +15,17 @@
     </ion-header>
   
     <div class="container text-center">      
-        <ion-button color="primary">Añadir Jugador</ion-button>
-        <ion-button color="primary">Quitar Jugador</ion-button>
-        <ion-card *ngFor="let p of appPages; let i = index"> 
-            <img src="img/card-saopaolo.png"/>
-            <div class="card-title">São Paulo</div>
+        <ion-button (click)="agregarJugador()">Añadir Jugador</ion-button>
+        <ion-button (click)="quitarJugador()" color="light">Quitar Jugador</ion-button>
+        <ion-card *ngFor="let jugador of jugadores; let i = index"> 
+            <ion-card-title>
+                <ion-item>
+                    <ion-label>Nombre</ion-label>
+                    <ion-input type="text" [(ngModel)]="jugador.nombre"></ion-input>
+                </ion-item>                
+            </ion-card-title>
+            <img *ngIf="jugador.cpu" src="../../../assets/Jugador.png"/>
+            <img *ngIf="!jugador.cpu" src="../../../assets/Jugador.png"/>            
             <div class="card-subtitle">41 Listings</div>
         </ion-card>
     </div>
