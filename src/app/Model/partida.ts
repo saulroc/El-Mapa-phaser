@@ -32,6 +32,7 @@ export class Partida {
         this.numeroJugadores = ini_jugadores.length;
         for (var i = 0; i < this.numeroJugadores; i++) {
             var datosJugador = new Jugador(ini_jugadores[i].nombre, ini_jugadores[i].color, i, ini_jugadores[i].cpu);
+            datosJugador.barajarFichas();
             this.jugadores.push(datosJugador);             
         }
         if (this.numeroJugadores > 0)
