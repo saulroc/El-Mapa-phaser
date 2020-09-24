@@ -8,7 +8,6 @@ import * as Phaser from 'phaser';
 //import GesturesPlugin from 'phaser3-rex-plugins/plugins/gestures-plugin.js';
 import { GameOverSceneService } from '../services/game-over-scene.service';
 
-
 interface GameInstance extends Phaser.Types.Core.GameConfig {
   instance: Phaser.Game
 }
@@ -52,7 +51,7 @@ export class FolderPage implements OnInit {
   }
 
   constructor(private activatedRoute: ActivatedRoute,
-    private mapSceneService: MapSceneService) { }
+    private mapSceneService: MapSceneService    ) { }
 
   ngOnInit() {
     this.folder = this.activatedRoute.snapshot.paramMap.get('id');

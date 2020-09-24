@@ -25,10 +25,8 @@
                 </ion-item>                
             </ion-card-title>
             <div (click)="cambiarCPU(jugador)">
-                <img *ngIf="!jugador.cpu"  src="../../../assets/Avatar Jugador.png" style="width: 12% ; -webkit-filter: opacity(.5) drop-shadow(0 0 0 green);
-                filter: opacity(.5) drop-shadow(0 0 0 green);" />
-                <img *ngIf="jugador.cpu" src="../../../assets/Avatar CPU.png" style="width: 12% ; -webkit-filter: opacity(.5) drop-shadow(0 0 0 green);
-                filter: opacity(.5) drop-shadow(0 0 0 green);" />                        
+                <img [src]="!jugador.cpu ? '../../../assets/Avatar Jugador.png' : '../../../assets/Avatar CPU.png'" style="width: 12% ; -webkit-filter: opacity(.5) drop-shadow(0 0 0 green);
+                filter: opacity(.5) drop-shadow(0 0 0 green);" />                
             </div>
             
         </ion-card>

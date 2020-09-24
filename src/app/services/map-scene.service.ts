@@ -10,6 +10,7 @@ import { ini_jugadores } from '../Model/datosIniciales';
 import { Jugador } from '../Model/jugador';
 import { Partida } from '../Model/partida';
 import { Edificio } from '../Model/edificio';
+import { DataService } from './data.service';
 
 const FRAME_FICHA_FONDO = 44;
 const COLOR_LETRA_BLANCO = '#FFFFFF';
@@ -50,11 +51,18 @@ export class MapSceneService extends Phaser.Scene {
     distanciaDelta: number;
     escalarMundo: number = 1;
 
-    public constructor() {
+    public constructor(private dataService: DataService) {
       super({ key: 'Map' });
-      this.partida = new Partida();
-      this.partida.iniciarJugadores(ini_jugadores);
+      this.partida = dataService.obtenerPartida();
+      if (this.partida === undefined) {
+        this.partida = new Partida();
+        this.partida.iniciarJugadores(ini_jugadores);
+      }      
       this.mensajesInformacion = [];
+    }
+
+    asignarPartida(partida: Partida) {
+      this.partida = partida;
     }
 
     public preload() {
