@@ -2,7 +2,6 @@ import * as Phaser from 'phaser';
 import { CartaSprite } from './cartaSprite';
 import { FichaSprite } from './fichaSprite';
 import { Pueblo } from '../Model/pueblo';
-import { INI_FICHAS } from '../Model/datosIniciales';
 import { Peloton } from '../Model/peloton';
 import { Jugador } from '../Model/jugador';
 import { Ficha } from '../Model/ficha';
@@ -123,84 +122,24 @@ export class JugadorSprite extends Phaser.Physics.Arcade.Sprite {
 
     inicializarFichas() {
         this.fichasTerreno = this.scene.physics.add.group();
-        for( var i = 0; i < INI_FICHAS.length; i++) {
-            var datosficha = INI_FICHAS[i];
-            var ficha = new Ficha(
-                datosficha.frame,
-                datosficha.nombre, 
-                datosficha.nivel, 
-                datosficha.colocada, 
-                datosficha.oculta,
-                datosficha.pueblo ? 
-                    (i == 0) ? 
-                        new Pueblo(this.jugador.color) 
-                        : new Pueblo('#FFFFFF') 
-                    : null,
-                datosficha.minaMadera,
-                datosficha.minaPiedra,
-                datosficha.minaOro,
-                datosficha.minaTecnologia,
-                datosficha.tesoro,
-                datosficha.bloqueoNorte,
-                datosficha.bloqueoSur,
-                datosficha.bloqueoEste,
-                datosficha.bloqueoOeste
-
-            );
+        
+        for( var i = 0; i < this.jugador.fichas.length; i++) {
+            var ficha = this.jugador.fichas[i];
             this.jugador.fichas.push(ficha);
             var fichaTerreno = new FichaSprite(
                 this.scene, 
                 ficha
                 );
-            if (datosficha.tropa) {
-                for (var j = 0; j < datosficha.tropa.length; j++) {
-                    ficha.addTropas(datosficha.tropa[j].jugador, datosficha.tropa[j].tropas)
-                }
-            }
-
+            
             if(fichaTerreno.ficha.pueblo)
-                fichaTerreno.ficha.pueblo.nombre = datosficha.nombre;
+                fichaTerreno.ficha.pueblo.nombre = ficha.nombre;
 
             fichaTerreno.setVisible(false);            
             fichaTerreno.setPosition(50 * i * this.jugador.numero + fichaTerreno.width, 50 * i * this.jugador.numero + fichaTerreno.height);
-            this.fichasTerreno.add(fichaTerreno);
-            if (i == 0 && ficha.pueblo) {                
-                this.jugador.agregarPueblo(ficha.pueblo);
-            }
-        }
-        this.barajarFichas();
+            this.fichasTerreno.add(fichaTerreno);            
+        }        
         
-    }
-
-    shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-    }
-
-    barajarFichas() {
-        var fichas = <FichaSprite[]>this.fichasTerreno.getChildren();
-        var fichasNiveles = [[]];
-        while (fichas.length > 0) {
-            var ficha = fichas.splice(0,1)[0];
-            if(ficha.ficha.nivel == fichasNiveles.length) {
-                fichasNiveles.push(new Array());                
-            }
-            fichasNiveles[ficha.ficha.nivel].push(ficha);
-        }
-        for(var i = 1; i < fichasNiveles.length; i++) {
-            this.shuffleArray(fichasNiveles[i]);            
-        }
-        this.fichasTerreno.clear();
-        fichasNiveles.forEach(fichas => {
-            this.fichasTerreno.addMultiple(fichas);
-            // fichas.forEach(ficha => {
-            //     this.fichasTerreno.add(ficha);
-            // })
-        });
-
-    }
+    }    
 
     obtenerSiguienteFicha() {
         if (!this.fichasTerreno) return null;

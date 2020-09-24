@@ -2,7 +2,7 @@ import { Pueblo } from "./pueblo";
 import { Peloton } from "./peloton";
 import { Ficha } from "./ficha";
 import { Edificio } from "./edificio";
-
+import { INI_FICHAS } from '../Model/datosIniciales';
 
 export class Jugador {
     nombre: string;
@@ -36,12 +36,13 @@ export class Jugador {
         this.puntos = 0;
         this.minas = [];
         this.fichas = [];
-        
+                
         this.activo = false;
         this.pelotonesMoviendo = 0;
         this.maximoPelotonesMoviendo = 0;
         this.pelotones = [];
 
+        this.cargarFichas(INI_FICHAS)
     }
 
     iniciarTurno() {
@@ -214,5 +215,76 @@ export class Jugador {
             }
         });
         return puebloEncontrado;
+    }
+
+    cargarFichas(ini_fichas) {
+        this.fichas = [];
+
+        for( var i = 0; i < ini_fichas.length; i++) {
+            var datosficha = ini_fichas[i];
+            var ficha = new Ficha(
+                datosficha.frame,
+                datosficha.nombre, 
+                datosficha.nivel, 
+                datosficha.colocada, 
+                datosficha.oculta,
+                datosficha.pueblo ? 
+                    (i == 0) ? 
+                        new Pueblo(this.color) 
+                        : new Pueblo('#FFFFFF') 
+                    : null,
+                datosficha.minaMadera,
+                datosficha.minaPiedra,
+                datosficha.minaOro,
+                datosficha.minaTecnologia,
+                datosficha.tesoro,
+                datosficha.bloqueoNorte,
+                datosficha.bloqueoSur,
+                datosficha.bloqueoEste,
+                datosficha.bloqueoOeste
+
+            );
+            if(datosficha.xTile !== undefined)
+                ficha.xTile = datosficha.xTile;
+            if(datosficha.yTile !== undefined)
+                ficha.yTile = datosficha.yTile;
+
+            this.fichas.push(ficha);            
+            
+            if (datosficha.tropa) {
+                for (var j = 0; j < datosficha.tropa.length; j++) {
+                    ficha.addTropas(datosficha.tropa[j].jugador, datosficha.tropa[j].tropas)
+                }
+            }
+
+            if (i == 0 && ficha.pueblo) {                
+                this.agregarPueblo(ficha.pueblo);
+            }
+        }
+    }
+
+    barajarFichas() {
+        var fichas = this.fichas.slice();
+        var fichasNiveles = [[]];
+        while (fichas.length > 0) {
+            var ficha = fichas.splice(0,1)[0];
+            if(ficha.nivel == fichasNiveles.length) {
+                fichasNiveles.push(new Array());                
+            }
+            fichasNiveles[ficha.nivel].push(ficha);
+        }
+        for(var i = 1; i < fichasNiveles.length; i++) {
+            this.shuffleArray(fichasNiveles[i]);            
+        }
+        this.fichas = [];
+        this.fichas = fichas;
+
+    }
+
+    shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
     }
 }
