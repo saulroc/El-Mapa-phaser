@@ -15,12 +15,12 @@ export class AppComponent implements OnInit {
     {
       title: 'Partida',
       url: '/folder/partida',
-      icon: 'gamepad'
+      icon: 'game-controller'
     },
     {
       title: 'Nueva Partida',
-      url: '/folder/nuevaPartida',
-      icon: 'paper-plane'
+      url: '/nuevaPartida',
+      icon: 'add'
     }
   ];
   
