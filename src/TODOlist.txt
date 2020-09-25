@@ -5,8 +5,7 @@
     - volumen de la musica
     - efectos de sonido
 - ventana de partida nueva 
-    - numero de jugadores
-    - CPU's
+    - Colores
     - hotseat vs online
 - ventana de cargar partidas
 - Juego
