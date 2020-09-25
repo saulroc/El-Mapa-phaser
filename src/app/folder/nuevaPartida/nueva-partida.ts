@@ -11,7 +11,7 @@ import { DataService } from '../../services/data.service';
   })
 export class NuevaPartida implements OnInit {
     public jugadores: Jugador[];
-    private colores = ["0xff0000", "0x0000ff", "0x008000", "0xffff00", "0xD2B48C", "0xff4500", "0x800080", "0x00ffff"]; 
+    private colores = ["#ff0000", "#0000ff", "#008000", "#ffff00", "#D2B48C", "#ff4500", "#800080", "#00ffff"]; 
     image: HTMLElement;
 
     constructor(private dataService: DataService, private router: Router) { 

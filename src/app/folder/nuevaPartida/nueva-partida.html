@@ -25,8 +25,9 @@
                 </ion-item>                
             </ion-card-title>
             <div (click)="cambiarCPU(jugador)">
-                <img [src]="!jugador.cpu ? '../../../assets/Avatar Jugador.png' : '../../../assets/Avatar CPU.png'" style="width: 12% ; -webkit-filter: opacity(.5) drop-shadow(0 0 0 green);
-                filter: opacity(.5) drop-shadow(0 0 0 green);" />                
+                <img 
+                  [src]="!jugador.CPU ? '../../../assets/Avatar Jugador.png' : '../../../assets/Avatar CPU.png'" 
+                  [style]="'width: 12% ; background-color: ' + jugador.color + ';'" />                
             </div>
             
         </ion-card>
