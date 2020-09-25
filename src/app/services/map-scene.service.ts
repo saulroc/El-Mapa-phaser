@@ -50,15 +50,23 @@ export class MapSceneService extends Phaser.Scene {
     distanciaAnterior: number;
     distanciaDelta: number;
     escalarMundo: number = 1;
+    private dataService: DataService;
 
-    public constructor(private dataService: DataService) {
+    public constructor() {
       super({ key: 'Map' });
-      this.partida = dataService.obtenerPartida();
+      if (this.dataService != undefined)
+        this.partida = this.dataService.obtenerPartida();
+
       if (this.partida === undefined) {
         this.partida = new Partida();
         this.partida.iniciarJugadores(ini_jugadores);
       }      
       this.mensajesInformacion = [];
+    }
+
+    init(partida) {
+      if(typeof(partida) === typeof(Partida))
+        this.partida = partida;
     }
 
     asignarPartida(partida: Partida) {

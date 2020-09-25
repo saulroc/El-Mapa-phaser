@@ -7,6 +7,7 @@ import { PuebloSceneService } from '../services/pueblo-scene.service';
 import * as Phaser from 'phaser';
 //import GesturesPlugin from 'phaser3-rex-plugins/plugins/gestures-plugin.js';
 import { GameOverSceneService } from '../services/game-over-scene.service';
+import { DataService } from '../services/data.service';
 
 interface GameInstance extends Phaser.Types.Core.GameConfig {
   instance: Phaser.Game
@@ -50,8 +51,11 @@ export class FolderPage implements OnInit {
     instance: null
   }
 
-  constructor(private activatedRoute: ActivatedRoute,
-    private mapSceneService: MapSceneService    ) { }
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private mapSceneService: MapSceneService,
+    private dataService: DataService
+    ) { }
 
   ngOnInit() {
     this.folder = this.activatedRoute.snapshot.paramMap.get('id');
@@ -59,11 +63,11 @@ export class FolderPage implements OnInit {
 
   initializeGame() {    
     this.initialize = true
-
+    //this.game.instance.scene.start('Map', this.dataService.obtenerPartida())
   }
 
   getInstance(){
-    return this.game.instance;
+    return this.game.instance;    
   }
 
   changeAngle () {
