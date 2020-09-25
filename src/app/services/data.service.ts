@@ -4,7 +4,7 @@ import { Partida } from '../Model/partida';
 @Injectable({
   providedIn: 'root'
 })
-export class DataService {
+class DataService {
  
   private data = [];
   private partida: Partida;
@@ -26,3 +26,5 @@ export class DataService {
       return this.partida;
   }
 }
+
+export const MyDataService = new DataService();

@@ -24,7 +24,7 @@
                     <ion-input type="text" [(ngModel)]="jugador.nombre"></ion-input>
                 </ion-item>                
             </ion-card-title>
-            <ion-item (click)="cambiarCPU(jugador)" [color]="jugador.color" >
+            <ion-item (click)="cambiarCPU(jugador)" [color]="obtenerNombreColor(jugador.color)" >
               <ion-avatar slot="start">
                 <img 
                   [src]="!jugador.CPU ? '../../../assets/Avatar Jugador.png' : '../../../assets/Avatar CPU.png'"                   
