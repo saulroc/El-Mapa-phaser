@@ -24,11 +24,13 @@
                     <ion-input type="text" [(ngModel)]="jugador.nombre"></ion-input>
                 </ion-item>                
             </ion-card-title>
-            <div (click)="cambiarCPU(jugador)">
+            <ion-item (click)="cambiarCPU(jugador)" [color]="jugador.color" >
+              <ion-avatar slot="start">
                 <img 
-                  [src]="!jugador.CPU ? '../../../assets/Avatar Jugador.png' : '../../../assets/Avatar CPU.png'" 
-                  [style]="'width: 12% ; background-color: ' + jugador.color + ';'" />                
-            </div>
+                  [src]="!jugador.CPU ? '../../../assets/Avatar Jugador.png' : '../../../assets/Avatar CPU.png'"                   
+                  />      
+              </ion-avatar>            
+            </ion-item>
             
         </ion-card>
         <ion-button *ngIf="jugadores.length<8" (click)="agregarJugador()">Añadir Jugador</ion-button>

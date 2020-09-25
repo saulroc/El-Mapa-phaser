@@ -12,12 +12,13 @@ import { DataService } from '../../services/data.service';
 export class NuevaPartida implements OnInit {
     public jugadores: Jugador[];
     private colores = ["#ff0000", "#0000ff", "#008000", "#ffff00", "#D2B48C", "#ff4500", "#800080", "#00ffff"]; 
+    private nombreColores = ["red", "blue", "darkgreen", "yellow", "teal", "orange", "purple", "cyan"]; 
     image: HTMLElement;
 
     constructor(private dataService: DataService, private router: Router) { 
         this.jugadores = [];
-        this.jugadores.push(new Jugador("Jugador 1", this.colores[0], this.jugadores.length + 1, false));
-        this.jugadores.push(new Jugador("Jugador 2", this.colores[1], this.jugadores.length + 1, false));
+        this.jugadores.push(new Jugador("Jugador 1", this.nombreColores[0], this.jugadores.length + 1, false));
+        this.jugadores.push(new Jugador("Jugador 2", this.nombreColores[1], this.jugadores.length + 1, false));
     }
 
     ngOnInit() {
@@ -29,8 +30,8 @@ export class NuevaPartida implements OnInit {
     }
 
     agregarJugador() {
-        if(this.jugadores.length < this.colores.length)
-            this.jugadores.push(new Jugador("nuevo jugador", this.colores[this.jugadores.length], this.jugadores.length + 1, false));
+        if(this.jugadores.length < this.nombreColores.length)
+            this.jugadores.push(new Jugador("nuevo jugador", this.nombreColores[this.jugadores.length], this.jugadores.length + 1, false));
     }
     quitarJugador() {
         if (this.jugadores.length > 2)
