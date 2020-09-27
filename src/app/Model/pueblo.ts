@@ -162,11 +162,11 @@ export class Pueblo  {
 
     puedeComprarTropas(jugador: Jugador) {
         if (!jugador.tieneRecursos()) return false;
-        
+
         if (this.leva.cantidad > 0 && jugador.puedeComprar(this.leva.coste.oro, this.leva.coste.madera, this.leva.coste.piedra))
             return true;
         
-        var edificiosConTropas = this.edificios.filter((e:Edificio) => e.estaConstruido() && e.tropa.cantidad >= 1);
+        var edificiosConTropas = this.edificios.filter((e:Edificio) => e.estaConstruido() && e.tropa && e.tropa.cantidad >= 1);
         for(var edificio of edificiosConTropas) {
             var coste = edificio.tropa.coste;
             if (jugador.puedeComprar(coste.oro, coste.madera, coste.piedra))
