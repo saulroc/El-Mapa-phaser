@@ -423,6 +423,8 @@ export class PuebloSceneService extends Phaser.Scene {
         var nuevaTropa = Object.assign({}, tropa);
         nuevaTropa.cantidad = 1;
         this.fichaPueblo.ficha.addTropa(this.jugador.jugador, nuevaTropa);
+        var mapa =<MapSceneService>this.game.scene.getScene('Map');
+        mapa.voltearFichas(this.fichaPueblo.ficha.xTile, this.fichaPueblo.ficha.yTile);
         this.fichaPueblo.cargarMarcadoresTropas();
         this.jugador.refrescarDatos();
         tropa.cantidad -= 1;
