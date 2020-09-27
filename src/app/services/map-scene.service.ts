@@ -630,13 +630,10 @@ export class MapSceneService extends Phaser.Scene {
           await this.sleep(1500);
 
           var fichaOrigen = pelotonesJugador[index].ficha;
-          var fichasDestino = <FichaSprite[]>this.mapaFichas.getChildren();
-          fichasDestino = fichasDestino.filter(fd => (Math.abs(fd.ficha.xTile - fichaOrigen.ficha.xTile) + Math.abs(fd.ficha.yTile - fichaOrigen.ficha.yTile)) == 1
-                                        && fd.ficha.sePuedeMover(fichaOrigen.ficha.xTile, fichaOrigen.ficha.yTile)
-                                        &&  fichaOrigen.ficha.sePuedeMover(fd.ficha.xTile, fd.ficha.yTile));
-          var indexFicha = Phaser.Math.Between(0, fichasDestino.length - 1);
+          var fichasDestino = <FichaSprite[]>this.mapaFichas.getChildren();          
+          var fichaDestino = this.escogerFichaDestinoCPU(fichaOrigen, fichasDestino);
           
-          var punto = this.map.tileToWorldXY(fichasDestino[indexFicha].ficha.xTile, fichasDestino[indexFicha].ficha.yTile);
+          var punto = this.map.tileToWorldXY(fichaDestino.ficha.xTile, fichaDestino.ficha.yTile);
         
           this.game.input.activePointer.x = punto.x - this.cameras.main.scrollX;
           this.game.input.activePointer.y = punto.y - this.cameras.main.scrollY;
@@ -645,13 +642,20 @@ export class MapSceneService extends Phaser.Scene {
 
           await this.sleep(1500);
 
-          var marcador = fichasDestino[indexFicha].marcadoresTropas.find(mt => (<PelotonSprite[]>mt.getChildren())[0].peloton.jugador == this.jugadorActivo.jugador);
+          var marcador = fichaDestino.marcadoresTropas.find(mt => (<PelotonSprite[]>mt.getChildren())[0].peloton.jugador == this.jugadorActivo.jugador);
           pelotonesJugador[index] = (<PelotonSprite[]>marcador.getChildren())[0];
 
         }
 
       }      
 
+    }
+
+    escogerFichaDestinoCPU(fichaOrigen:FichaSprite, fichasDestino: FichaSprite[]) {
+      var fichasPuedeMover = fichasDestino.filter(fd => (Math.abs(fd.ficha.xTile - fichaOrigen.ficha.xTile) + Math.abs(fd.ficha.yTile - fichaOrigen.ficha.yTile)) == 1
+                                      && fd.ficha.sePuedeMover(fichaOrigen.ficha.xTile, fichaOrigen.ficha.yTile)
+                                      &&  fichaOrigen.ficha.sePuedeMover(fd.ficha.xTile, fd.ficha.yTile));
+      return fichasPuedeMover[Phaser.Math.Between(0, fichasPuedeMover.length - 1)];
     }
 
     sleep(ms) {
