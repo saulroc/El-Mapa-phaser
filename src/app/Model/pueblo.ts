@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import {EdificioSprite} from '../Sprites/edificioSprite';
 import { INI_EDIFICIOS } from './datosIniciales';
 import { Edificio } from './edificio';
+import { Jugador } from './jugador';
 import { Tropa, LEVA } from './tropa';
 
 
@@ -140,6 +141,38 @@ export class Pueblo  {
 
     puedeComerciar() {
         return this.comerciado < this.comercio;
+    }
+
+    puedeConstruir(jugador: Jugador) {
+        var puedeConstruir = false;
+        if (!jugador.tieneRecursos()) return false;
+        
+        if (!this.construido) {    
+            this.edificios.forEach((edificio: Edificio) => {
+                if (!edificio.estaConstruido()) {
+                    var resultado = jugador.puedeComprar(edificio.oro, edificio.madera, edificio.piedra);
+                    if (resultado) 
+                        puedeConstruir = true;
+                }
+            });                             
+        }
+
+        return puedeConstruir;
+    }
+
+    puedeComprarTropas(jugador: Jugador) {
+        if (!jugador.tieneRecursos()) return false;
+        
+        if (this.leva.cantidad > 0 && jugador.puedeComprar(this.leva.coste.oro, this.leva.coste.madera, this.leva.coste.piedra))
+            return true;
+        
+        var edificiosConTropas = this.edificios.filter((e:Edificio) => e.estaConstruido() && e.tropa.cantidad >= 1);
+        for(var edificio of edificiosConTropas) {
+            var coste = edificio.tropa.coste;
+            if (jugador.puedeComprar(coste.oro, coste.madera, coste.piedra))
+                return true;
+        }
+        return false;
     }
 
     comerciar() {

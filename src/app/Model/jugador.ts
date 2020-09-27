@@ -176,7 +176,7 @@ export class Jugador {
 
     tieneAccionesPuebloPendientes(): boolean {
         return (this.tieneRecursos() && 
-        (this.puedeConstruir() != null || this.puedeComerciar() != null || this.puedeComprarTropas() != null))
+        (this.pueblosPuedeConstruir().length > 0 || this.puedeComerciar() != null || this.puedeComprarTropas() != null))
     }
 
     tieneRecursos(): boolean {
@@ -192,7 +192,11 @@ export class Jugador {
     }
 
     puedeComprarTropas(): Pueblo {
-        var filtrados = this.pueblos.filter((pueblo: Pueblo) => (pueblo.leva.cantidad > 0 && this.oro > 0));
+        var filtrados = [];
+        for(var pueblo of this.pueblos) {
+            if(pueblo.puedeComprarTropas(this))
+                filtrados.push(pueblo);
+        }
         return filtrados.length > 0 ? filtrados[0] : null;
     }
 
@@ -201,20 +205,13 @@ export class Jugador {
         return filtrados.length > 0 ? filtrados[0] : null;
     }
 
-    puedeConstruir(): Pueblo {
-        var puebloEncontrado: Pueblo = null;
-        this.pueblos.forEach((pueblo: Pueblo) => {
-            if (!pueblo.construido) {
-                pueblo.edificios.forEach((edificio: Edificio) => {
-                    if (!edificio.estaConstruido()) {
-                        var resultado = this.puedeComprar(edificio.oro, edificio.madera, edificio.piedra);
-                        if (resultado) 
-                            puebloEncontrado = pueblo;
-                    }
-                });                             
-            }
-        });
-        return puebloEncontrado;
+    pueblosPuedeConstruir(): Pueblo[] {
+        var pueblosResultado: Pueblo[] = [];
+        for(var pueblo of this.pueblos) {
+            if (pueblo.puedeConstruir(this))
+                pueblosResultado.push(pueblo);
+        }
+        return pueblosResultado;
     }
 
     cargarFichas(ini_fichas) {

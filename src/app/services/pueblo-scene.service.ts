@@ -579,19 +579,25 @@ export class PuebloSceneService extends Phaser.Scene {
     async jugarCPU() {
         var CPU = this.jugador.jugador;
 
-        while(CPU.tieneAccionesPuebloPendientes()) {
+        while(this.tieneAccionesPuebloPendientes(CPU)) {
             if (this.pueblo.puedeConstruir(CPU)) {
                 await this.construirCPU(CPU);
             }
-            if (CPU.tieneRecursos() && this.pueblo === CPU.puedeComerciar()) {
+            if (CPU.tieneRecursos() && this.pueblo.puedeComerciar()) {
                 await this.comerciarCPU(CPU);
             }
-            if (CPU.tieneRecursos() && this.pueblo === CPU.puedeComprarTropas()) {
+            if (this.pueblo.puedeComprarTropas(CPU)) {
                 await this.comprarTropasCPU(CPU);
             }
         } 
         this.cerrar(null, null, null, null);    
         await this.sleep(1000);
+    }
+
+    tieneAccionesPuebloPendientes(CPU: Jugador): boolean {
+        if (!CPU.tieneRecursos())
+            return false;
+        return (this.pueblo.puedeConstruir(CPU) || this.pueblo.puedeComerciar() || this.pueblo.puedeComprarTropas(CPU));
     }
 
     async construirCPU(cpu: Jugador) {

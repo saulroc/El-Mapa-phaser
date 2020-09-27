@@ -600,7 +600,7 @@ export class MapSceneService extends Phaser.Scene {
     
     abrirPueblo() {
       var jugador = this.jugadorActivo.jugador;
-      var pueblo = jugador.puedeConstruir() ? jugador.puedeConstruir() 
+      var pueblo = jugador.pueblosPuedeConstruir().length > 0 ? jugador.pueblosPuedeConstruir()[0]
         : jugador.puedeComprarTropas() ? jugador.puedeComprarTropas() 
         : jugador.puedeComerciar();
       if (pueblo != null) {
