@@ -580,14 +580,14 @@ export class PuebloSceneService extends Phaser.Scene {
         var CPU = this.jugador.jugador;
 
         while(CPU.tieneAccionesPuebloPendientes()) {
-            if (this.pueblo === CPU.puedeConstruir()) {
-                await this.construirCPU(CPU);;
+            if (this.pueblo.puedeConstruir(CPU)) {
+                await this.construirCPU(CPU);
             }
             if (CPU.tieneRecursos() && this.pueblo === CPU.puedeComerciar()) {
-                await this.comerciarCPU(CPU);;
+                await this.comerciarCPU(CPU);
             }
             if (CPU.tieneRecursos() && this.pueblo === CPU.puedeComprarTropas()) {
-                await this.comprarTropasCPU(CPU);;
+                await this.comprarTropasCPU(CPU);
             }
         } 
         this.cerrar(null, null, null, null);    
@@ -597,7 +597,7 @@ export class PuebloSceneService extends Phaser.Scene {
     async construirCPU(cpu: Jugador) {
         
         var zonasEdificables = (<Phaser.GameObjects.Rectangle[]>this.zonasDeConstruccion.getChildren())
-            .filter(zc => zc.isStroked);
+            .filter(zc => zc.isStroked && zc.visible);
 
         var index = Phaser.Math.Between(0,zonasEdificables.length-1);
                     
@@ -624,7 +624,7 @@ export class PuebloSceneService extends Phaser.Scene {
         } else if (cpu.oro < 3 && cpu.piedra > 1) {
             index = 1;
         } else {
-            this.pueblo.comerciado++;
+            this.pueblo.comerciar();
         }
         if (index > -1) {
             this.mostrarOcultarComercio();
