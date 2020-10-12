@@ -30,7 +30,7 @@ export class NuevaPartida implements OnInit {
 
     agregarJugador() {
         if(this.jugadores.length < this.nombreColores.length)
-            this.jugadores.push(new Jugador("nuevo jugador", this.colores[this.jugadores.length], this.jugadores.length + 1, false));
+            this.jugadores.push(new Jugador("jugador " + (this.jugadores.length + 1), this.colores[this.jugadores.length], this.jugadores.length + 1, false));
     }
     quitarJugador() {
         if (this.jugadores.length > 2)
@@ -38,6 +38,10 @@ export class NuevaPartida implements OnInit {
     }
     cambiarCPU(jugador: Jugador) {
         jugador.CPU = !jugador.CPU;
+        if (jugador.CPU)
+            jugador.nombre = "CPU " + (this.jugadores.indexOf(jugador) + 1);
+        else
+            jugador.nombre = "Jugador " + (this.jugadores.indexOf(jugador) + 1);
     }
 
     crearPartida() {
