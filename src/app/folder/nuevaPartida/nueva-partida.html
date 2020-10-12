@@ -17,22 +17,26 @@
     <div class="container text-center">              
         <ion-button *ngIf="jugadores.length>2" (click)="quitarJugador()" color="light">Quitar Jugador</ion-button>
         <ion-button (click)="crearPartida()" color="light">Crear partida</ion-button>
-        <ion-card *ngFor="let jugador of jugadores; let i = index" class="col-2"> 
-            <ion-card-title>
-                <ion-item>
-                    <ion-label>Nombre</ion-label>
-                    <ion-input type="text" [(ngModel)]="jugador.nombre"></ion-input>
-                </ion-item>                
-            </ion-card-title>
-            <ion-item (click)="cambiarCPU(jugador)" [color]="obtenerNombreColor(jugador.color)" >
-              <ion-avatar slot="start">
-                <img 
-                  [src]="!jugador.CPU ? '../../../assets/Avatar Jugador.png' : '../../../assets/Avatar CPU.png'"                   
-                  />      
-              </ion-avatar>            
-            </ion-item>
-            
-        </ion-card>
+        <ion-row>          
+          <ion-col *ngFor="let jugador of jugadores; let i = index" col-3> 
+            <ion-card>
+              <ion-card-title>
+                  <ion-item>
+                      <ion-label floating>Nombre: </ion-label>
+                      <ion-input type="text" [(ngModel)]="jugador.nombre"></ion-input>
+                  </ion-item>                
+              </ion-card-title>
+              <ion-item (click)="cambiarCPU(jugador)" [color]="obtenerNombreColor(jugador.color)" >
+                <ion-avatar slot="start">
+                  <img 
+                    [src]="!jugador.CPU ? '../../../assets/Avatar Jugador.png' : '../../../assets/Avatar CPU.png'"                   
+                    />      
+                </ion-avatar>            
+              </ion-item>            
+            </ion-card>
+          </ion-col>
+        </ion-row>
+        
         <ion-button *ngIf="jugadores.length<8" (click)="agregarJugador()">Añadir Jugador</ion-button>
     </div>
   </ion-content>
